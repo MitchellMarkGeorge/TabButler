@@ -1,12 +1,12 @@
 export interface MessagePlayload {
     message: string; // for now
-    data: TabData[]
+    // data: TabData[]
 }
 
 export interface TabData {
     tabId: number,
     favIcon: string | null,
     tabIndex:number
-    tabTitle: string | null
+    tabTitle: string
     tabUrl: string
 }

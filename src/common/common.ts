@@ -2,10 +2,13 @@ import { TabData } from "./types";
 
 export const COMMANDS = {
   TOGGLE_TAB_SEARCH: "toggle-tab-search",
+  TOGGLE_TAB_ACTIONS: "toggle-tab-actions",
 };
 
 export const MESSAGES = {
   TOGGLE_SEARCH: "toggle-search",
+  GET_TAB_DATA: "get-tab-data",
+  
 };
 
 export async function getCurrentTab() {
@@ -16,7 +19,6 @@ export async function getCurrentTab() {
 
 export async function getTabsInCurrentWindow() {
   let tabs = await chrome.tabs.query({ currentWindow: true });
-  console.log(tabs)
   return tabs
     .filter((tab) => {
         // will all pages have a title?
@@ -31,7 +33,7 @@ export async function getTabsInCurrentWindow() {
       const tabData: TabData = {
         tabId: id!,
         favIcon: favIconUrl || null,
-        tabTitle: title || null,
+        tabTitle: title!,
         tabIndex: index!,
         tabUrl: url!,
         // muted info

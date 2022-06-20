@@ -9,19 +9,17 @@ tab-butler-modal {
   display: flex;
   /* align-items: center; */
   justify-content: center;
+  box-sizing: border-box;
   padding: 1rem;
   padding-top: 25vh;
   width: 100%;
   height: 100%;
+  /* think about this */
   background-color: rgba(0, 0, 0, 0.5);
   /* background-color: transparent; */
   opacity: 0;
   visibility: hidden;
   z-index: 999999 !important;
-}
-
-tab-butler-modal * {
-  box-sizing: border-box !important;
 }
 
 tab-butler-modal-body::-webkit-scrollbar {
@@ -33,46 +31,24 @@ tab-butler-modal-body {
   position: relative;
   width: 550px;
   height: 300px;
-
   max-height: 300px;
   background: rgba(0, 0, 0, 0.5);
-  color: white !important;
   backdrop-filter: saturate(180%) blur(10px);
   /* display: flex; */
   /* align-items: center; */
   /* justify-content: center; */
-  font-size: 1em !important;
   padding: 16px;
   /* max-height: 80vh; */
   border-radius: 8px;
   /* background-color: #fff; */
-  overflow: auto;
+  overflow: none;
   /* figure out the best box shadow */
   /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
 }
 
 /* USE IDS FOR EVERYTHING */
 /* would css modules work */
-tab-butler-modal-body #search_input {
-  background-color: transparent;
-  border: none;
-  border-color: transparent;
-  outline: none;
-  font-size: 16px !important;
-  margin: 0;
-  /* should only take 50px */
-  height: 50px;
-  width: 100%;
-  color: white;
-}
-
-tab-butler-modal-body #search_input::placeholder {
-  color: white !important;
-}
 
 .is_visible {
   visibility: visible;
