@@ -1,10 +1,10 @@
 import React from "react";
 import * as ReactDOM from "react-dom/client";
 import {
-  getSearchType,
+  getSearchMode,
   Message,
   MessagePlayload,
-  SearchType,
+  SearchMode,
   TabData,
 } from "../common/types";
 import { getActions } from "./actions";
@@ -16,7 +16,7 @@ const tabButlerModalBody = document.createElement("tab-butler-modal-body");
 const shadow = tabButlerModalBody.attachShadow({ mode: "open" });
 tabButlerModalRoot.appendChild(tabButlerModalBody);
 let isOpen = false;
-let currentSearchType: SearchType;
+let currentSearchMode: SearchMode;
 // is there a better way to do this??? should i just attach it in the beggining and then move on?
 let reactRoot: ReactDOM.Root | null = null;
 
@@ -43,11 +43,11 @@ function mountSearchComponent(message: Message) {
     reactRoot = ReactDOM.createRoot(shadow);
     const searchComponentInstance = React.createElement(Search, {
       shadowRoot: shadow,
-      searchType: SearchType.TAB_ACTIONS,
+      searchMode: SearchMode.TAB_ACTIONS,
       actions: getActions(),
     });
     reactRoot.render(searchComponentInstance);
-    currentSearchType = SearchType.TAB_ACTIONS;
+    currentSearchMode = SearchMode.TAB_ACTIONS;
     isOpen = true;
   } else {
     // default to search
@@ -61,11 +61,11 @@ function mountSearchComponent(message: Message) {
       reactRoot = ReactDOM.createRoot(shadow);
       const searchComponentInstance = React.createElement(Search, {
         shadowRoot: shadow,
-        searchType: SearchType.TAB_SEARCH,
+        searchMode: SearchMode.TAB_SEARCH,
         currentTabs: response,
       });
       reactRoot.render(searchComponentInstance);
-      currentSearchType = SearchType.TAB_SEARCH;
+      currentSearchMode = SearchMode.TAB_SEARCH;
       isOpen = true;
       // try and cache tabData array
       // the only times it should not be "used" is if the component is unmounted
@@ -77,8 +77,8 @@ function mountSearchComponent(message: Message) {
 function unmountSearchComponentFromMessage(message: Message) {
   // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
   // get the accosiated search type of the message
-  let requestedSearchType = getSearchType(message);
-  if (currentSearchType === requestedSearchType) {
+  let requestedSearchMode = getSearchMode(message);
+  if (currentSearchMode === requestedSearchMode) {
     // if the search type of the currently open search compenent is the same
     // as the the received one, the user issued the same command
     // meaning they just want to toggle it of
@@ -87,14 +87,14 @@ function unmountSearchComponentFromMessage(message: Message) {
     // in this case, the user wants to switch to a different search type
     // update the props of the component with the nessecary information
     // and update the cuttent search type
-    if (requestedSearchType === SearchType.TAB_ACTIONS) {
+    if (requestedSearchMode === SearchMode.TAB_ACTIONS) {
       const newComponentInstance = React.createElement(Search, {
         shadowRoot: shadow,
-        searchType: requestedSearchType,
+        searchMode: requestedSearchMode,
         actions: getActions(),
       });
       reactRoot?.render(newComponentInstance);
-      currentSearchType = requestedSearchType;
+      currentSearchMode = requestedSearchMode;
     } else {
       const messagePayload = {
         message: Message.GET_TAB_DATA,
@@ -102,11 +102,11 @@ function unmountSearchComponentFromMessage(message: Message) {
       chrome.runtime.sendMessage(messagePayload, (response: TabData[]) => {
         const searchComponentInstance = React.createElement(Search, {
           shadowRoot: shadow,
-          searchType: requestedSearchType,
+          searchMode: requestedSearchMode,
           currentTabs: response,
         });
         reactRoot?.render(searchComponentInstance);
-        currentSearchType = requestedSearchType;
+        currentSearchMode = requestedSearchMode;
       });
     }
   }
@@ -146,4 +146,4 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-document.body.appendChild(tabButlerModalRoot);
+document.body.appendChild(tabButlerModalRoot); // is there a possibility that document.body is null?

@@ -11,15 +11,17 @@ import {
   ChangeTabMessagePayload,
   Message,
   MessagePlayload,
-  SearchType,
+  SearchMode,
   TabData,
 } from "../../common/types";
 import { TabListItem } from "./TabListItem";
 import { ActionListItem } from "./ActionListItem";
 
+// NOTE: SHOW URL IN TABDATA LIST ITEM
+
 interface BaseProps {
   shadowRoot: ShadowRoot;
-  searchType: SearchType;
+  searchMode: SearchMode;
 }
 interface TabSearchProps extends BaseProps {
   currentTabs: TabData[];
@@ -43,17 +45,17 @@ export const Search = (props: Props) => {
     // in the case of the search type changing, reset the input value and the selected index
     setValue("")
     setSelectedIndex(0)
-  }, [props.searchType])
+  }, [props.searchMode])
 
   let data: Action[] | TabData[];
-  if (props.searchType === SearchType.TAB_ACTIONS) {
+  if (props.searchMode === SearchMode.TAB_ACTIONS) {
     data = (props as TabActionsProps).actions;
   } else {
     data = (props as TabSearchProps).currentTabs;
   }
 
-  const isTabActions = () => props.searchType === SearchType.TAB_ACTIONS;
-  const isTabSearch = () => props.searchType === SearchType.TAB_SEARCH;
+  const isTabActions = () => props.searchMode === SearchMode.TAB_ACTIONS;
+  const isTabSearch = () => props.searchMode === SearchMode.TAB_SEARCH;
 
   const filterTabs = (currentTabs: TabData[]) => {
     return currentTabs.filter(
@@ -99,18 +101,21 @@ export const Search = (props: Props) => {
 
   const onKeyDown = (event: any) => {
     if (event.key === "ArrowUp") {
+      event.preventDefault();
       if (selectedIndex !== 0) {
         setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
       } else {
         setSelectedIndex(filteredData.length - 1); // scroll to the buttom
       }
     } else if (event.key === "ArrowDown") {
+      event.preventDefault();
       if (selectedIndex !== filteredData.length - 1) {
         setSelectedIndex((selectectedIndex) => selectectedIndex + 1);
       } else {
         setSelectedIndex(0); // scroll up to the start
       }
     } else if (event.key === "Enter") {
+      event.preventDefault();
         onSubmit();
     }
   };

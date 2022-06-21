@@ -35,17 +35,17 @@ export const enum Message {
   ERROR = "error",
 }
 
-export const enum SearchType {
+export const enum SearchMode {
   TAB_ACTIONS,
   TAB_SEARCH,
 }
 
-export function getSearchType(message: Message) {
+export function getSearchMode(message: Message) {
   if (message === Message.TOGGLE_TAB_ACTIONS) {
-    return SearchType.TAB_ACTIONS;
+    return SearchMode.TAB_ACTIONS;
   }
   // should always be the default
-  return SearchType.TAB_SEARCH;
+  return SearchMode.TAB_SEARCH;
 }
 
 export interface MessagePlayload {
