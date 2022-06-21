@@ -18,6 +18,7 @@ import { TabListItem } from "./TabListItem";
 import { ActionListItem } from "./ActionListItem";
 
 // NOTE: SHOW URL IN TABDATA LIST ITEM
+// should it be full url or just basename
 
 interface BaseProps {
   shadowRoot: ShadowRoot;
