@@ -1,21 +1,35 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
 import { Container } from "./Container";
-import { TabList } from "./TabList";
+import { DataList } from "./DataList";
 import { Empty } from "./Empty";
 import { Heading } from "./Heading";
-import { ChangeTabMessagePayload, Message, TabData } from "../../common/types";
+import {
+  Action,
+  ChangeTabMessagePayload,
+  Message,
+  MessagePlayload,
+  SearchType,
+  TabData,
+} from "../../common/types";
 import { TabListItem } from "./TabListItem";
+import { ActionListItem } from "./ActionListItem";
 
-interface Props {
+interface BaseProps {
   shadowRoot: ShadowRoot;
+  searchType: SearchType;
+}
+interface TabSearchProps extends BaseProps {
   currentTabs: TabData[];
 }
+
+interface TabActionsProps extends BaseProps {
+  actions: Action[];
+}
+
+type Props = TabActionsProps | TabSearchProps;
 
 export const Search = (props: Props) => {
   const [value, setValue] = useState("");
@@ -25,21 +39,32 @@ export const Search = (props: Props) => {
     container: props.shadowRoot,
   });
 
+  let data: Action[] | TabData[];
+  if (props.searchType === SearchType.TAB_ACTIONS) {
+    data = (props as TabActionsProps).actions;
+  } else {
+    data = (props as TabSearchProps).currentTabs;
+  }
 
-  const filterTabs = () => {
-    if (value) {
-      return props.currentTabs.filter(
-        (tabData) =>
-          // try to filter based on the tab title and the tab url
-          tabData.tabTitle.toLowerCase().includes(value.toLowerCase()) ||
-          tabData.tabUrl.toLowerCase().includes(value.toLowerCase())
-      );
-    } else {
-      return props.currentTabs;
-    }
+  const isTabActions = () => props.searchType === SearchType.TAB_ACTIONS;
+  const isTabSearch = () => props.searchType === SearchType.TAB_SEARCH;
+
+  const filterTabs = (currentTabs: TabData[]) => {
+    return currentTabs.filter(
+      (tabData) =>
+        // try to filter based on the tab title and the tab url
+        tabData.tabTitle.toLowerCase().includes(value.toLowerCase()) ||
+        tabData.tabUrl.toLowerCase().includes(value.toLowerCase())
+    );
   };
 
-  const onTabItemSelect = (tabData: TabData) => {
+  const filterActions = (actions: Action[]) => {
+    return actions.filter((action) =>
+      action.name.toLowerCase().includes(value.toLowerCase())
+    );
+  };
+
+  const onTabItemClick = (tabData: TabData) => {
     const messagePayload: ChangeTabMessagePayload = {
       message: Message.CHANGE_TAB,
       tabId: tabData.tabId,
@@ -47,15 +72,23 @@ export const Search = (props: Props) => {
     chrome.runtime.sendMessage(messagePayload);
   };
 
+  const onActionItemClick = (action: Action) => {
+    const messagePayload: MessagePlayload = {
+        message: action.message
+    }
+    chrome.runtime.sendMessage(messagePayload);
+  }
+
   const onSubmit = (event: any) => {
     event.preventDefault();
-    const selectedTab = filteredTabs[selectedIndex];
-    if (selectedTab) {
-      const messagePayload: ChangeTabMessagePayload = {
-        message: Message.CHANGE_TAB,
-        tabId: selectedTab.tabId,
-      };
-      chrome.runtime.sendMessage(messagePayload);
+    const selectedData = filteredData[selectedIndex];
+    if (selectedData) {
+
+      if (isTabActions()) {
+        onActionItemClick(selectedData as Action)
+      } else {
+        onTabItemClick(selectedData as TabData)
+      }
     }
   };
 
@@ -64,10 +97,10 @@ export const Search = (props: Props) => {
       if (selectedIndex !== 0) {
         setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
       } else {
-        setSelectedIndex(filteredTabs.length - 1); // scroll to the buttom
+        setSelectedIndex(filteredData.length - 1); // scroll to the buttom
       }
     } else if (event.key === "ArrowDown") {
-      if (selectedIndex !== filteredTabs.length - 1) {
+      if (selectedIndex !== filteredData.length - 1) {
         setSelectedIndex((selectectedIndex) => selectectedIndex + 1);
       } else {
         setSelectedIndex(0); // scroll up to the start
@@ -83,7 +116,35 @@ export const Search = (props: Props) => {
     };
   });
 
-  const filteredTabs = filterTabs();
+  let filteredData: Action[] | TabData[];
+
+  if (isTabActions()) {
+    filteredData = value ? filterActions(data as Action[]) : data;
+  } else {
+    filteredData = value ? filterTabs(data as TabData[]) : data;
+  }
+
+  const showList = () => {
+    if (isTabActions()) {
+      return (filteredData as Action[]).map((action, index) => (
+        <ActionListItem
+          onClick={(action) => console.log(action)}
+          data={action}
+          key={index}
+          selected={selectedIndex === index}
+        />
+      ));
+    } else {
+      return (filteredData as TabData[]).map((tabData, index) => (
+        <TabListItem
+          onClick={onTabItemClick}
+          data={tabData}
+          key={tabData.tabId}
+          selected={selectedIndex === index}
+        />
+      ));
+    }
+  };
 
   return (
     <CacheProvider value={customCache}>
@@ -99,7 +160,9 @@ export const Search = (props: Props) => {
         {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
         <form onSubmit={onSubmit}>
           <Input
-            placeholder="Search Tabs..."
+            placeholder={
+              isTabActions() ? "Search Actions..." : "Search Tabs..."
+            }
             type="text"
             value={value}
             autoFocus
@@ -109,24 +172,14 @@ export const Search = (props: Props) => {
             }}
           />
         </form>
-        {filteredTabs.length === 0 ? (
+        {filteredData.length === 0 ? (
           <Empty>
-            <Heading color="rgba(255, 255, 255, 0.36)">No tabs to show</Heading>
+            <Heading color="rgba(255, 255, 255, 0.36)">
+              {isTabActions() ? "No actions to show" : "No tabs to show"}
+            </Heading>
           </Empty>
         ) : (
-          <TabList>
-            {filteredTabs.map((tabData, index) => (
-              // use text elipsis is name is too long
-              // <div onClick={() => console.log(tabData)} key={tabData.tabId}>{tabData.tabTitle}</div>
-              <TabListItem
-                onClick={onTabItemSelect}
-                tabData={tabData}
-                selected={selectedIndex === index}
-                // should this component have an onclick listener??
-                key={tabData.tabId}
-              />
-            ))}
-          </TabList>
+          <DataList>{showList()}</DataList>
         )}
       </Container>
     </CacheProvider>

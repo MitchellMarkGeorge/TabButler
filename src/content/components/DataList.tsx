@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const TabList = styled.div`
+export const DataList = styled.div`
     height: 100%;
     max-height: 100%;
     overflow: auto;

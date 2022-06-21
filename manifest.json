@@ -26,6 +26,10 @@
     "toggle-tab-search": {
       "suggested_key": "Ctrl+Shift+S",
       "description": "Toggle tab search in current page"
+    },
+    "toggle-tab-actions": {
+      "suggested_key": "Ctrl+Shift+K",
+      "description": "Toggle tab actions in current page"
     }
   }
 }

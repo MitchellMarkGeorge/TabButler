@@ -1,26 +1,23 @@
-import { TableIcon } from "@heroicons/react/outline";
+import { getCurrentTab, getTabsInCurrentWindow } from "../common/common";
 import {
-  getCurrentTab,
-  getTabsInCurrentWindow,
-} from "../common/common";
-import { ChangeTabMessagePayload, Commands, Message, MessagePlayload } from "../common/types";
+  ChangeTabMessagePayload,
+  Commands,
+  Message,
+  MessagePlayload,
+} from "../common/types";
 
 chrome.commands.onCommand.addListener((command) => {
-  // should I still use async await?? should I just use promises isted
-  // should I just use the tab provided by the listener
-  if (command === Commands.TOGGLE_TAB_SEARCH) {
-    getCurrentTab().then((currentTab) => {
-      let messagePayload: MessagePlayload;
-
-      if (currentTab?.id) {
-        messagePayload = {
-          message: Message.TOGGLE_SEARCH,
-          // data: await getTabsInCurrentWindow(),
-        };
-        chrome.tabs.sendMessage(currentTab.id, messagePayload);
-      }
-    });
-  }
+  getCurrentTab().then((currentTab) => {
+    if (currentTab?.id) {
+      let messagePayload: MessagePlayload = {
+        message:
+          command === Commands.TOGGLE_TAB_ACTIONS
+            ? Message.TOGGLE_TAB_ACTIONS
+            : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
+      };
+      chrome.tabs.sendMessage(currentTab.id, messagePayload);
+    }
+  }); // handle error
 });
 
 chrome.runtime.onMessage.addListener(
@@ -30,10 +27,11 @@ chrome.runtime.onMessage.addListener(
         console.log(currentTabs);
         sendResponse(currentTabs);
       }); // send message is error occured (.catch())
-      return true
+      return true;
     } else if (messagePayload.message === Message.CHANGE_TAB) {
-        // change the tab
-      chrome.tabs.update((messagePayload as ChangeTabMessagePayload).tabId, {
+      // change the tab
+      const { tabId } = messagePayload as ChangeTabMessagePayload;
+      chrome.tabs.update(tabId, {
         active: true,
       });
     }

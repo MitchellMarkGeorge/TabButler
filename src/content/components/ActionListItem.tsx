@@ -1,14 +1,14 @@
-import styled from "@emotion/styled";
+
 import React, { useEffect, useRef } from "react";
-import { TabData } from "../../common/types";
-import { GlobeIcon } from "@heroicons/react/outline";
+import { Action, TabData } from "../../common/types";
+import { ChipIcon } from "@heroicons/react/outline";
 import { ListItem, ListItemProps } from "./ListItem";
 import { useScroll } from "./hooks";
 
 
 
 
-export const TabListItem = ({ data, onClick, selected }: ListItemProps<TabData>) => {
+export const ActionListItem = ({ data, onClick, selected }: ListItemProps<Action>) => {
 //   const ref = useRef<HTMLDivElement>(null);
 //   useEffect(() => {
 //     // if the item becomes selected, scroll to it
@@ -19,23 +19,20 @@ export const TabListItem = ({ data, onClick, selected }: ListItemProps<TabData>)
 //       });
 //     }
 //   }, [selected]);
-const ref = useScroll(selected);
+const ref = useScroll(selected)
   return (
     <ListItem
       onClick={() => onClick(data)}
       selected={selected}
       ref={ref}
     >
-      {data.favIcon ? (
-        <img src={data.favIcon} />
-      ) : (
-        <GlobeIcon
+        <ChipIcon
           width="24px"
           height="24px"
           color="rgba(255, 255, 255, 0.36)"
         />
-      )}
-      <div>{data.tabTitle}</div>
+      
+      <div>{data.name}</div>
     </ListItem>
   );
 };
