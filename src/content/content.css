@@ -33,9 +33,12 @@ tab-butler-modal-body {
   /* was 300px */
   height: 400px;
   max-height: 400px;
-  /* think about blured translucent backgroung */
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: saturate(180%) blur(10px);
+  /* think about blured translucent background */
+  /* current background does not look so good in sites that use ark colors */
+  /* background: rgba(0, 0, 0, 0.5); */
+  /* backdrop-filter: saturate(180%) blur(10px); */
+  /* background-color: #1A202C;  */
+  background-color: rgb(46, 49, 56);
   /* display: flex; */
   /* align-items: center; */
   /* justify-content: center; */

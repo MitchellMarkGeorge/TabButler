@@ -9,16 +9,6 @@ import { useScroll } from "./hooks";
 
 
 export const ActionListItem = ({ data, onClick, selected }: ListItemProps<Action>) => {
-//   const ref = useRef<HTMLDivElement>(null);
-//   useEffect(() => {
-//     // if the item becomes selected, scroll to it
-//     if (selected) {
-//       ref.current?.scrollIntoView({
-//         behavior: "smooth",
-//         block: "start"
-//       });
-//     }
-//   }, [selected]);
 const ref = useScroll(selected)
   return (
     <ListItem

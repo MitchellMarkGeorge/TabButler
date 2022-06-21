@@ -39,6 +39,12 @@ export const Search = (props: Props) => {
     container: props.shadowRoot,
   });
 
+  useEffect(() => {
+    // in the case of the search type changing, reset the input value and the selected index
+    setValue("")
+    setSelectedIndex(0)
+  }, [props.searchType])
+
   let data: Action[] | TabData[];
   if (props.searchType === SearchType.TAB_ACTIONS) {
     data = (props as TabActionsProps).actions;
@@ -76,14 +82,13 @@ export const Search = (props: Props) => {
     const messagePayload: MessagePlayload = {
         message: action.message
     }
+    console.log(messagePayload);
     chrome.runtime.sendMessage(messagePayload);
   }
 
-  const onSubmit = (event: any) => {
-    event.preventDefault();
+  const onSubmit = () => {
     const selectedData = filteredData[selectedIndex];
     if (selectedData) {
-
       if (isTabActions()) {
         onActionItemClick(selectedData as Action)
       } else {
@@ -92,7 +97,7 @@ export const Search = (props: Props) => {
     }
   };
 
-  const onKeyPress = (event: any) => {
+  const onKeyDown = (event: any) => {
     if (event.key === "ArrowUp") {
       if (selectedIndex !== 0) {
         setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
@@ -105,14 +110,17 @@ export const Search = (props: Props) => {
       } else {
         setSelectedIndex(0); // scroll up to the start
       }
+    } else if (event.key === "Enter") {
+        onSubmit();
     }
   };
 
   useEffect(() => {
-    window.addEventListener("keydown", onKeyPress);
+    // can also use window
+    document.addEventListener("keydown", onKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", onKeyPress);
+      document.removeEventListener("keydown", onKeyDown);
     };
   });
 
@@ -128,7 +136,7 @@ export const Search = (props: Props) => {
     if (isTabActions()) {
       return (filteredData as Action[]).map((action, index) => (
         <ActionListItem
-          onClick={(action) => console.log(action)}
+          onClick={onActionItemClick}
           data={action}
           key={index}
           selected={selectedIndex === index}
@@ -158,7 +166,6 @@ export const Search = (props: Props) => {
       />
       <Container>
         {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
-        <form onSubmit={onSubmit}>
           <Input
             placeholder={
               isTabActions() ? "Search Actions..." : "Search Tabs..."
@@ -171,7 +178,6 @@ export const Search = (props: Props) => {
               setValue(e.target.value);
             }}
           />
-        </form>
         {filteredData.length === 0 ? (
           <Empty>
             <Heading color="rgba(255, 255, 255, 0.36)">
