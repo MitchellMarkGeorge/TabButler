@@ -30,8 +30,10 @@ tab-butler-modal-body {
   box-sizing: border-box !important;
   position: relative;
   width: 550px;
-  height: 300px;
-  max-height: 300px;
+  /* was 300px */
+  height: 400px;
+  max-height: 400px;
+  /* think about blured translucent backgroung */
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: saturate(180%) blur(10px);
   /* display: flex; */
