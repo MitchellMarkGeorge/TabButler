@@ -30,12 +30,22 @@ export const ListItem = styled.div<{ selected: boolean}>`
     width: 24px;
   }
 
-  div {
+  .main_text {
+    font-size: 16px;
+  }
+
+  .secondary_text {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.36);
+  }
+
+  .main_text, .secondary_text {
     white-space: nowrap;
-    width: 100%;
+    width: 400px;
+    max-width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 16px;
+    /* font-size: 16px; */
     user-select: none;
   }
 `;

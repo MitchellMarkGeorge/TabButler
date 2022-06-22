@@ -24,6 +24,10 @@ export const enum Message {
   OPEN_SETTINGS = "open-settings",
   OPEN_HISTORY = "open-history",
 
+  PIN_TAB = "pin-tab",
+  MUTE_TAB = "mute-tab",
+  
+
   OPEN_GITHUB = "open-github",
   OPEN_YOUTUBE = "open-youtube",
   OPEN_GOOGLE = "open-google",

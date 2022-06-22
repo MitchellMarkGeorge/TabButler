@@ -22,7 +22,7 @@ const ref = useScroll(selected)
           color="rgba(255, 255, 255, 0.36)"
         />
       
-      <div>{data.name}</div>
+      <div className="main_text">{data.name}</div>
     </ListItem>
   );
 };

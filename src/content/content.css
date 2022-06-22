@@ -38,6 +38,7 @@ tab-butler-modal-body {
   /* background: rgba(0, 0, 0, 0.5); */
   /* backdrop-filter: saturate(180%) blur(10px); */
   /* background-color: #1A202C;  */
+  /* find the best background color */
   background-color: rgb(46, 49, 56);
   /* display: flex; */
   /* align-items: center; */

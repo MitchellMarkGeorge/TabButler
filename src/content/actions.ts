@@ -11,15 +11,15 @@ export function getActions(): Action[] {
       message: Message.CLOSE_CURRENT_WINDOW,
     },
     {
-      name: "Open New Tab",
+      name: "New Tab",
       message: Message.OPEN_NEW_TAB,
     },
     {
-      name: "Open New Window",
+      name: "New Window",
       message: Message.OPEN_NEW_WINDOW,
     },
     {
-      name: "Open Incognito Window",
+      name: "New Incognito Window",
       message: Message.OPEN_INCOGNITO_WINDOW,
     },
     {

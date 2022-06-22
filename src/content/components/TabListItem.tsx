@@ -5,17 +5,14 @@ import { GlobeIcon } from "@heroicons/react/outline";
 import { ListItem, ListItemProps } from "./ListItem";
 import { useScroll } from "./hooks";
 
-
-
-
-export const TabListItem = ({ data, onClick, selected }: ListItemProps<TabData>) => {
-const ref = useScroll(selected);
+export const TabListItem = ({
+  data,
+  onClick,
+  selected,
+}: ListItemProps<TabData>) => {
+  const ref = useScroll(selected);
   return (
-    <ListItem
-      onClick={() => onClick(data)}
-      selected={selected}
-      ref={ref}
-    >
+    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref}>
       {data.favIcon ? (
         <img src={data.favIcon} />
       ) : (
@@ -25,7 +22,10 @@ const ref = useScroll(selected);
           color="rgba(255, 255, 255, 0.36)"
         />
       )}
-      <div>{data.tabTitle}</div>
+      <div>
+        <div className="main_text">{data.tabTitle}</div>
+        <div className="secondary_text">{data.tabUrl}</div>
+      </div>
     </ListItem>
   );
 };

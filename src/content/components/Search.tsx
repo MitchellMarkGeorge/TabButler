@@ -189,6 +189,7 @@ export const Search = (props: Props) => {
             value={value}
             autoFocus
             onChange={(e) => {
+                // can move this to a useEffect hook
               setSelectedIndex(0);
               setValue(e.target.value);
             }}
