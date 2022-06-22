@@ -5,7 +5,7 @@
   "short_name": "Tab Butler",
   "author": "Mitchell Mark-George",
   "version": "1.0",
-  "description": "A full-featured tab manager at your service",
+  "description": "A tab manager at your service",
   "permissions": ["tabs"],
   "background": {
     "service_worker": "background/background.js"
@@ -15,7 +15,7 @@
       "matches": [
         "<all_urls>"
       ],
-      "run_at": "document_end",
+      "run_at": "document_idle",
       "js": [
         "content/content.js"
       ],

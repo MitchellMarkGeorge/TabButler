@@ -20,6 +20,9 @@ import { ActionListItem } from "./ActionListItem";
 // NOTE: SHOW URL IN TABDATA LIST ITEM
 // should it be full url or just basename
 
+// Add support for light mode/theming
+// Add focus lock
+// update tabData array props if tabs added/removed?
 interface BaseProps {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
@@ -43,18 +46,20 @@ export const Search = (props: Props) => {
   // causing the cache provider to think the value has changed
   // leading to new style tags being inserted everytime the state changes
   // tldr; this is important because without it, new style tags will be inserted on every state change
-  
+
   // persist the cache between renders
-  const customCache = useRef(createCache({
-    key: "tab-butler",
-    container: props.shadowRoot,
-  }));
+  const customCache = useRef(
+    createCache({
+      key: "tab-butler",
+      container: props.shadowRoot,
+    })
+  );
 
   useEffect(() => {
     // in the case of the search type changing, reset the input value and the selected index
-    setValue("")
-    setSelectedIndex(0)
-  }, [props.searchMode])
+    setValue("");
+    setSelectedIndex(0);
+  }, [props.searchMode]);
 
   let data: Action[] | TabData[];
   if (props.searchMode === SearchMode.TAB_ACTIONS) {
@@ -91,19 +96,19 @@ export const Search = (props: Props) => {
 
   const onActionItemClick = (action: Action) => {
     const messagePayload: MessagePlayload = {
-        message: action.message
-    }
+      message: action.message,
+    };
     console.log(messagePayload);
     chrome.runtime.sendMessage(messagePayload);
-  }
+  };
 
   const onSubmit = () => {
     const selectedData = filteredData[selectedIndex];
     if (selectedData) {
       if (isTabActions()) {
-        onActionItemClick(selectedData as Action)
+        onActionItemClick(selectedData as Action);
       } else {
-        onTabItemClick(selectedData as TabData)
+        onTabItemClick(selectedData as TabData);
       }
     }
   };
@@ -125,7 +130,7 @@ export const Search = (props: Props) => {
       }
     } else if (event.key === "Enter") {
       event.preventDefault();
-        onSubmit();
+      onSubmit();
     }
   };
 
@@ -168,7 +173,6 @@ export const Search = (props: Props) => {
     }
   };
 
-
   return (
     <CacheProvider value={customCache.current}>
       <Global
@@ -181,19 +185,17 @@ export const Search = (props: Props) => {
       />
       <Container>
         {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
-          <Input
-            placeholder={
-              isTabActions() ? "Search Actions..." : "Search Tabs..."
-            }
-            type="text"
-            value={value}
-            autoFocus
-            onChange={(e) => {
-                // can move this to a useEffect hook
-              setSelectedIndex(0);
-              setValue(e.target.value);
-            }}
-          />
+        <Input
+          placeholder={isTabActions() ? "Search Actions..." : "Search Tabs..."}
+          type="text"
+          value={value}
+          autoFocus
+          onChange={(e) => {
+            // can move this to a useEffect hook
+            setSelectedIndex(0);
+            setValue(e.target.value);
+          }}
+        />
         {filteredData.length === 0 ? (
           <Empty>
             <Heading color="rgba(255, 255, 255, 0.36)">

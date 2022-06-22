@@ -1,7 +1,7 @@
 {
   "name": "tab-butler",
   "version": "1.0.0",
-  "description": "",
+  "description": "A tab manager at your service",
   "main": "index.js",
   "scripts": {
     "start": "webpack --config webpack.config.js --watch",
@@ -37,5 +37,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }

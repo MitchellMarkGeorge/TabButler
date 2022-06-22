@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 
+// hook to scroll to element is selected
 export const useScroll = (selected: boolean) => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
