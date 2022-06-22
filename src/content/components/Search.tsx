@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
@@ -34,13 +34,21 @@ interface TabActionsProps extends BaseProps {
 
 type Props = TabActionsProps | TabSearchProps;
 
+// tidy up this component
 export const Search = (props: Props) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const customCache = createCache({
+  // VERY IMPORTANT
+  // this has to be in a ref so it is not recreated every rerender (when the state changes)
+  // causing the cache provider to think the value has changed
+  // leading to new style tags being inserted everytime the state changes
+  // tldr; this is important because without it, new style tags will be inserted on every state change
+  
+  // persist the cache between renders
+  const customCache = useRef(createCache({
     key: "tab-butler",
     container: props.shadowRoot,
-  });
+  }));
 
   useEffect(() => {
     // in the case of the search type changing, reset the input value and the selected index
@@ -160,8 +168,9 @@ export const Search = (props: Props) => {
     }
   };
 
+
   return (
-    <CacheProvider value={customCache}>
+    <CacheProvider value={customCache.current}>
       <Global
         styles={css`
           * {

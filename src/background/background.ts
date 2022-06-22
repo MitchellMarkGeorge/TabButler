@@ -22,6 +22,7 @@ chrome.commands.onCommand.addListener((command) => {
 
 chrome.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender, sendResponse) => {
+    // turn this into switch statement
     if (messagePayload.message === Message.GET_TAB_DATA) {
       getTabsInCurrentWindow().then((currentTabs) => {
         console.log(currentTabs);
