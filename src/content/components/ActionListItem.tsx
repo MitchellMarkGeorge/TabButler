@@ -7,6 +7,7 @@ import { useIsDarkMode, useScroll } from "./hooks";
 export const ActionListItem = ({
   data,
   onClick,
+  onHover,
   selected,
 }: ListItemProps<Action>) => {
   const ref = useScroll(selected);
@@ -14,7 +15,7 @@ export const ActionListItem = ({
   const isDarkMode = useIsDarkMode();
   const Icon = data.icon;
   return (
-    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref}>
+    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref} onMouseOver={onHover}>
       <Icon
         size="24px"
         color={

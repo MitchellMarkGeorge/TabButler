@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import createCache from "@emotion/cache";
-import { CacheProvider, css, Global, ThemeProvider } from "@emotion/react";
+import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
 import { Container } from "./Container";
 import { DataList } from "./DataList";
@@ -16,8 +16,7 @@ import {
 } from "../../common/types";
 import { TabListItem } from "./TabListItem";
 import { ActionListItem } from "./ActionListItem";
-import { Kbd } from "./Kbd";
-import HelpBar from "./HelpBar";
+import BottomBar from "./BottomBar";
 import FocusTrap from "focus-trap-react";
 
 // NOTE: SHOW URL IN TABDATA LIST ITEM
@@ -132,6 +131,7 @@ export const Search = (props: Props) => {
         setSelectedIndex(0); // scroll up to the start
       }
     } else if (event.key === "Enter") {
+        console.log("here")
       event.preventDefault();
       onSubmit();
     }
@@ -139,10 +139,10 @@ export const Search = (props: Props) => {
 
   useEffect(() => {
     // can also use window
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown, true);
 
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", onKeyDown, true);
     };
   });
 
@@ -156,11 +156,13 @@ export const Search = (props: Props) => {
 
   const showList = () => {
     if (isTabActionsMode()) {
+        // change selected on mouse over
       return (filteredData as Action[]).map((action, index) => (
         <ActionListItem
           onClick={onActionItemClick}
           data={action}
           key={index}
+          onHover={() => setSelectedIndex(index)}
           selected={selectedIndex === index}
         />
       ));
@@ -170,6 +172,7 @@ export const Search = (props: Props) => {
           onClick={onTabItemClick}
           data={tabData}
           key={tabData.tabId}
+          onHover={() => setSelectedIndex(index)}
           selected={selectedIndex === index}
         />
       ));
@@ -190,20 +193,18 @@ export const Search = (props: Props) => {
           }
         `}
       />
-      {/* <ThemeProvider theme={}>
-
-      </ThemeProvider> */}
-      {/* <FocusTrap> */}
+      <FocusTrap>
       <Container>
         {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
         <Input
           placeholder={isTabActionsMode() ? "Search Actions..." : "Search Tabs..."}
-          type="text"
           value={value}
           autoFocus
           onChange={(e) => {
+            e.preventDefault();
             // can move this to a useEffect hook
-            setSelectedIndex(0);
+            // setSelectedIndex(0);
+            console.log(e.target.value)
             setValue(e.target.value);
           }}
         />
@@ -216,9 +217,9 @@ export const Search = (props: Props) => {
         ) : (
           <DataList>{showList()}</DataList>
         )}
-      <HelpBar isTabActionsMode={isTabActionsMode()}/>
+      <BottomBar isTabActionsMode={isTabActionsMode()} resultNum={filteredData.length}/>
       </Container>
-      {/* </FocusTrap> */}
+      </FocusTrap>
     </CacheProvider>
   );
 };

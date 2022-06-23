@@ -24,7 +24,6 @@ export const Input = styled.input`
 
     @media (prefers-color-scheme: light) {
        color:  rgba(0, 0, 0, 0.80);
-
        ::placeholder {
         color: rgba(0, 0, 0, 0.36);
        }

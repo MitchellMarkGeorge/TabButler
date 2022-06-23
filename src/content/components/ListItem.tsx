@@ -1,12 +1,13 @@
 import styled from "@emotion/styled";
-import React from "react";
 
 export interface ListItemProps<T> {
   data: T;
   selected: boolean;
   onClick: (data: T) => void;
+  onHover: () => void;
 }
 
+// figure out best hover/selected colors
 export const ListItem = styled.div<{ selected: boolean }>`
   width: 100%;
   /* height: 24px; */
@@ -22,10 +23,11 @@ export const ListItem = styled.div<{ selected: boolean }>`
   color: ${(props) => (props.selected ? "#F7FAFC" : "inherit")};
   background-color: ${(props) => (props.selected ? "#3182ce" : "transparent")};
 
-  :hover {
+  // hover css is technocally no longer needed as the element becomes selected on mouse over
+  /* :hover {
     color: #f7fafc;
     background-color: #3182ce;
-  }
+  } */
 
   img {
     height: 24px;
@@ -44,9 +46,9 @@ export const ListItem = styled.div<{ selected: boolean }>`
       props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"};
   }
 
-  :hover .secondary_text {
+  /* :hover .secondary_text {
     color: #cbd5e0;
-  }
+  } */
 
   .main_text,
   .secondary_text {
@@ -64,8 +66,8 @@ export const ListItem = styled.div<{ selected: boolean }>`
       color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
     }
 
-    :hover .secondary_text {
+    /* :hover .secondary_text {
       color: #cbd5e0;
-    }
+    } */
   }
 `;

@@ -8,6 +8,7 @@ import { useIsDarkMode, useScroll } from "./hooks";
 export const TabListItem = ({
   data,
   onClick,
+  onHover,
   selected,
 }: ListItemProps<TabData>) => {
   const ref = useScroll(selected);
@@ -18,7 +19,7 @@ export const TabListItem = ({
     return new URL(url).hostname;
   };
   return (
-    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref}>
+    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref} onMouseOver={onHover}>
       {data.favIcon ? (
         <img src={data.favIcon} />
       ) : (

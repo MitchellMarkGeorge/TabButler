@@ -12,7 +12,9 @@ chrome.commands.onCommand.addListener((command) => {
       currentTab?.id &&
       // chrome does not like content scripts acting on thier urls
       !currentTab.url!.startsWith("chrome://") &&
-      !currentTab.url!.startsWith("chrome-extension://")
+      !currentTab.url!.startsWith("chrome-extension://") &&
+      // extension webstore
+      !currentTab.url!.startsWith("chrome.google.com")
     ) {
       let messagePayload: MessagePlayload = {
         message:

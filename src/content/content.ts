@@ -130,14 +130,17 @@ function unmountSearchComponent() {
 //   }
 // });
 
+
 // remove these listeners on page exit
-window.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => {
+  // this is neccessary to stop some sites from preventing some key strokes from being registered
+  event.stopPropagation();
   const eventKey = event.key.toLowerCase();
   if (eventKey === "escape" && isOpen) {
     // toggleModal();
     unmountSearchComponent();
   }
-});
+}, true);
 
 // remove these listeners on page exit
 document.addEventListener("visibilitychange", () => {

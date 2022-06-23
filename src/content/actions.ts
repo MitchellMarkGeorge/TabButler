@@ -18,6 +18,7 @@ import {
   BiHistory,
 } from "react-icons/bi";
 
+// using black icon color for now
 export function getActions(): Action[] {
   return [
     {
@@ -69,7 +70,7 @@ export function getActions(): Action[] {
       name: "Open GitHub",
       message: Message.OPEN_GITHUB,
       icon: AiFillGithub,
-      iconColor: "rgba(0, 0, 0, 0.92)",
+    //   iconColor: "rgba(0, 0, 0, 0.64)",
     },
     {
       name: "Open Google",
@@ -87,6 +88,7 @@ export function getActions(): Action[] {
       name: "Open YouTube",
       message: Message.OPEN_YOUTUBE,
       icon: AiFillYoutube,
+      iconColor: "rgba(0, 0, 0, 0.64)",
       //   iconColor: "#c53030"
     },
     {
