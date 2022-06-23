@@ -57,7 +57,7 @@ function mountSearchComponent(message: Message) {
     chrome.runtime.sendMessage(messagePayload, (response: TabData[]) => {
       // going to leave this in here as we need to wait for the responce before making the modal root visible
       // all the needed data should be present before anything is mounted
-      tabButlerModalRoot.classList.add("is_visible");
+      tabButlerModalRoot.classList.toggle("is_visible");
       reactRoot = ReactDOM.createRoot(shadow);
       const searchComponentInstance = React.createElement(Search, {
         shadowRoot: shadow,

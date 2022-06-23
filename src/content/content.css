@@ -26,13 +26,14 @@ tab-butler-modal-body::-webkit-scrollbar {
   display: none;
 }
 
+/* default if dark mode styling */
 tab-butler-modal-body {
   box-sizing: border-box !important;
   position: relative;
-  width: 550px;
-  /* was 300px */
-  height: 400px;
-  max-height: 400px;
+  width: 650px;
+  /* was cna use viewport units to make is scale to different screeens */
+  height: 500px;
+  max-height: 500px;
   /* think about blured translucent background */
   /* current background does not look so good in sites that use ark colors */
   /* background: rgba(0, 0, 0, 0.5); */
@@ -51,6 +52,12 @@ tab-butler-modal-body {
   /* figure out the best box shadow */
   /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+@media (prefers-color-scheme: light) {
+  tab-butler-modal-body {
+    background-color: #fff;
+  }
 }
 
 /* USE IDS FOR EVERYTHING */

@@ -1,14 +1,13 @@
-
 import styled from "@emotion/styled";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 
 export interface ListItemProps<T> {
-  data: T
+  data: T;
   selected: boolean;
-  onClick: (data: T) => void
+  onClick: (data: T) => void;
 }
 
-export const ListItem = styled.div<{ selected: boolean}>`
+export const ListItem = styled.div<{ selected: boolean }>`
   width: 100%;
   /* height: 24px; */
   height: 50px;
@@ -19,9 +18,12 @@ export const ListItem = styled.div<{ selected: boolean}>`
   align-items: center;
   padding: 8px;
   border-radius: 10px;
+  /* if item is selected, the color should change (inspite of theme) */
+  color: ${(props) => (props.selected ? "#F7FAFC" : "inherit")};
   background-color: ${(props) => (props.selected ? "#3182ce" : "transparent")};
 
   :hover {
+    color: #f7fafc;
     background-color: #3182ce;
   }
 
@@ -32,20 +34,38 @@ export const ListItem = styled.div<{ selected: boolean}>`
 
   .main_text {
     font-size: 16px;
+    font-weight: 450;
   }
 
   .secondary_text {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.36);
+    /* if selected use special color if not fall back to the default one*/
+    color: ${(props) =>
+      props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"};
   }
 
-  .main_text, .secondary_text {
+  :hover .secondary_text {
+    color: #cbd5e0;
+  }
+
+  .main_text,
+  .secondary_text {
     white-space: nowrap;
-    width: 400px;
-    max-width: 400px;
+    width: 500px;
+    max-width: 500px;
     overflow: hidden;
     text-overflow: ellipsis;
     /* font-size: 16px; */
     user-select: none;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .secondary_text {
+      color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
+    }
+
+    :hover .secondary_text {
+      color: #cbd5e0;
+    }
   }
 `;

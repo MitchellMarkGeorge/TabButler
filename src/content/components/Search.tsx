@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import createCache from "@emotion/cache";
-import { CacheProvider, css, Global } from "@emotion/react";
+import { CacheProvider, css, Global, ThemeProvider } from "@emotion/react";
 import { Input } from "./Input";
 import { Container } from "./Container";
 import { DataList } from "./DataList";
@@ -16,6 +16,9 @@ import {
 } from "../../common/types";
 import { TabListItem } from "./TabListItem";
 import { ActionListItem } from "./ActionListItem";
+import { Kbd } from "./Kbd";
+import HelpBar from "./HelpBar";
+import FocusTrap from "focus-trap-react";
 
 // NOTE: SHOW URL IN TABDATA LIST ITEM
 // should it be full url or just basename
@@ -68,8 +71,8 @@ export const Search = (props: Props) => {
     data = (props as TabSearchProps).currentTabs;
   }
 
-  const isTabActions = () => props.searchMode === SearchMode.TAB_ACTIONS;
-  const isTabSearch = () => props.searchMode === SearchMode.TAB_SEARCH;
+  const isTabActionsMode = () => props.searchMode === SearchMode.TAB_ACTIONS;
+  const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
 
   const filterTabs = (currentTabs: TabData[]) => {
     return currentTabs.filter(
@@ -105,7 +108,7 @@ export const Search = (props: Props) => {
   const onSubmit = () => {
     const selectedData = filteredData[selectedIndex];
     if (selectedData) {
-      if (isTabActions()) {
+      if (isTabActionsMode()) {
         onActionItemClick(selectedData as Action);
       } else {
         onTabItemClick(selectedData as TabData);
@@ -145,14 +148,14 @@ export const Search = (props: Props) => {
 
   let filteredData: Action[] | TabData[];
 
-  if (isTabActions()) {
+  if (isTabActionsMode()) {
     filteredData = value ? filterActions(data as Action[]) : data;
   } else {
     filteredData = value ? filterTabs(data as TabData[]) : data;
   }
 
   const showList = () => {
-    if (isTabActions()) {
+    if (isTabActionsMode()) {
       return (filteredData as Action[]).map((action, index) => (
         <ActionListItem
           onClick={onActionItemClick}
@@ -175,18 +178,26 @@ export const Search = (props: Props) => {
 
   return (
     <CacheProvider value={customCache.current}>
+      {/*  add all colors to variables       */}
       <Global
         styles={css`
           * {
             box-sizing: border-box;
-            font-family: system-ui, sans-serif;
+            /* font-family: "Segoe UI light",Segoe,sans-serif; */
+            /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+              Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
           }
         `}
       />
+      {/* <ThemeProvider theme={}>
+
+      </ThemeProvider> */}
+      {/* <FocusTrap> */}
       <Container>
         {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
         <Input
-          placeholder={isTabActions() ? "Search Actions..." : "Search Tabs..."}
+          placeholder={isTabActionsMode() ? "Search Actions..." : "Search Tabs..."}
           type="text"
           value={value}
           autoFocus
@@ -198,14 +209,16 @@ export const Search = (props: Props) => {
         />
         {filteredData.length === 0 ? (
           <Empty>
-            <Heading color="rgba(255, 255, 255, 0.36)">
-              {isTabActions() ? "No actions to show" : "No tabs to show"}
+            <Heading>
+              {isTabActionsMode() ? "No actions to show" : "No tabs to show"}
             </Heading>
           </Empty>
         ) : (
           <DataList>{showList()}</DataList>
         )}
+      <HelpBar isTabActionsMode={isTabActionsMode()}/>
       </Container>
+      {/* </FocusTrap> */}
     </CacheProvider>
   );
 };

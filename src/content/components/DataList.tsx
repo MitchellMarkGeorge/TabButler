@@ -5,11 +5,15 @@ export const DataList = styled.div`
     max-height: 100%;
     overflow: auto;
     width: 100%;
-    flex: 1;
+    flex: auto;
     color: #F7FAFC;
-    /* background-color: black; */
 
     ::-webkit-scrollbar {
         display: none;
     }
+
+
+  @media (prefers-color-scheme: light) {
+    color: rgba(0, 0, 0, 0.80);
+  }
 `

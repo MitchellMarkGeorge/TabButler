@@ -1,27 +1,38 @@
-
-import React, { useEffect, useRef } from "react";
-import { Action, TabData } from "../../common/types";
+import React from "react";
+import { Action } from "../../common/types";
 import { ChipIcon } from "@heroicons/react/outline";
 import { ListItem, ListItemProps } from "./ListItem";
-import { useScroll } from "./hooks";
+import { useIsDarkMode, useScroll } from "./hooks";
 
-
-
-
-export const ActionListItem = ({ data, onClick, selected }: ListItemProps<Action>) => {
-const ref = useScroll(selected)
+export const ActionListItem = ({
+  data,
+  onClick,
+  selected,
+}: ListItemProps<Action>) => {
+  const ref = useScroll(selected);
+  // is it fine to be used like this???
+  const isDarkMode = useIsDarkMode();
+  const Icon = data.icon;
   return (
-    <ListItem
-      onClick={() => onClick(data)}
-      selected={selected}
-      ref={ref}
-    >
-        <ChipIcon
+    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref}>
+      <Icon
+        size="24px"
+        color={
+          data.iconColor
+            ? data.iconColor
+            : isDarkMode
+            ? "rgba(255, 255, 255, 0.36)"
+            : "rgba(0, 0, 0, 0.36)"
+        }
+      />
+      {/* <ChipIcon
           width="24px"
           height="24px"
-          color="rgba(255, 255, 255, 0.36)"
-        />
-      
+          color={
+            isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"
+          }  
+        /> */}
+
       <div className="main_text">{data.name}</div>
     </ListItem>
   );

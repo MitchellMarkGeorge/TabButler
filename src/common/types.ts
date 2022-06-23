@@ -1,3 +1,6 @@
+import React from "react";
+import { IconType } from "react-icons";
+
 export const enum Commands {
   TOGGLE_TAB_SEARCH = "toggle-tab-search",
   TOGGLE_TAB_ACTIONS = "toggle-tab-actions",
@@ -74,4 +77,6 @@ export interface TabData {
 export interface Action {
   name: string;
   message: Message; // the message that the action sends to the backgrpond sctipt
+  icon: IconType
+  iconColor?: string
 }
