@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
@@ -131,7 +131,7 @@ export const Search = (props: Props) => {
         setSelectedIndex(0); // scroll up to the start
       }
     } else if (event.key === "Enter") {
-        console.log("here")
+      console.log("here");
       event.preventDefault();
       onSubmit();
     }
@@ -149,14 +149,22 @@ export const Search = (props: Props) => {
   let filteredData: Action[] | TabData[];
 
   if (isTabActionsMode()) {
-    filteredData = value ? filterActions(data as Action[]) : data;
+    // https://beta.reactjs.org/learn/you-might-not-need-an-effect#caching-expensive-calculations
+    // trying to only do this when the value or data changes
+    filteredData = value
+      ? useMemo(() => filterActions(data as Action[]), [value, data])
+      : data;
+    // filteredData = value ? filterActions(data as Action[]): data;
   } else {
-    filteredData = value ? filterTabs(data as TabData[]) : data;
+    filteredData = value
+      ? useMemo(() => filterTabs(data as TabData[]), [value, data])
+      : data;
+    // filteredData = value ? filterTabs(data as TabData[]) : data;
   }
 
   const showList = () => {
     if (isTabActionsMode()) {
-        // change selected on mouse over
+      // change selected on mouse over
       return (filteredData as Action[]).map((action, index) => (
         <ActionListItem
           onClick={onActionItemClick}
@@ -194,31 +202,36 @@ export const Search = (props: Props) => {
         `}
       />
       <FocusTrap>
-      <Container>
-        {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
-        <Input
-          placeholder={isTabActionsMode() ? "Search Actions..." : "Search Tabs..."}
-          value={value}
-          autoFocus
-          onChange={(e) => {
-            e.preventDefault();
-            // can move this to a useEffect hook
-            // setSelectedIndex(0);
-            console.log(e.target.value)
-            setValue(e.target.value);
-          }}
-        />
-        {filteredData.length === 0 ? (
-          <Empty>
-            <Heading>
-              {isTabActionsMode() ? "No actions to show" : "No tabs to show"}
-            </Heading>
-          </Empty>
-        ) : (
-          <DataList>{showList()}</DataList>
-        )}
-      <BottomBar isTabActionsMode={isTabActionsMode()} resultNum={filteredData.length}/>
-      </Container>
+        <Container>
+          {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
+          <Input
+            placeholder={
+              isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
+            }
+            value={value}
+            autoFocus
+            onChange={(e) => {
+              e.preventDefault();
+              // can move this to a useEffect hook
+              // setSelectedIndex(0);
+              console.log(e.target.value);
+              setValue(e.target.value);
+            }}
+          />
+          {filteredData.length === 0 ? (
+            <Empty>
+              <Heading>
+                {isTabActionsMode() ? "No actions to show" : "No tabs to show"}
+              </Heading>
+            </Empty>
+          ) : (
+            <DataList>{showList()}</DataList>
+          )}
+          <BottomBar
+            isTabActionsMode={isTabActionsMode()}
+            resultNum={filteredData.length}
+          />
+        </Container>
       </FocusTrap>
     </CacheProvider>
   );

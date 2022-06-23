@@ -28,6 +28,7 @@ chrome.runtime.onMessage.addListener(({ message }: MessagePlayload) => {
   ) {
     if (isOpen) {
       // unmountSearchComponent();
+      // special function to switch modes if the message is different
       unmountSearchComponentFromMessage(message);
     } else {
       mountSearchComponent(message);
@@ -39,6 +40,7 @@ function mountSearchComponent(message: Message) {
   // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
   if (message === Message.TOGGLE_TAB_ACTIONS) {
     // render it normally with actions as the received data
+    // should we moint the compoenent first before we make it visible
     tabButlerModalRoot.classList.toggle("is_visible");
     reactRoot = ReactDOM.createRoot(shadow);
     const searchComponentInstance = React.createElement(Search, {
@@ -81,12 +83,12 @@ function unmountSearchComponentFromMessage(message: Message) {
   if (currentSearchMode === requestedSearchMode) {
     // if the search type of the currently open search compenent is the same
     // as the the received one, the user issued the same command
-    // meaning they just want to toggle it of
+    // meaning they just want to toggle it off
     unmountSearchComponent();
   } else {
     // in this case, the user wants to switch to a different search type
     // update the props of the component with the nessecary information
-    // and update the cuttent search type
+    // and update the cuttent search mode
     if (requestedSearchMode === SearchMode.TAB_ACTIONS) {
       const newComponentInstance = React.createElement(Search, {
         shadowRoot: shadow,
@@ -124,14 +126,14 @@ function unmountSearchComponent() {
 }
 
 // remove these listeners on page exit
-// window.addEventListener("click", () => {
-//   if (isOpen) {
-//     unmountSearchComponent();
-//   }
-// });
+window.addEventListener("click", (event) => {
+  if (event.target === tabButlerModalRoot) {
+    unmountSearchComponent();
+  }
+});
 
 
-// remove these listeners on page exit
+// remove these listeners on page exit/ compoenent mount
 document.addEventListener("keydown", (event) => {
   // this is neccessary to stop some sites from preventing some key strokes from being registered
   event.stopPropagation();
