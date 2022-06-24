@@ -1,11 +1,17 @@
 import React from "react";
 import * as ReactDOM from "react-dom/client";
 import {
+  getCurrentSearchMode,
+  setCurrentSearchMode,
+  setIsSearchOpen,
+} from "../common/common";
+import {
   getSearchMode,
   Message,
   MessagePlayload,
   SearchMode,
   TabData,
+  UpdatedTabDataMessagePayload,
 } from "../common/types";
 import { getActions } from "./actions";
 import { Search } from "./components/Search";
@@ -34,8 +40,15 @@ chrome.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
     } else {
       mountSearchComponent(message);
     }
-  } else if (message === Message.TAB_DATA_UPDATE && isOpen) {
-      
+  } else if (
+    message === Message.TAB_DATA_UPDATE &&
+    isOpen &&
+    currentSearchMode === SearchMode.TAB_SEARCH
+  ) {
+    // most of the checks here are not needed, but it is still good to make sure
+    updateTabSearchComponent(
+      (messagePayload as UpdatedTabDataMessagePayload).updatedTabData
+    );
   }
 });
 
@@ -55,6 +68,8 @@ function mountSearchComponent(message: Message) {
     reactRoot.render(searchComponentInstance);
     currentSearchMode = SearchMode.TAB_ACTIONS;
     isOpen = true;
+
+    updateStoredState(isOpen, currentSearchMode);
   } else {
     // default to search
     const messagePayload = {
@@ -74,6 +89,7 @@ function mountSearchComponent(message: Message) {
       reactRoot.render(searchComponentInstance);
       currentSearchMode = SearchMode.TAB_SEARCH;
       isOpen = true;
+      updateStoredState(isOpen, currentSearchMode);
       // try and cache tabData array
       // the only times it should not be "used" is if the component is unmounted
       // it migtn have to be cleared after a period of time
@@ -103,6 +119,8 @@ function unmountSearchComponentFromMessage(message: Message) {
       });
       reactRoot?.render(newComponentInstance);
       currentSearchMode = requestedSearchMode;
+      // we know that is still open
+      updateStoredState(true, currentSearchMode);
     } else {
       const messagePayload = {
         message: Message.GET_TAB_DATA,
@@ -115,6 +133,8 @@ function unmountSearchComponentFromMessage(message: Message) {
         });
         reactRoot?.render(searchComponentInstance);
         currentSearchMode = requestedSearchMode;
+        // we know that is still open
+        updateStoredState(true, currentSearchMode);
       });
     }
   }
@@ -130,7 +150,19 @@ function unmountSearchComponent() {
   }
   reactRoot = null;
   isOpen = false;
+  updateStoredState(isOpen, null);
   // should i reset currentSearchMode?
+}
+
+function updateTabSearchComponent(updatedTabData: TabData[]) {
+  const searchComponentInstance = React.createElement(Search, {
+    shadowRoot: shadow,
+    searchMode: currentSearchMode, // in this case, we know that this is SearchMode.TAB_SEARCH
+    currentTabs: updatedTabData,
+  });
+  reactRoot?.render(searchComponentInstance);
+  // no need for further updates as nothing really chanches (apart from the tab data)
+  // updateStoredState(true, currentSearchMode);
 }
 
 // remove these listeners on page exit
@@ -150,24 +182,23 @@ const attachListeners = () => {
   document.addEventListener("keydown", onKeyDown, true);
   // remove these listeners on page exit
   document.addEventListener("visibilitychange", onVisibilityCahange);
-  document.addEventListener("click", unmountOnEscape)
+  document.addEventListener("click", unmountOnEscape);
 };
 
 const removeListeners = () => {
   document.removeEventListener("keydown", onKeyDown, true);
   document.removeEventListener("visibilitychange", onVisibilityCahange);
-  document.removeEventListener("click", unmountOnEscape)
+  document.removeEventListener("click", unmountOnEscape);
 };
 
 const unmountOnEscape = (event: MouseEvent) => {
-
   // dont like this
-  console.log(event.target)
+  console.log(event.target);
   if (event.target === tabButlerModalRoot) {
     // toggleModal();
-    unmountSearchComponent()
+    unmountSearchComponent();
   }
-}
+};
 
 const onKeyDown = (event: KeyboardEvent) => {
   // this is neccessary to stop some sites from preventing some key strokes from being registered
@@ -183,6 +214,15 @@ const onVisibilityCahange = () => {
   if (document.visibilityState === "hidden" && isOpen) {
     unmountSearchComponent();
   }
+};
+
+// updated the local storage state when any changes happen
+const updateStoredState = (
+  isSearchOpen: boolean,
+  currentSearchMode: SearchMode | null
+) => {
+  setIsSearchOpen(isSearchOpen);
+  setCurrentSearchMode(currentSearchMode ?? null);
 };
 
 document.body.appendChild(tabButlerModalRoot); // is there a possibility that document.body is null?

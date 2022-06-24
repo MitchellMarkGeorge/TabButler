@@ -25,6 +25,7 @@ import FocusTrap from "focus-trap-react";
 // Add focus lock
 // update tabData array props if tabs added/removed?
 // this is important as tabs can be closed with the search open...
+// Virtualization
 interface BaseProps {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
@@ -192,7 +193,7 @@ export const Search = (props: Props) => {
         `}
       />
       {/* allowing outside click to only deactivate it  */}
-      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }} autoFocus>
+      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }} >
         {/* with focus trap on, you cant click on the overlay to close it           */}
         <Container>
           <Input

@@ -1,18 +1,34 @@
-import { getCurrentSearchMode, getCurrentTab, getIsSearchOpen, getTabsInCurrentWindow, setCurrentSearchMode, setIsSearchOpen } from "../common/common";
+import { getCurrentSearchMode, getCurrentTab, getIsSearchOpen, getTabsInCurrentWindow, isDev, setCurrentSearchMode, setIsSearchOpen } from "../common/common";
 import {
   ChangeTabMessagePayload,
   Commands,
   Message,
   MessagePlayload,
+  SearchMode,
   UpdatedTabDataMessagePayload,
 } from "../common/types";
 
-getCurrentSearchMode()
+
+if (isDev) {
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+  for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+    console.log(
+      `Storage key "${key}" in namespace "${namespace}" changed.`,
+      `Old value was "${oldValue}", new value is "${newValue}".`
+    );
+  }
+});
+}
+
 chrome.runtime.onInstalled.addListener((details) => {
+    console.log(details.reason)
     if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
         // what other case is this useful for???
         setIsSearchOpen(false);
         setCurrentSearchMode(null);
+    } else if (details.reason === chrome.runtime.OnInstalledReason.UPDATE && isDev) {
+        // clear local storage on dev update
+        chrome.storage.local.clear();
     }
 })
 
@@ -37,23 +53,34 @@ chrome.commands.onCommand.addListener((command) => {
   }); // handle error
 });
 
-// chrome.tabs.onRemoved.addListener(async () => {
-// // can i use async await here?
+// chrome.tabs.onRemoved.addListener(() => {
+//     // send updated tab data if a tab is closed
+// // does not like async await
 
-//     const isSearchOpen = await getIsSearchOpen();
-//     const currentSearchMode = await getCurrentSearchMode();
+// console.log("here")
 
-//     if (isSearchOpen) {
-//         const currentTab = await getCurrentTab();
+//     Promise.all([getIsSearchOpen(), getCurrentSearchMode()]).then(values => {
+
+//         const [ isSearchOpen, currentSearchMode ] = values;
+
+
+//     // only send the updated tab data if the search is opne and the serch mode is tab search
+//     if (isSearchOpen && currentSearchMode === SearchMode.TAB_SEARCH) {
+//         getCurrentTab().then((currentTab) => {
+
 
 //         if (currentTab?.id) {
 //             const messagePayload: UpdatedTabDataMessagePayload = {
 //                 message: Message.TAB_DATA_UPDATE,
 //                 updatedTabData: await getTabsInCurrentWindow()
 //             }
+//             console.log("sending message")
 //             chrome.tabs.sendMessage(currentTab.id, messagePayload);
 //         }
+//         })
 //     }
+//     })
+
 // })
 
 chrome.runtime.onMessage.addListener(

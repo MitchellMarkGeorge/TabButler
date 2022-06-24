@@ -17,6 +17,8 @@ export const enum Message {
   CHANGE_TAB = "change-tab",
   TAB_DATA_UPDATE = "tab-data-update",
 
+  UPDATE_BACKGROUND_STATE = "update-background-state",
+
   // tab action specific
   CLOSE_CURRENT_TAB = "close-current-tab",
   CLOSE_CURRENT_WINDOW = "close-current-window",
@@ -30,7 +32,6 @@ export const enum Message {
 
   PIN_TAB = "pin-tab",
   MUTE_TAB = "mute-tab",
-  
 
   OPEN_GITHUB = "open-github",
   OPEN_YOUTUBE = "open-youtube",
@@ -44,8 +45,8 @@ export const enum Message {
 }
 
 export const enum SearchMode {
-  TAB_ACTIONS,
-  TAB_SEARCH,
+  TAB_ACTIONS = "tab-actions",
+  TAB_SEARCH = "tab-search",
 }
 
 export function getSearchMode(message: Message) {
@@ -63,11 +64,13 @@ export interface MessagePlayload {
 }
 
 export interface ChangeTabMessagePayload extends MessagePlayload {
+  message: Message.CHANGE_TAB;
   tabId: number;
 }
 
 export interface UpdatedTabDataMessagePayload extends MessagePlayload {
-    updatedTabData: TabData[]
+  message: Message.TAB_DATA_UPDATE;
+  updatedTabData: TabData[];
 }
 
 
@@ -81,6 +84,6 @@ export interface TabData {
 export interface Action {
   name: string;
   message: Message; // the message that the action sends to the backgrpond sctipt
-  icon: IconType
-  iconColor?: string
+  icon: IconType;
+  iconColor?: string;
 }

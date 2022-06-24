@@ -1,5 +1,7 @@
 import { SearchMode, TabData } from "./types";
 
+export const isDev = true;
+
 export async function getCurrentTab() {
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true }); // what is the difference between currentWindow and lastFocused?
   return tab;
