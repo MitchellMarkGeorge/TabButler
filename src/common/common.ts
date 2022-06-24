@@ -1,4 +1,4 @@
-import { SearchMode, TabData } from "./types";
+import { Message, SearchMode, TabData } from "./types";
 
 export const isDev = true;
 
@@ -7,32 +7,24 @@ export async function getCurrentTab() {
   return tab;
 }
 
-const IS_SEARCH_OPEN = "is-search-open";
-const CURRENT_SEARCH_MODE = "current-search-mode";
-
-export function setIsSearchOpen(isSearchOpen: boolean) {
-  chrome.storage.local.set({ IS_SEARCH_OPEN: isSearchOpen });
-}
-
-export function getIsSearchOpen(): Promise<boolean> {
+export async function getTabIdWithSearchOpen(
+  windowId: number
+): Promise<number | null> {
+  // wde only want the active tab as that is the only place it can be in
+  // get the tab in the window with search modal open and in tab search mode
+  const [tab] = await chrome.tabs.query({ active: true, windowId });
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get(IS_SEARCH_OPEN, (result) => {
-      resolve((result[IS_SEARCH_OPEN] ?? false as boolean));
-    });
-  });
-}
-
-export function setCurrentSearchMode(searchMode: SearchMode | null) {
-  chrome.storage.local.set({ CURRENT_SEARCH_MODE: searchMode });
-}
-
-export function getCurrentSearchMode(): Promise<SearchMode | null> {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get(CURRENT_SEARCH_MODE, (result) => {
-      // return the current search mode or retun null
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
-      resolve((result[CURRENT_SEARCH_MODE] ?? null as SearchMode | null));
-    });
+    if (tab?.id) {
+      chrome.tabs.sendMessage(
+        tab.id,
+        { message: Message.CHECK_SEARCH_OPEN },
+        (respose: {isOpen: boolean, currentSearchMode: SearchMode}) => {
+          resolve(respose.isOpen && respose.currentSearchMode === SearchMode.TAB_SEARCH ? tab.id! : null);
+        }
+      );
+    } else {
+      resolve(null);
+    }
   });
 }
 

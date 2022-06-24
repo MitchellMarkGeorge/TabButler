@@ -1,11 +1,6 @@
 import React from "react";
 import * as ReactDOM from "react-dom/client";
 import {
-  getCurrentSearchMode,
-  setCurrentSearchMode,
-  setIsSearchOpen,
-} from "../common/common";
-import {
   getSearchMode,
   Message,
   MessagePlayload,
@@ -26,7 +21,7 @@ let currentSearchMode: SearchMode;
 // is there a better way to do this??? should i just attach it in the beggining and then move on?
 let reactRoot: ReactDOM.Root | null = null;
 
-chrome.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
+chrome.runtime.onMessage.addListener((messagePayload: MessagePlayload, sender, sendResponse) => {
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
   if (
@@ -49,6 +44,9 @@ chrome.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
     updateTabSearchComponent(
       (messagePayload as UpdatedTabDataMessagePayload).updatedTabData
     );
+  } else if (message === Message.CHECK_SEARCH_OPEN) {
+    // message used to check the current status of the search modal in thispage
+    sendResponse({ isOpen, currentSearchMode})
   }
 });
 
@@ -69,7 +67,6 @@ function mountSearchComponent(message: Message) {
     currentSearchMode = SearchMode.TAB_ACTIONS;
     isOpen = true;
 
-    updateStoredState(isOpen, currentSearchMode);
   } else {
     // default to search
     const messagePayload = {
@@ -89,7 +86,6 @@ function mountSearchComponent(message: Message) {
       reactRoot.render(searchComponentInstance);
       currentSearchMode = SearchMode.TAB_SEARCH;
       isOpen = true;
-      updateStoredState(isOpen, currentSearchMode);
       // try and cache tabData array
       // the only times it should not be "used" is if the component is unmounted
       // it migtn have to be cleared after a period of time
@@ -120,7 +116,6 @@ function unmountSearchComponentFromMessage(message: Message) {
       reactRoot?.render(newComponentInstance);
       currentSearchMode = requestedSearchMode;
       // we know that is still open
-      updateStoredState(true, currentSearchMode);
     } else {
       const messagePayload = {
         message: Message.GET_TAB_DATA,
@@ -134,7 +129,6 @@ function unmountSearchComponentFromMessage(message: Message) {
         reactRoot?.render(searchComponentInstance);
         currentSearchMode = requestedSearchMode;
         // we know that is still open
-        updateStoredState(true, currentSearchMode);
       });
     }
   }
@@ -150,7 +144,6 @@ function unmountSearchComponent() {
   }
   reactRoot = null;
   isOpen = false;
-  updateStoredState(isOpen, null);
   // should i reset currentSearchMode?
 }
 
@@ -216,13 +209,5 @@ const onVisibilityCahange = () => {
   }
 };
 
-// updated the local storage state when any changes happen
-const updateStoredState = (
-  isSearchOpen: boolean,
-  currentSearchMode: SearchMode | null
-) => {
-  setIsSearchOpen(isSearchOpen);
-  setCurrentSearchMode(currentSearchMode ?? null);
-};
 
 document.body.appendChild(tabButlerModalRoot); // is there a possibility that document.body is null?

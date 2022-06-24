@@ -33,6 +33,8 @@ export const enum Message {
   PIN_TAB = "pin-tab",
   MUTE_TAB = "mute-tab",
 
+  CHECK_SEARCH_OPEN = "check-search-open",
+
   OPEN_GITHUB = "open-github",
   OPEN_YOUTUBE = "open-youtube",
   OPEN_GOOGLE = "open-google",
@@ -72,6 +74,8 @@ export interface UpdatedTabDataMessagePayload extends MessagePlayload {
   message: Message.TAB_DATA_UPDATE;
   updatedTabData: TabData[];
 }
+
+
 
 
 export interface TabData {
