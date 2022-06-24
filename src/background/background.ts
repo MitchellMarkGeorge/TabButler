@@ -1,10 +1,20 @@
-import { getCurrentTab, getTabsInCurrentWindow } from "../common/common";
+import { getCurrentSearchMode, getCurrentTab, getIsSearchOpen, getTabsInCurrentWindow, setCurrentSearchMode, setIsSearchOpen } from "../common/common";
 import {
   ChangeTabMessagePayload,
   Commands,
   Message,
   MessagePlayload,
+  UpdatedTabDataMessagePayload,
 } from "../common/types";
+
+getCurrentSearchMode()
+chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+        // what other case is this useful for???
+        setIsSearchOpen(false);
+        setCurrentSearchMode(null);
+    }
+})
 
 chrome.commands.onCommand.addListener((command) => {
   getCurrentTab().then((currentTab) => {
@@ -27,6 +37,25 @@ chrome.commands.onCommand.addListener((command) => {
   }); // handle error
 });
 
+// chrome.tabs.onRemoved.addListener(async () => {
+// // can i use async await here?
+
+//     const isSearchOpen = await getIsSearchOpen();
+//     const currentSearchMode = await getCurrentSearchMode();
+
+//     if (isSearchOpen) {
+//         const currentTab = await getCurrentTab();
+
+//         if (currentTab?.id) {
+//             const messagePayload: UpdatedTabDataMessagePayload = {
+//                 message: Message.TAB_DATA_UPDATE,
+//                 updatedTabData: await getTabsInCurrentWindow()
+//             }
+//             chrome.tabs.sendMessage(currentTab.id, messagePayload);
+//         }
+//     }
+// })
+
 chrome.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender, sendResponse) => {
     // turn this into switch statement
@@ -41,6 +70,7 @@ chrome.runtime.onMessage.addListener(
         const { tabId } = messagePayload as ChangeTabMessagePayload;
         chrome.tabs.update(tabId, {
           active: true,
+          highlighted: true
         });
         break;
 

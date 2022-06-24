@@ -15,6 +15,7 @@ export const enum Message {
   // tab search specific
   GET_TAB_DATA = "get-tab-data",
   CHANGE_TAB = "change-tab",
+  TAB_DATA_UPDATE = "tab-data-update",
 
   // tab action specific
   CLOSE_CURRENT_TAB = "close-current-tab",
@@ -65,11 +66,14 @@ export interface ChangeTabMessagePayload extends MessagePlayload {
   tabId: number;
 }
 
+export interface UpdatedTabDataMessagePayload extends MessagePlayload {
+    updatedTabData: TabData[]
+}
+
 
 export interface TabData {
   tabId: number;
   favIcon: string | null;
-  tabIndex: number;
   tabTitle: string;
   tabUrl: string;
 }

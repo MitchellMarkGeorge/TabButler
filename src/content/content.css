@@ -32,7 +32,7 @@ tab-butler-modal-body {
   position: relative;
   width: 650px;
   /* was cna use viewport units to make is scale to different screeens */
-  height: 500px;
+  /* height: 500px; */
   max-height: 500px;
   /* think about blured translucent background */
   /* current background does not look so good in sites that use ark colors */
@@ -62,8 +62,13 @@ tab-butler-modal-body {
 
 /* USE IDS FOR EVERYTHING */
 /* would css modules work */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
 
 .is_visible {
   visibility: visible;
   opacity: 1;
+  animation: fadeIn 0.5s;
 }

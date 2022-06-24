@@ -24,6 +24,11 @@ const BottomBarContainer = styled.div`
     column-gap: 8px;
   }
 
+  .result_num {
+    font-size: 12px;
+    font-weight: 450;
+  }
+
   @media (prefers-color-scheme: light) {
     color: rgba(0, 0, 0, 0.48);
   }
@@ -36,7 +41,7 @@ interface Props {
 export default function BottomBar({ isTabActionsMode, resultNum }: Props) {
   return (
     <BottomBarContainer>
-      <div>{resultNum} Results</div>
+      <div className="result_num">{resultNum} Results</div>
       <div className="help_items">
         <div>
           <Kbd>&uarr;</Kbd>

@@ -22,9 +22,9 @@ import FocusTrap from "focus-trap-react";
 // NOTE: SHOW URL IN TABDATA LIST ITEM
 // should it be full url or just basename
 
-// Add support for light mode/theming
 // Add focus lock
 // update tabData array props if tabs added/removed?
+// this is important as tabs can be closed with the search open...
 interface BaseProps {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
@@ -131,7 +131,6 @@ export const Search = (props: Props) => {
         setSelectedIndex(0); // scroll up to the start
       }
     } else if (event.key === "Enter") {
-      console.log("here");
       event.preventDefault();
       onSubmit();
     }
@@ -150,16 +149,9 @@ export const Search = (props: Props) => {
 
   if (isTabActionsMode()) {
     // https://beta.reactjs.org/learn/you-might-not-need-an-effect#caching-expensive-calculations
-    // trying to only do this when the value or data changes
-    filteredData = value
-      ? useMemo(() => filterActions(data as Action[]), [value, data])
-      : data;
-    // filteredData = value ? filterActions(data as Action[]): data;
+    filteredData = value ? filterActions(data as Action[]) : data;
   } else {
-    filteredData = value
-      ? useMemo(() => filterTabs(data as TabData[]), [value, data])
-      : data;
-    // filteredData = value ? filterTabs(data as TabData[]) : data;
+    filteredData = value ? filterTabs(data as TabData[]) : data;
   }
 
   const showList = () => {
@@ -194,16 +186,15 @@ export const Search = (props: Props) => {
         styles={css`
           * {
             box-sizing: border-box;
-            /* font-family: "Segoe UI light",Segoe,sans-serif; */
-            /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
           }
         `}
       />
-      <FocusTrap>
+      {/* allowing outside click to only deactivate it  */}
+      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }} autoFocus>
+        {/* with focus trap on, you cant click on the overlay to close it           */}
         <Container>
-          {/* this onsubmit only works if the inputr is focused... what if the input isnt focused???        */}
           <Input
             placeholder={
               isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
@@ -211,9 +202,6 @@ export const Search = (props: Props) => {
             value={value}
             autoFocus
             onChange={(e) => {
-              e.preventDefault();
-              // can move this to a useEffect hook
-              // setSelectedIndex(0);
               console.log(e.target.value);
               setValue(e.target.value);
             }}
