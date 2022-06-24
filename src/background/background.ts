@@ -53,6 +53,7 @@ chrome.commands.onCommand.addListener((command) => {
   }); // handle error
 });
 
+// SHOULD ONLY SEND UPDATED TAB DATA IF A TAB IN THE SAME WINDOW AS THE OPEN SEARCH IS CLOSED
 // chrome.tabs.onRemoved.addListener(() => {
 //     // send updated tab data if a tab is closed
 // // does not like async await
