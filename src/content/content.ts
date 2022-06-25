@@ -21,41 +21,42 @@ let currentSearchMode: SearchMode;
 // is there a better way to do this??? should i just attach it in the beggining and then move on?
 let reactRoot: ReactDOM.Root | null = null;
 
-chrome.runtime.onMessage.addListener((messagePayload: MessagePlayload, sender, sendResponse) => {
-  // i will need to rename the component from search to something else
-  const { message } = messagePayload;
-  if (
-    message === Message.TOGGLE_TAB_ACTIONS ||
-    message === Message.TOGGLE_TAB_SEARCH
-  ) {
-    if (isOpen) {
-      // unmountSearchComponent();
-      // special function to switch modes if the message is different
-      unmountSearchComponentFromMessage(message);
-    } else {
-      mountSearchComponent(message);
+chrome.runtime.onMessage.addListener(
+  (messagePayload: MessagePlayload, sender, sendResponse) => {
+    // i will need to rename the component from search to something else
+    const { message } = messagePayload;
+    switch (message) {
+      case Message.TOGGLE_TAB_ACTIONS:
+      case Message.TOGGLE_TAB_SEARCH:
+        if (isOpen) {
+          // special function to switch modes if the message is different
+          unmountSearchComponentFromMessage(message);
+        } else {
+          mountSearchComponent(message);
+        }
+        break;
+
+      case Message.TAB_DATA_UPDATE:
+        if (isOpen && currentSearchMode === SearchMode.TAB_SEARCH) {
+          // most of the checks here are not needed, but it is still good to make sure
+          updateTabSearchComponent(
+            (messagePayload as UpdatedTabDataMessagePayload).updatedTabData
+          );
+        }
+        break;
+
+      case Message.CHECK_SEARCH_OPEN:
+        sendResponse({ isOpen, currentSearchMode });
+        break;
     }
-  } else if (
-    message === Message.TAB_DATA_UPDATE &&
-    isOpen &&
-    currentSearchMode === SearchMode.TAB_SEARCH
-  ) {
-    // most of the checks here are not needed, but it is still good to make sure
-    updateTabSearchComponent(
-      (messagePayload as UpdatedTabDataMessagePayload).updatedTabData
-    );
-  } else if (message === Message.CHECK_SEARCH_OPEN) {
-    // message used to check the current status of the search modal in thispage
-    sendResponse({ isOpen, currentSearchMode})
   }
-});
+);
 
 function mountSearchComponent(message: Message) {
   // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
   if (message === Message.TOGGLE_TAB_ACTIONS) {
     // render it normally with actions as the received data
     // should we moint the compoenent first before we make it visible
-    tabButlerModalRoot.classList.toggle("is_visible");
     attachListeners();
     reactRoot = ReactDOM.createRoot(shadow);
     const searchComponentInstance = React.createElement(Search, {
@@ -64,9 +65,9 @@ function mountSearchComponent(message: Message) {
       actions: getActions(),
     });
     reactRoot.render(searchComponentInstance);
+    tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
     currentSearchMode = SearchMode.TAB_ACTIONS;
     isOpen = true;
-
   } else {
     // default to search
     const messagePayload = {
@@ -75,7 +76,7 @@ function mountSearchComponent(message: Message) {
     chrome.runtime.sendMessage(messagePayload, (response: TabData[]) => {
       // going to leave this in here as we need to wait for the responce before making the modal root visible
       // all the needed data should be present before anything is mounted
-      tabButlerModalRoot.classList.toggle("is_visible");
+      tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
       attachListeners();
       reactRoot = ReactDOM.createRoot(shadow);
       const searchComponentInstance = React.createElement(Search, {
@@ -86,9 +87,6 @@ function mountSearchComponent(message: Message) {
       reactRoot.render(searchComponentInstance);
       currentSearchMode = SearchMode.TAB_SEARCH;
       isOpen = true;
-      // try and cache tabData array
-      // the only times it should not be "used" is if the component is unmounted
-      // it migtn have to be cleared after a period of time
     });
   }
 }
@@ -115,7 +113,6 @@ function unmountSearchComponentFromMessage(message: Message) {
       });
       reactRoot?.render(newComponentInstance);
       currentSearchMode = requestedSearchMode;
-      // we know that is still open
     } else {
       const messagePayload = {
         message: Message.GET_TAB_DATA,
@@ -128,14 +125,14 @@ function unmountSearchComponentFromMessage(message: Message) {
         });
         reactRoot?.render(searchComponentInstance);
         currentSearchMode = requestedSearchMode;
-        // we know that is still open
       });
     }
   }
 }
 
 function unmountSearchComponent() {
-  tabButlerModalRoot.classList.toggle("is_visible");
+  // doing this first here so it disapears as soon as possible
+  tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
   removeListeners();
   reactRoot?.unmount();
   // clear the remaining styles in the shadow root
@@ -160,12 +157,6 @@ function updateTabSearchComponent(updatedTabData: TabData[]) {
 
 // remove these listeners on page exit
 console.log("hello");
-// window.addEventListener("click", (event) => {
-//   console.log(event.target === tabButlerModalRoot)
-//   if (event.target === tabButlerModalRoot) {
-//     unmountSearchComponent();
-//   }
-// });
 
 // move all the listeners to the Component mount
 // then remove them on unmont
@@ -183,6 +174,8 @@ const removeListeners = () => {
   document.removeEventListener("visibilitychange", onVisibilityCahange);
   document.removeEventListener("click", unmountOnEscape);
 };
+
+
 
 const unmountOnEscape = (event: MouseEvent) => {
   // dont like this
@@ -208,6 +201,5 @@ const onVisibilityCahange = () => {
     unmountSearchComponent();
   }
 };
-
 
 document.body.appendChild(tabButlerModalRoot); // is there a possibility that document.body is null?
