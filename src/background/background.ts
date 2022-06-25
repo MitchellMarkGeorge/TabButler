@@ -2,6 +2,7 @@ import {
   getCurrentTab,
   getTabIdWithSearchOpen,
   getTabsInCurrentWindow,
+  isChromeURL,
 } from "../common/common";
 import {
   ChangeTabMessagePayload,
@@ -16,10 +17,7 @@ chrome.commands.onCommand.addListener((command) => {
     if (
       currentTab?.id &&
       // chrome does not like content scripts acting on thier urls
-      !currentTab.url!.startsWith("chrome://") &&
-      !currentTab.url!.startsWith("chrome-extension://") &&
-      // extension webstore
-      !currentTab.url!.startsWith("chrome.google.com")
+      !isChromeURL(currentTab.url!)
     ) {
       let messagePayload: MessagePlayload = {
         message:

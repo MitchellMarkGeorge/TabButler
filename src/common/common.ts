@@ -14,18 +14,32 @@ export async function getTabIdWithSearchOpen(
   // get the tab in the window with search modal open and in tab search mode
   const [tab] = await chrome.tabs.query({ active: true, windowId });
   return new Promise((resolve, reject) => {
-    if (tab?.id) {
+    if (tab?.id && !isChromeURL(tab.url!)) {
       chrome.tabs.sendMessage(
         tab.id,
         { message: Message.CHECK_SEARCH_OPEN },
-        (respose: {isOpen: boolean, currentSearchMode: SearchMode}) => {
-          resolve(respose.isOpen && respose.currentSearchMode === SearchMode.TAB_SEARCH ? tab.id! : null);
+        (respose: { isOpen: boolean; currentSearchMode: SearchMode }) => {
+          resolve(
+            respose.isOpen &&
+              respose.currentSearchMode === SearchMode.TAB_SEARCH
+              ? tab.id!
+              : null
+          );
         }
       );
     } else {
       resolve(null);
     }
   });
+}
+
+export function isChromeURL(url: string) {
+  return (
+    url.startsWith("chrome://") &&
+    url.startsWith("chrome-extension://") &&
+    // extension webstore
+    url.startsWith("chrome.google.com")
+  );
 }
 
 export async function getTabsInCurrentWindow() {
