@@ -76,7 +76,7 @@ tab-butler-modal-body {
 .tab_butler_modal_visible {
   visibility: visible;
   opacity: 1;
-  animation: fadeIn 0.5s;
+  /* animation: fadeIn 0.5s; */
 }
 
 .tab_butler_fade_in {
