@@ -35,6 +35,13 @@ export const ListItem = styled.div<{ selected: boolean }>`
     width: 24px;
   }
 
+  .text_container {
+/*  flex might not be needed here     */
+    display: flex;
+    flex-direction: column;
+    line-height: normal !important;
+  }
+
   .main_text {
     font-size: 16px;
     font-weight: 450;

@@ -31,7 +31,7 @@ export const TabListItem = ({
           }
         />
       )}
-      <div>
+      <div className="text_container">
         <div className="main_text">{data.tabTitle}</div>
         <div className="secondary_text">{getHostname(data.tabUrl)}</div>
       </div>
