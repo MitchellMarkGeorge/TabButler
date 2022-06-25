@@ -45,6 +45,7 @@ type Props = TabActionsProps | TabSearchProps;
 export const Search = (props: Props) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const dataListElementRef = useRef<HTMLDivElement | null>(null)
   // VERY IMPORTANT
   // this has to be in a ref so it is not recreated every rerender (when the state changes)
   // causing the cache provider to think the value has changed
@@ -156,9 +157,10 @@ export const Search = (props: Props) => {
     filteredData = value ? filterTabs(data as TabData[]) : data;
   }
 
-  const showList = () => (
+  const showList = () => {
     // might not use virtual list for action mode (only 14 items)
-    <FixedSizeList
+    console.log(dataListElementRef.current?.clientHeight, dataListElementRef.current?.clientWidth)
+    return <FixedSizeList
       height={390}
       width={620}
       itemCount={filteredData.length}
@@ -189,7 +191,7 @@ export const Search = (props: Props) => {
         );
       }}
     </FixedSizeList>
-  );
+  };
 
   return (
     <CacheProvider value={customCache.current}>
@@ -229,7 +231,7 @@ export const Search = (props: Props) => {
               </Heading>
             </Empty>
           ) : (
-            <DataList>{showList()}</DataList>
+            <DataList ref={dataListElementRef}>{showList()}</DataList>
           )}
           <BottomBar
             isTabActionsMode={isTabActionsMode()}
