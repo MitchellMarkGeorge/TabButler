@@ -18,6 +18,7 @@ import { TabListItem } from "./TabListItem";
 import { ActionListItem } from "./ActionListItem";
 import BottomBar from "./BottomBar";
 import FocusTrap from "focus-trap-react";
+import { FixedSizeList } from "react-window";
 
 // NOTE: SHOW URL IN TABDATA LIST ITEM
 // should it be full url or just basename
@@ -155,30 +156,40 @@ export const Search = (props: Props) => {
     filteredData = value ? filterTabs(data as TabData[]) : data;
   }
 
-  const showList = () => {
-    if (isTabActionsMode()) {
-      // change selected on mouse over
-      return (filteredData as Action[]).map((action, index) => (
-        <ActionListItem
-          onClick={onActionItemClick}
-          data={action}
-          key={index}
-          onHover={() => setSelectedIndex(index)}
-          selected={selectedIndex === index}
-        />
-      ));
-    } else {
-      return (filteredData as TabData[]).map((tabData, index) => (
-        <TabListItem
-          onClick={onTabItemClick}
-          data={tabData}
-          key={tabData.tabId}
-          onHover={() => setSelectedIndex(index)}
-          selected={selectedIndex === index}
-        />
-      ));
-    }
-  };
+  const showList = () => (
+    // might not use virtual list for action mode (only 14 items)
+    <FixedSizeList
+      height={390}
+      width={620}
+      itemCount={filteredData.length}
+      itemSize={50}
+      itemData={filteredData}
+      className="tab_butler_virtual_list"
+    >
+      {({ index, style, data }) => {
+        const item = data[index];
+        return isTabActionsMode() ? (
+          <ActionListItem
+            onClick={onActionItemClick}
+            data={item as Action}
+            key={index}
+            onHover={() => setSelectedIndex(index)}
+            selected={selectedIndex === index}
+            style={style}
+          />
+        ) : (
+          <TabListItem
+            onClick={onTabItemClick}
+            data={item as TabData}
+            key={index}
+            onHover={() => setSelectedIndex(index)}
+            selected={selectedIndex === index}
+            style={style}
+          />
+        );
+      }}
+    </FixedSizeList>
+  );
 
   return (
     <CacheProvider value={customCache.current}>
@@ -190,10 +201,14 @@ export const Search = (props: Props) => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
           }
+
+          .tab_butler_virtual_list::-webkit-scrollbar {
+            display: none;
+          }
         `}
       />
       {/* allowing outside click to only deactivate it  */}
-      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }} >
+      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
         {/* with focus trap on, you cant click on the overlay to close it           */}
         <Container>
           <Input

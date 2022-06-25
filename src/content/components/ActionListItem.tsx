@@ -9,13 +9,14 @@ export const ActionListItem = ({
   onClick,
   onHover,
   selected,
+  style
 }: ListItemProps<Action>) => {
   const ref = useScroll(selected);
   // is it fine to be used like this???
   const isDarkMode = useIsDarkMode();
   const Icon = data.icon;
   return (
-    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref} onMouseOver={onHover}>
+    <ListItem style={style} onClick={() => onClick(data)} selected={selected} ref={ref} onMouseOver={onHover}>
       <Icon
         size="24px"
         color={

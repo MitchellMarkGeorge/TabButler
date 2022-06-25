@@ -6,6 +6,7 @@ export interface ListItemProps<T> {
   selected: boolean;
   onClick: (data: T) => void;
   onHover: () => void;
+  style: React.CSSProperties
 }
 
 // figure out best hover/selected colors

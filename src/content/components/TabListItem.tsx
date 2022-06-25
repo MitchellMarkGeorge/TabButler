@@ -10,6 +10,7 @@ export const TabListItem = ({
   onClick,
   onHover,
   selected,
+  style
 }: ListItemProps<TabData>) => {
   const ref = useScroll(selected);
   // is it fine to be used like this???
@@ -19,7 +20,7 @@ export const TabListItem = ({
     return new URL(url).hostname;
   };
   return (
-    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref} onMouseOver={onHover}>
+    <ListItem style={style} onClick={() => onClick(data)} selected={selected} ref={ref} onMouseOver={onHover}>
       {data.favIcon ? (
         <img src={data.favIcon} />
       ) : (
