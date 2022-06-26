@@ -171,13 +171,13 @@ const attachListeners = () => {
   // remove these listeners on page exit/ compoenent mount
   document.addEventListener("keydown", onKeyDown, true);
   // remove these listeners on page exit
-  document.addEventListener("visibilitychange", onVisibilityCahange, false);
+  document.addEventListener("visibilitychange", onVisibilityChange, false);
   document.addEventListener("click", unmountOnEscape);
 };
 
 const removeListeners = () => {
   document.removeEventListener("keydown", onKeyDown, true);
-  document.removeEventListener("visibilitychange", onVisibilityCahange);
+  document.removeEventListener("visibilitychange", onVisibilityChange);
   document.removeEventListener("click", unmountOnEscape);
 };
 
@@ -200,7 +200,7 @@ const onKeyDown = (event: KeyboardEvent) => {
   }
 };
 
-const onVisibilityCahange = () => {
+const onVisibilityChange = () => {
   // think about this... do users want it to remain open once they leave a page
   // AS OF RIGHT NOW: if the user switch tabs using the modal (or any action), it should automatically close
   // if the user simply goes to another tab manually (like they usually would), it should stay open incase they still want to use it
@@ -217,6 +217,8 @@ const onVisibilityCahange = () => {
     // get the updated tab data
     // should this be here??
     isPageActive = true;
+    // for some reason this event keeps throwing an Extension context invalidated error... is is because some tabs arent up to date
+    // or becuae the tab is possibley not acitve?
     // can probably make this into a promise like method
     const messagePayload = {
       message: Message.GET_TAB_DATA,

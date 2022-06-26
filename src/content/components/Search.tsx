@@ -96,6 +96,8 @@ export const Search = (props: Props) => {
       tabId: tabData.tabId,
     };
     chrome.runtime.sendMessage(messagePayload);
+    // better here as users can also click on items
+    props.unMount(); 
   };
 
   const onActionItemClick = (action: Action) => {
@@ -104,6 +106,7 @@ export const Search = (props: Props) => {
     };
     console.log(messagePayload);
     chrome.runtime.sendMessage(messagePayload);
+    props.unMount(); 
   };
 
   const onSubmit = () => {
@@ -115,7 +118,6 @@ export const Search = (props: Props) => {
       } else {
         onTabItemClick(selectedData as TabData);
       }
-      props.unMount(); // should they be in the seperate click methods?
     }
   };
 
@@ -196,7 +198,7 @@ export const Search = (props: Props) => {
         `}
       />
       {/* allowing outside click to only deactivate it  */}
-      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }} >
+      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
         {/* with focus trap on, you cant click on the overlay to close it           */}
         <Container>
           <Input
