@@ -29,6 +29,7 @@ import FocusTrap from "focus-trap-react";
 interface BaseProps {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
+  unMount: () => void; // function to completly unmount the modal
 }
 interface TabSearchProps extends BaseProps {
   currentTabs: TabData[];
@@ -106,6 +107,7 @@ export const Search = (props: Props) => {
   };
 
   const onSubmit = () => {
+    // rename this method
     const selectedData = filteredData[selectedIndex];
     if (selectedData) {
       if (isTabActionsMode()) {
@@ -113,6 +115,7 @@ export const Search = (props: Props) => {
       } else {
         onTabItemClick(selectedData as TabData);
       }
+      props.unMount(); // should they be in the seperate click methods?
     }
   };
 

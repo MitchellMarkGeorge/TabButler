@@ -18,10 +18,11 @@ export async function getTabIdWithSearchOpen(
       chrome.tabs.sendMessage(
         tab.id,
         { message: Message.CHECK_SEARCH_OPEN },
-        (respose: { isOpen: boolean; currentSearchMode: SearchMode }) => {
+        (response: { isOpen: boolean; currentSearchMode: SearchMode }) => {
           resolve(
-            respose.isOpen &&
-              respose.currentSearchMode === SearchMode.TAB_SEARCH
+            response &&
+            response.isOpen &&
+              response.currentSearchMode === SearchMode.TAB_SEARCH
               ? tab.id!
               : null
           );
@@ -35,8 +36,8 @@ export async function getTabIdWithSearchOpen(
 
 export function isChromeURL(url: string) {
   return (
-    url.startsWith("chrome://") &&
-    url.startsWith("chrome-extension://") &&
+    url.startsWith("chrome://") ||
+    url.startsWith("chrome-extension://") ||
     // extension webstore
     url.startsWith("chrome.google.com")
   );

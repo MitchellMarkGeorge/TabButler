@@ -12,6 +12,15 @@ import {
   UpdatedTabDataMessagePayload,
 } from "../common/types";
 
+// chrome.runtime.onInstalled.addListener(details => {
+//     if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+//         // IMPORTANT inject content script into all tabs on isntall so it is ready to be used once installed
+// do the same thing on updates
+//         const manifest = chrome.runtime.getManifest();
+//         const contentScript = manifest.content_scripts?[0]
+//     }
+// })
+
 chrome.commands.onCommand.addListener((command) => {
   getCurrentTab().then((currentTab) => {
     if (

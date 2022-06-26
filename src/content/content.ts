@@ -17,6 +17,7 @@ const tabButlerModalBody = document.createElement("tab-butler-modal-body");
 const shadow = tabButlerModalBody.attachShadow({ mode: "open" });
 tabButlerModalRoot.appendChild(tabButlerModalBody);
 let isOpen = false;
+let isPageActive = true;
 let currentSearchMode: SearchMode;
 // is there a better way to do this??? should i just attach it in the beggining and then move on?
 let reactRoot: ReactDOM.Root | null = null;
@@ -63,6 +64,7 @@ function mountSearchComponent(message: Message) {
       shadowRoot: shadow,
       searchMode: SearchMode.TAB_ACTIONS,
       actions: getActions(),
+      unMount: unmountSearchComponent,
     });
     reactRoot.render(searchComponentInstance);
     tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
@@ -83,6 +85,7 @@ function mountSearchComponent(message: Message) {
         shadowRoot: shadow,
         searchMode: SearchMode.TAB_SEARCH,
         currentTabs: response,
+        unMount: unmountSearchComponent,
       });
       reactRoot.render(searchComponentInstance);
       currentSearchMode = SearchMode.TAB_SEARCH;
@@ -110,6 +113,7 @@ function unmountSearchComponentFromMessage(message: Message) {
         shadowRoot: shadow,
         searchMode: requestedSearchMode,
         actions: getActions(),
+        unMount: unmountSearchComponent,
       });
       reactRoot?.render(newComponentInstance);
       currentSearchMode = requestedSearchMode;
@@ -122,6 +126,7 @@ function unmountSearchComponentFromMessage(message: Message) {
           shadowRoot: shadow,
           searchMode: requestedSearchMode,
           currentTabs: response,
+          unMount: unmountSearchComponent,
         });
         reactRoot?.render(searchComponentInstance);
         currentSearchMode = requestedSearchMode;
@@ -149,6 +154,7 @@ function updateTabSearchComponent(updatedTabData: TabData[]) {
     shadowRoot: shadow,
     searchMode: currentSearchMode, // in this case, we know that this is SearchMode.TAB_SEARCH
     currentTabs: updatedTabData,
+    unMount: unmountSearchComponent,
   });
   reactRoot?.render(searchComponentInstance);
   // no need for further updates as nothing really chanches (apart from the tab data)
@@ -165,7 +171,7 @@ const attachListeners = () => {
   // remove these listeners on page exit/ compoenent mount
   document.addEventListener("keydown", onKeyDown, true);
   // remove these listeners on page exit
-  document.addEventListener("visibilitychange", onVisibilityCahange);
+  document.addEventListener("visibilitychange", onVisibilityCahange, false);
   document.addEventListener("click", unmountOnEscape);
 };
 
@@ -174,8 +180,6 @@ const removeListeners = () => {
   document.removeEventListener("visibilitychange", onVisibilityCahange);
   document.removeEventListener("click", unmountOnEscape);
 };
-
-
 
 const unmountOnEscape = (event: MouseEvent) => {
   // dont like this
@@ -197,9 +201,36 @@ const onKeyDown = (event: KeyboardEvent) => {
 };
 
 const onVisibilityCahange = () => {
-  if (document.visibilityState === "hidden" && isOpen) {
-    unmountSearchComponent();
+  // think about this... do users want it to remain open once they leave a page
+  // AS OF RIGHT NOW: if the user switch tabs using the modal (or any action), it should automatically close
+  // if the user simply goes to another tab manually (like they usually would), it should stay open incase they still want to use it
+  if (document.visibilityState === "hidden") {
+    // unmountSearchComponent();
+    isPageActive = false;
+  } else if (
+    document.visibilityState === "visible" &&
+    !isPageActive &&
+    isOpen &&
+    currentSearchMode === SearchMode.TAB_SEARCH
+  ) {
+    // if the document is now visible and was previously inactive and a tab search modal was open
+    // get the updated tab data
+    // should this be here??
+    isPageActive = true;
+    // can probably make this into a promise like method
+    const messagePayload = {
+      message: Message.GET_TAB_DATA,
+    };
+    chrome.runtime.sendMessage(messagePayload, (updatedTabData: TabData[]) => {
+      updateTabSearchComponent(updatedTabData);
+    });
   }
 };
+
+window.addEventListener("beforeunload", () => {
+  if (isOpen) {
+    unmountSearchComponent();
+  }
+});
 
 document.body.appendChild(tabButlerModalRoot); // is there a possibility that document.body is null?
