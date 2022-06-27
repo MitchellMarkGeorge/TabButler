@@ -4,7 +4,9 @@
 
 A tab manager at your service
 
+Note: This extension is only avalible for Chrome browsers with a minumum version 88
 
+All commands on Mac map to the Command key, not Ctrl
 <!-- # Mindful Extension
 
 The internet has become a wonderful place to spread ideas and beliefs, and no one should be scared to share them online. The purpose of this extension is to make you more “mindful” of the things you say online, so more people can feel free to express themselves online.

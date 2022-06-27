@@ -1,9 +1,4 @@
-import {
-  getCurrentTab,
-  getTabIdWithSearchOpen,
-  getTabsInCurrentWindow,
-  isChromeURL,
-} from "../common/common";
+import { isChromeURL } from "../common/common";
 import {
   ChangeTabMessagePayload,
   Commands,
@@ -11,15 +6,46 @@ import {
   MessagePlayload,
   UpdatedTabDataMessagePayload,
 } from "../common/types";
+import {
+  getCurrentTab,
+  getTabIdWithSearchOpen,
+  getTabsInCurrentWindow,
+} from "./utils";
 
-// chrome.runtime.onInstalled.addListener(details => {
-//     if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-//         // IMPORTANT inject content script into all tabs on isntall so it is ready to be used once installed
-// do the same thing on updates
-//         const manifest = chrome.runtime.getManifest();
-//         const contentScript = manifest.content_scripts?[0]
-//     }
-// })
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (
+    reason === chrome.runtime.OnInstalledReason.INSTALL ||
+    reason === chrome.runtime.OnInstalledReason.UPDATE
+  ) {
+    // IMPORTANT inject content script into all tabs on isntall so it is ready to be used once installed
+    // do the same thing on updates
+    // unfortunately, if doing this on update, this leaves the previous content script still on the page
+    // and it might still try and comunicate with the extension, resulting in an error
+    const manifest = chrome.runtime.getManifest();
+    // in our case there will only be one but just in case we decide to change that
+    const extensionContentScripts = manifest.content_scripts![0].js!;
+    const extensionCss = manifest.content_scripts![0].css![0];
+    // inject the extension into all tabs
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach((tab) => {
+        if (
+          tab.id &&
+          tab.id !== chrome.tabs.TAB_ID_NONE &&
+          !isChromeURL(tab.url!)
+        ) {
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: extensionContentScripts,
+          });
+          chrome.scripting.insertCSS({
+            target: { tabId: tab.id },
+            css: extensionCss,
+          });
+        }
+      });
+    });
+  }
+});
 
 chrome.commands.onCommand.addListener((command) => {
   getCurrentTab().then((currentTab) => {
@@ -61,7 +87,6 @@ chrome.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
   }
 });
 
-
 chrome.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender, sendResponse) => {
     // turn this into switch statement
@@ -76,7 +101,7 @@ chrome.runtime.onMessage.addListener(
         const { tabId } = messagePayload as ChangeTabMessagePayload;
         chrome.tabs.update(tabId, {
           active: true,
-          highlighted: true,
+          highlighted: true, // this might not be needed
         });
         break;
 

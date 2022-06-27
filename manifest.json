@@ -6,12 +6,16 @@
   "author": "Mitchell Mark-George",
   "version": "1.0",
   "description": "A tab manager at your service.",
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": [
+    "*://*/*"
+  ],
   "offline_enabled": true,
   "icons": {
     "48": "icons/Tab Butler Logo 48.png",
     "128": "icons/Tab Butler Logo 128.png"
   },
+  "minimum_chrome_version": "88",
   "background": {
     "service_worker": "background/background.js"
   },
