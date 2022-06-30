@@ -45,7 +45,8 @@ type Props = TabActionsProps | TabSearchProps;
 export const Search = (props: Props) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const dataListElementRef = useRef<HTMLDivElement | null>(null)
+  const dataListElementRef = useRef<HTMLDivElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   // VERY IMPORTANT
   // this has to be in a ref so it is not recreated every rerender (when the state changes)
   // causing the cache provider to think the value has changed
@@ -65,6 +66,18 @@ export const Search = (props: Props) => {
     setValue("");
     setSelectedIndex(0);
   }, [props.searchMode]);
+
+  useEffect(() => {
+    // useEffect to wait for ref to be avalible
+    // make sure the needed values are avalible
+    // console.log(dataListElementRef.current?.getBoundingClientRect().height)
+    if (
+      dataListElementRef.current?.clientHeight &&
+      dataListElementRef.current?.clientWidth
+    ) {
+      setIsLoading(false);
+    }
+  }, []);
 
   let data: Action[] | TabData[];
   if (props.searchMode === SearchMode.TAB_ACTIONS) {
@@ -158,39 +171,44 @@ export const Search = (props: Props) => {
   }
 
   const showList = () => {
-    // might not use virtual list for action mode (only 14 items)
-    console.log(dataListElementRef.current?.clientHeight, dataListElementRef.current?.clientWidth)
-    return <FixedSizeList
-      height={390}
-      width={620}
-      itemCount={filteredData.length}
-      itemSize={50}
-      itemData={filteredData}
-      className="tab_butler_virtual_list"
-    >
-      {({ index, style, data }) => {
-        const item = data[index];
-        return isTabActionsMode() ? (
-          <ActionListItem
-            onClick={onActionItemClick}
-            data={item as Action}
-            key={index}
-            onHover={() => setSelectedIndex(index)}
-            selected={selectedIndex === index}
-            style={style}
-          />
-        ) : (
-          <TabListItem
-            onClick={onTabItemClick}
-            data={item as TabData}
-            key={index}
-            onHover={() => setSelectedIndex(index)}
-            selected={selectedIndex === index}
-            style={style}
-          />
-        );
-      }}
-    </FixedSizeList>
+    // at this point we know that the ref is avalible
+    // this gets the (client) width and height of the container of the list (instead of using majic numbers or guessing)
+    // this is also very usefull if I change the overall size of the modal
+    // might be off (by like 0.38) but it is nothing noticeable
+    const { clientHeight: height, clientWidth: width } = dataListElementRef.current!;
+    return (
+      <FixedSizeList
+        height={height}
+        width={width}
+        itemCount={filteredData.length}
+        itemSize={50}
+        itemData={filteredData}
+        className="tab_butler_virtual_list"
+      >
+        {({ index, style, data }) => {
+          const item = data[index];
+          return isTabActionsMode() ? (
+            <ActionListItem
+              onClick={onActionItemClick}
+              data={item as Action}
+              key={index}
+              onHover={() => setSelectedIndex(index)}
+              selected={selectedIndex === index}
+              style={style}
+            />
+          ) : (
+            <TabListItem
+              onClick={onTabItemClick}
+              data={item as TabData}
+              key={index}
+              onHover={() => setSelectedIndex(index)}
+              selected={selectedIndex === index}
+              style={style}
+            />
+          );
+        }}
+      </FixedSizeList>
+    );
   };
 
   return (
@@ -204,6 +222,7 @@ export const Search = (props: Props) => {
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
           }
 
+          /* disable scrollbar for virtualized list */
           .tab_butler_virtual_list::-webkit-scrollbar {
             display: none;
           }
@@ -220,7 +239,6 @@ export const Search = (props: Props) => {
             value={value}
             autoFocus
             onChange={(e) => {
-              console.log(e.target.value);
               setValue(e.target.value);
             }}
           />
@@ -231,7 +249,16 @@ export const Search = (props: Props) => {
               </Heading>
             </Empty>
           ) : (
-            <DataList ref={dataListElementRef}>{showList()}</DataList>
+            <DataList ref={dataListElementRef}>
+              {isLoading ? (
+                // show loading if the ref is not avalible yet
+                <Empty>
+                  <Heading>Loading...</Heading>
+                </Empty>
+              ) : (
+                showList()
+              )}
+            </DataList>
           )}
           <BottomBar
             isTabActionsMode={isTabActionsMode()}
