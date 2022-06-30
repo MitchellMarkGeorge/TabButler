@@ -11,6 +11,7 @@ import {
 import { getActions } from "./actions";
 import { Search } from "./components/Search";
 import "./content.css";
+import browser from "webextension-polyfill";
 
 const tabButlerModalRoot = document.createElement("tab-butler-modal");
 const tabButlerModalBody = document.createElement("tab-butler-modal-body");
@@ -22,36 +23,33 @@ let currentSearchMode: SearchMode;
 // is there a better way to do this??? should i just attach it in the beggining and then move on?
 let reactRoot: ReactDOM.Root | null = null;
 
-chrome.runtime.onMessage.addListener(
-  (messagePayload: MessagePlayload, sender, sendResponse) => {
-    // i will need to rename the component from search to something else
-    const { message } = messagePayload;
-    switch (message) {
-      case Message.TOGGLE_TAB_ACTIONS:
-      case Message.TOGGLE_TAB_SEARCH:
-        if (isOpen) {
-          // special function to switch modes if the message is different
-          unmountSearchComponentFromMessage(message);
-        } else {
-          mountSearchComponent(message);
-        }
-        break;
+browser.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
+  // i will need to rename the component from search to something else
+  const { message } = messagePayload;
+  switch (message) {
+    case Message.TOGGLE_TAB_ACTIONS:
+    case Message.TOGGLE_TAB_SEARCH:
+      if (isOpen) {
+        // special function to switch modes if the message is different
+        unmountSearchComponentFromMessage(message);
+      } else {
+        mountSearchComponent(message);
+      }
+      break;
 
-      case Message.TAB_DATA_UPDATE:
-        if (isOpen && currentSearchMode === SearchMode.TAB_SEARCH) {
-          // most of the checks here are not needed, but it is still good to make sure
-          updateTabSearchComponent(
-            (messagePayload as UpdatedTabDataMessagePayload).updatedTabData
-          );
-        }
-        break;
+    case Message.TAB_DATA_UPDATE:
+      if (isOpen && currentSearchMode === SearchMode.TAB_SEARCH) {
+        // most of the checks here are not needed, but it is still good to make sure
+        updateTabSearchComponent(
+          (messagePayload as UpdatedTabDataMessagePayload).updatedTabData
+        );
+      }
+      break;
 
-      case Message.CHECK_SEARCH_OPEN:
-        sendResponse({ isOpen, currentSearchMode });
-        break;
-    }
+    case Message.CHECK_SEARCH_OPEN:
+      return Promise.resolve({ isOpen, currentSearchMode });
   }
-);
+});
 
 function mountSearchComponent(message: Message) {
   // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
@@ -75,10 +73,9 @@ function mountSearchComponent(message: Message) {
     const messagePayload = {
       message: Message.GET_TAB_DATA,
     };
-    chrome.runtime.sendMessage(messagePayload, (response: TabData[]) => {
+    browser.runtime.sendMessage(messagePayload).then((response: TabData[]) => {
       // going to leave this in here as we need to wait for the responce before making the modal root visible
       // all the needed data should be present before anything is mounted
-      tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
       attachListeners();
       reactRoot = ReactDOM.createRoot(shadow);
       const searchComponentInstance = React.createElement(Search, {
@@ -88,6 +85,7 @@ function mountSearchComponent(message: Message) {
         unMount: unmountSearchComponent,
       });
       reactRoot.render(searchComponentInstance);
+      tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
       currentSearchMode = SearchMode.TAB_SEARCH;
       isOpen = true;
     });
@@ -121,16 +119,18 @@ function unmountSearchComponentFromMessage(message: Message) {
       const messagePayload = {
         message: Message.GET_TAB_DATA,
       };
-      chrome.runtime.sendMessage(messagePayload, (response: TabData[]) => {
-        const searchComponentInstance = React.createElement(Search, {
-          shadowRoot: shadow,
-          searchMode: requestedSearchMode,
-          currentTabs: response,
-          unMount: unmountSearchComponent,
+      browser.runtime
+        .sendMessage(messagePayload)
+        .then((response: TabData[]) => {
+          const searchComponentInstance = React.createElement(Search, {
+            shadowRoot: shadow,
+            searchMode: requestedSearchMode,
+            currentTabs: response,
+            unMount: unmountSearchComponent,
+          });
+          reactRoot?.render(searchComponentInstance);
+          currentSearchMode = requestedSearchMode;
         });
-        reactRoot?.render(searchComponentInstance);
-        currentSearchMode = requestedSearchMode;
-      });
     }
   }
 }
@@ -201,7 +201,7 @@ const onKeyDown = (event: KeyboardEvent) => {
 };
 
 const onVisibilityChange = () => {
-  console.log(chrome.runtime.id)
+  console.log(browser.runtime.id);
   // think about this... do users want it to remain open once they leave a page
   // AS OF RIGHT NOW: if the user switch tabs using the modal (or any action), it should automatically close
   // if the user simply goes to another tab manually (like they usually would), it should stay open incase they still want to use it
@@ -218,7 +218,7 @@ const onVisibilityChange = () => {
     // get the updated tab data
     // should this be here??
     isPageActive = true;
-    // for some reason this event keeps throwing an Extension context invalidated error... this might 
+    // for some reason this event keeps throwing an Extension context invalidated error... this might
     // the probelem is that a potential previous content script is still trying to send this message
     // and since it has been "cut off" by the extension, it is invalidated
     // functionality still works, but might need a way to handle this
@@ -226,9 +226,11 @@ const onVisibilityChange = () => {
     const messagePayload = {
       message: Message.GET_TAB_DATA,
     };
-    chrome.runtime.sendMessage(messagePayload, (updatedTabData: TabData[]) => {
-      updateTabSearchComponent(updatedTabData);
-    });
+    browser.runtime
+      .sendMessage(messagePayload)
+      .then((updatedTabData: TabData[]) => {
+        updateTabSearchComponent(updatedTabData);
+      });
   }
 };
 

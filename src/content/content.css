@@ -30,29 +30,29 @@ tab-butler-modal-body::-webkit-scrollbar {
 /* default if dark mode styling */
 tab-butler-modal-body {
   box-sizing: border-box !important;
-  position: relative;
-  width: 650px;
+  position: relative !important;
+  width: 650px !important;
   /* was cna use viewport units to make is scale to different screeens */
-  /* height: 500px; */
-  max-height: 500px;
+  height: 500px !important;
+  max-height: 500px !important;
   /* think about blured translucent background */
   /* current background does not look so good in sites that use ark colors */
   /* background: rgba(0, 0, 0, 0.5); */
   /* backdrop-filter: saturate(180%) blur(10px); */
   /* background-color: #1A202C;  */
   /* find the best background color */
-  background-color: rgb(46, 49, 56);
+  background-color: rgb(46, 49, 56) !important;
   /* display: flex; */
   /* align-items: center; */
   /* justify-content: center; */
-  padding: 16px;
+  padding: 16px !important;
   /* max-height: 80vh; */
-  border-radius: 8px;
+  border-radius: 8px !important;
   /* background-color: #fff; */
-  overflow: none;
+  overflow: none !important;
   /* figure out the best box shadow */
   /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
 }
 
 @media (prefers-color-scheme: light) {

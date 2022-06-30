@@ -18,6 +18,7 @@ import { TabListItem } from "./TabListItem";
 import { ActionListItem } from "./ActionListItem";
 import BottomBar from "./BottomBar";
 import FocusTrap from "focus-trap-react";
+import browser from "webextension-polyfill"
 
 // NOTE: SHOW URL IN TABDATA LIST ITEM
 // should it be full url or just basename
@@ -95,7 +96,7 @@ export const Search = (props: Props) => {
       message: Message.CHANGE_TAB,
       tabId: tabData.tabId,
     };
-    chrome.runtime.sendMessage(messagePayload);
+    browser.runtime.sendMessage(messagePayload);
     // better here as users can also click on items
     props.unMount(); 
   };
@@ -105,7 +106,7 @@ export const Search = (props: Props) => {
       message: action.message,
     };
     console.log(messagePayload);
-    chrome.runtime.sendMessage(messagePayload);
+    browser.runtime.sendMessage(messagePayload);
     props.unMount(); 
   };
 

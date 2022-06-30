@@ -11,33 +11,32 @@ import {
   getTabIdWithSearchOpen,
   getTabsInCurrentWindow,
 } from "./utils";
+import browser from "webextension-polyfill";
 
-chrome.runtime.onInstalled.addListener(({ reason }) => {
-  if (
-    reason === chrome.runtime.OnInstalledReason.INSTALL ||
-    reason === chrome.runtime.OnInstalledReason.UPDATE
-  ) {
+browser.runtime.onInstalled.addListener(({ reason }) => {
+  // should I make these async?
+  if (reason === "install" || reason === "update") {
     // IMPORTANT inject content script into all tabs on isntall so it is ready to be used once installed
     // do the same thing on updates
     // unfortunately, if doing this on update, this leaves the previous content script still on the page
     // and it might still try and comunicate with the extension, resulting in an error
-    const manifest = chrome.runtime.getManifest();
+    const manifest = browser.runtime.getManifest();
     // in our case there will only be one but just in case we decide to change that
     const extensionContentScripts = manifest.content_scripts![0].js!;
     const extensionCss = manifest.content_scripts![0].css![0];
     // inject the extension into all tabs
-    chrome.tabs.query({}, (tabs) => {
+    browser.tabs.query({}).then((tabs) => {
       tabs.forEach((tab) => {
         if (
           tab.id &&
-          tab.id !== chrome.tabs.TAB_ID_NONE &&
+          tab.id !== browser.tabs.TAB_ID_NONE &&
           !isChromeURL(tab.url!)
         ) {
-          chrome.scripting.executeScript({
+          browser.scripting.executeScript({
             target: { tabId: tab.id },
             files: extensionContentScripts,
           });
-          chrome.scripting.insertCSS({
+          browser.scripting.insertCSS({
             target: { tabId: tab.id },
             css: extensionCss,
           });
@@ -47,7 +46,8 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
   }
 });
 
-chrome.commands.onCommand.addListener((command) => {
+browser.commands.onCommand.addListener((command) => {
+  // should I make these async?
   getCurrentTab().then((currentTab) => {
     if (
       currentTab?.id &&
@@ -60,13 +60,14 @@ chrome.commands.onCommand.addListener((command) => {
             ? Message.TOGGLE_TAB_ACTIONS
             : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
       };
-      chrome.tabs.sendMessage(currentTab.id, messagePayload);
+      browser.tabs.sendMessage(currentTab.id, messagePayload);
     }
   }); // handle error
 });
 
 // SHOULD ONLY SEND UPDATED TAB DATA IF A TAB IN THE SAME WINDOW AS THE OPEN SEARCH IS CLOSED
-chrome.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
+browser.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
+  // should I make these async?
   // send updated tab data if a tab is closed
   // does not like async await
   if (!removedTabInfo.isWindowClosing) {
@@ -80,26 +81,27 @@ chrome.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
             updatedTabData,
           };
           console.log("sending message");
-          chrome.tabs.sendMessage(tabId, messagePayload);
+          browser.tabs.sendMessage(tabId, messagePayload);
         });
       }
     });
   }
 });
 
-chrome.runtime.onMessage.addListener(
-  (messagePayload: MessagePlayload, sender, sendResponse) => {
+browser.runtime.onMessage.addListener(
+  (messagePayload: MessagePlayload, sender) => {
     // turn this into switch statement
     switch (messagePayload.message) {
       case Message.GET_TAB_DATA: {
-        getTabsInCurrentWindow().then((currentTabs) => {
-          sendResponse(currentTabs);
-        }); // send message is error occured (.catch())
-        return true;
+        return Promise.resolve(getTabsInCurrentWindow());
+        // getTabsInCurrentVWindow().then((currentTabs) => {
+        //   return Promise.resolve(currentTabs);
+        // }); // send message is error occured (.catch())
+        // return true;
       }
       case Message.CHANGE_TAB:
         const { tabId } = messagePayload as ChangeTabMessagePayload;
-        chrome.tabs.update(tabId, {
+        browser.tabs.update(tabId, {
           active: true,
           highlighted: true, // this might not be needed
         });
@@ -108,22 +110,22 @@ chrome.runtime.onMessage.addListener(
       case Message.CLOSE_CURRENT_TAB:
         // if not throw error?
         if (sender.tab?.id) {
-          chrome.tabs.remove(sender.tab.id);
+          browser.tabs.remove(sender.tab.id);
           break;
         }
       case Message.CLOSE_CURRENT_WINDOW:
         if (sender.tab?.windowId) {
-          chrome.windows.remove(sender.tab.windowId);
+          browser.windows.remove(sender.tab.windowId);
           break;
         }
 
       case Message.OPEN_NEW_TAB:
-        chrome.tabs.create({ active: true });
+        browser.tabs.create({ active: true });
         break;
 
       case Message.OPEN_NEW_WINDOW:
       case Message.OPEN_INCOGNITO_WINDOW:
-        chrome.windows.create({
+        browser.windows.create({
           focused: true,
           incognito: messagePayload.message === Message.OPEN_INCOGNITO_WINDOW,
         });
@@ -138,7 +140,7 @@ chrome.runtime.onMessage.addListener(
       case Message.OPEN_YOUTUBE:
       case Message.OPEN_FACEBOOK:
         const url = getUrl(messagePayload.message);
-        chrome.tabs.create({ active: true, url });
+        browser.tabs.create({ active: true, url });
         break;
     }
   }
