@@ -106,7 +106,7 @@ npm start
 
 ### Add To Chrome
 
- - Open [chrome://extensions/](chrome://extensions/)
+ - Open ```chrome://extensions```
  - Click load unpacked button
  - Navigate to repository
  - Select Dist directory
@@ -123,8 +123,6 @@ Usage
 | `cmd` + `shift` + `k` | Toggle tab actions in current page |
 
 </details>
-
-<br>
 
 ## Versioning
 
