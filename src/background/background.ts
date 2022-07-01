@@ -13,6 +13,9 @@ import {
 } from "./utils";
 import browser from "webextension-polyfill";
 
+// if a tab in is dragged into another window, the search modal should update
+// if a tab is taken to another window, the search modal should updae
+
 browser.runtime.onInstalled.addListener(({ reason }) => {
   // should I make these async?
   if (reason === "install" || reason === "update") {

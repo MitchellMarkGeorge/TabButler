@@ -30,7 +30,7 @@ import browser from "webextension-polyfill"
 interface BaseProps {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
-  unMount: () => void; // function to completly unmount the modal
+  close: () => void; // function to completly unmount the modal
 }
 interface TabSearchProps extends BaseProps {
   currentTabs: TabData[];
@@ -98,7 +98,7 @@ export const Search = (props: Props) => {
     };
     browser.runtime.sendMessage(messagePayload);
     // better here as users can also click on items
-    props.unMount(); 
+    props.close(); 
   };
 
   const onActionItemClick = (action: Action) => {
@@ -107,7 +107,7 @@ export const Search = (props: Props) => {
     };
     console.log(messagePayload);
     browser.runtime.sendMessage(messagePayload);
-    props.unMount(); 
+    props.close(); 
   };
 
   const onSubmit = () => {

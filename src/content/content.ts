@@ -62,7 +62,7 @@ function mountSearchComponent(message: Message) {
       shadowRoot: shadow,
       searchMode: SearchMode.TAB_ACTIONS,
       actions: getActions(),
-      unMount: unmountSearchComponent,
+      close: unmountSearchComponent,
     });
     reactRoot.render(searchComponentInstance);
     tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
@@ -82,7 +82,7 @@ function mountSearchComponent(message: Message) {
         shadowRoot: shadow,
         searchMode: SearchMode.TAB_SEARCH,
         currentTabs: response,
-        unMount: unmountSearchComponent,
+        close: unmountSearchComponent,
       });
       reactRoot.render(searchComponentInstance);
       tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
@@ -111,7 +111,7 @@ function unmountSearchComponentFromMessage(message: Message) {
         shadowRoot: shadow,
         searchMode: requestedSearchMode,
         actions: getActions(),
-        unMount: unmountSearchComponent,
+        close: unmountSearchComponent,
       });
       reactRoot?.render(newComponentInstance);
       currentSearchMode = requestedSearchMode;
@@ -126,7 +126,7 @@ function unmountSearchComponentFromMessage(message: Message) {
             shadowRoot: shadow,
             searchMode: requestedSearchMode,
             currentTabs: response,
-            unMount: unmountSearchComponent,
+            close: unmountSearchComponent,
           });
           reactRoot?.render(searchComponentInstance);
           currentSearchMode = requestedSearchMode;
@@ -154,7 +154,7 @@ function updateTabSearchComponent(updatedTabData: TabData[]) {
     shadowRoot: shadow,
     searchMode: currentSearchMode, // in this case, we know that this is SearchMode.TAB_SEARCH
     currentTabs: updatedTabData,
-    unMount: unmountSearchComponent,
+    close: unmountSearchComponent,
   });
   reactRoot?.render(searchComponentInstance);
   // no need for further updates as nothing really chanches (apart from the tab data)
