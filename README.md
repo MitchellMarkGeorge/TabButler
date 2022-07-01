@@ -112,6 +112,18 @@ npm start
  - Select Dist directory
 
 </details>
+<details>
+<summary>
+Usage
+</summary>
+
+|        Shortcut       |             Description            |
+| --------------------- | ---------------------------------- |
+| `cmd` + `shift` + `s` | Toggle tab search in current page  |
+| `cmd` + `shift` + `k` | Toggle tab actions in current page |
+
+</details>
+
 <br>
 
 ## Versioning
