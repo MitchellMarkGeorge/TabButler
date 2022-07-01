@@ -88,6 +88,42 @@ npm run standard
 
 Please read [CONTRIBUTING.md] for details on our code of conduct, and the process for submitting pull requests to us. -->
 
+## Instructions
+<details>
+<summary>Development Quick Start</summary>
+
+### Install Dependencies
+
+```bash
+npm i
+```
+
+### Start Dev Build
+
+```bash
+npm start
+```
+
+### Add To Chrome
+
+ - Open ```chrome://extensions```
+ - Click load unpacked button
+ - Navigate to repository
+ - Select Dist directory
+
+</details>
+<details>
+<summary>
+Usage
+</summary>
+
+|        Shortcut       |             Description            |
+| --------------------- | ---------------------------------- |
+| `cmd` + `shift` + `s` | Toggle tab search in current page  |
+| `cmd` + `shift` + `k` | Toggle tab actions in current page |
+
+</details>
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.
