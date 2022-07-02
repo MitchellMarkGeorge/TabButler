@@ -13,11 +13,8 @@ import {
 } from "./utils";
 import browser from "webextension-polyfill";
 
-// if a tab in is dragged into another window, the search modal should update
-// if a tab is taken to another window, the search modal should updae
-
 browser.runtime.onInstalled.addListener(({ reason }) => {
-  // should I make these async?
+  // right now this code is slow if there are a lot of tabs opne (like A LOT)
   if (reason === "install" || reason === "update") {
     // IMPORTANT inject content script into all tabs on isntall so it is ready to be used once installed
     // do the same thing on updates
@@ -29,18 +26,18 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
     const extensionCss = manifest.content_scripts![0].css![0];
     // inject the extension into all tabs
     browser.tabs.query({}).then((tabs) => {
-      tabs.forEach((tab) => {
+      tabs.forEach(async (tab) => {
         if (
           tab.id &&
           tab.id !== browser.tabs.TAB_ID_NONE &&
           !isChromeURL(tab.url!)
         ) {
-          browser.scripting.executeScript({
-            target: { tabId: tab.id },
+          await browser.scripting.executeScript({
+            target: { tabId: tab.id, allFrames: false },
             files: extensionContentScripts,
           });
-          browser.scripting.insertCSS({
-            target: { tabId: tab.id },
+          await browser.scripting.insertCSS({
+            target: { tabId: tab.id, allFrames: false },
             css: extensionCss,
           });
         }
@@ -151,6 +148,7 @@ browser.runtime.onMessage.addListener(
 
 const getUrl = (message: Message) => {
   switch (message) {
+    // these actions will need to be updated for firefox compatability
     case Message.OPEN_DOWNLOADS:
       return "chrome://downloads";
     case Message.OPEN_EXTENSION:
