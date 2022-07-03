@@ -28,9 +28,10 @@ export const enum Message {
   OPEN_EXTENSION = "open-extensions",
   OPEN_SETTINGS = "open-settings",
   OPEN_HISTORY = "open-history",
+  OPEN_BOOKMARKS = "open-bookmarks",
 
-  PIN_TAB = "pin-tab",
-  MUTE_TAB = "mute-tab",
+  TOGGLE_PIN_TAB = "toggle-pin-tab",
+  TOGGLE_MUTE_TAB = "toggle-mute-tab",
 
   CHECK_SEARCH_OPEN = "check-search-open",
 

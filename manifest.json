@@ -1,4 +1,3 @@
-
 {
   "manifest_version": 3,
   "name": "Tab Butler",
@@ -7,9 +6,7 @@
   "version": "1.0",
   "description": "A tab manager at your service.",
   "permissions": ["tabs", "scripting"],
-  "host_permissions": [
-    "*://*/*"
-  ],
+  "host_permissions": ["<all_urls>"],
   "offline_enabled": true,
   "icons": {
     "48": "icons/Tab Butler Logo 48.png",
@@ -21,13 +18,9 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
+      "matches": ["<all_urls>"],
       "run_at": "document_idle",
-      "js": [
-        "content/content.js"
-      ],
+      "js": ["content/content.js"],
       "css": ["content/content.css"]
     }
   ],

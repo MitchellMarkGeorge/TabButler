@@ -162,6 +162,7 @@ export const Search = (props: Props) => {
   }
 
   const showList = () => {
+    // look into using sections for things like bookmarks, history items, etc.
     if (isTabActionsMode()) {
       // change selected on mouse over
       return (filteredData as Action[]).map((action, index) => (
@@ -209,7 +210,8 @@ export const Search = (props: Props) => {
             value={value}
             autoFocus
             onChange={(e) => {
-              console.log(e.target.value);
+              // reset selected to first element in search result
+              setSelectedIndex(0)
               setValue(e.target.value);
             }}
           />

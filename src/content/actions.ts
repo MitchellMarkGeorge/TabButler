@@ -16,6 +16,9 @@ import {
   BiDownload,
   BiExtension,
   BiHistory,
+  BiVolumeMute,
+  BiPin,
+  BiStar,
 } from "react-icons/bi";
 
 // using black icon color for now
@@ -67,6 +70,22 @@ export function getActions(): Action[] {
       icon: BiHistory,
     },
     {
+      name: "Open Bookmarks",
+      message: Message.OPEN_BOOKMARKS,
+      icon: BiStar,
+    },
+    {
+      name: "Toggle Mute Tab",
+      message: Message.TOGGLE_MUTE_TAB,
+      icon: BiVolumeMute,
+    },
+    {
+      name: "Toggle Pin Tab",
+      message: Message.TOGGLE_PIN_TAB,
+      icon: BiPin,
+    },
+
+    {
       name: "Open GitHub",
       message: Message.OPEN_GITHUB,
       icon: AiFillGithub,
@@ -88,7 +107,7 @@ export function getActions(): Action[] {
       name: "Open YouTube",
       message: Message.OPEN_YOUTUBE,
       icon: AiFillYoutube,
-      iconColor: "rgba(0, 0, 0, 0.64)",
+      // iconColor: "rgba(0, 0, 0, 0.64)",
       //   iconColor: "#c53030"
     },
     {

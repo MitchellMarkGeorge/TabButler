@@ -158,14 +158,9 @@ function updateTabSearchComponent(updatedTabData: TabData[]) {
   });
   reactRoot?.render(searchComponentInstance);
   // no need for further updates as nothing really chanches (apart from the tab data)
-  // updateStoredState(true, currentSearchMode);
 }
 
-// remove these listeners on page exit
-console.log("hello");
 
-// move all the listeners to the Component mount
-// then remove them on unmont
 
 const attachListeners = () => {
   // remove these listeners on page exit/ compoenent mount
@@ -183,9 +178,7 @@ const removeListeners = () => {
 
 const unmountOnEscape = (event: MouseEvent) => {
   // dont like this
-  console.log(event.target);
   if (event.target === tabButlerModalRoot) {
-    // toggleModal();
     unmountSearchComponent();
   }
 };
@@ -201,7 +194,6 @@ const onKeyDown = (event: KeyboardEvent) => {
 };
 
 const onVisibilityChange = () => {
-  console.log(browser.runtime.id);
   // think about this... do users want it to remain open once they leave a page
   // AS OF RIGHT NOW: if the user switch tabs using the modal (or any action), it should automatically close
   // if the user simply goes to another tab manually (like they usually would), it should stay open incase they still want to use it

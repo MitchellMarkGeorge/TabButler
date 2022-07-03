@@ -18,7 +18,7 @@ A tab manager at your service.
 
 Note: Even thought the extension uses the `webextension-pollyfill` library, it has currently only been tested on Chrome. However, it should work on other browsers like Firefox, Opera, Edge, etc.
 
-### Clone Repos
+### Clone Repo
 
 ```bash
 git clone https://github.com/MitchellMarkGeorge/TabButler

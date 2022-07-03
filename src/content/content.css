@@ -41,18 +41,18 @@ tab-butler-modal-body {
   /* backdrop-filter: saturate(180%) blur(10px); */
   /* background-color: #1A202C;  */
   /* find the best background color */
-  background-color: rgb(46, 49, 56) !important;
+  background-color: rgb(46, 49, 56);
   /* display: flex; */
   /* align-items: center; */
   /* justify-content: center; */
-  padding: 16px !important;
+  padding: 16px;
   /* max-height: 80vh; */
-  border-radius: 8px !important;
+  border-radius: 8px;
   /* background-color: #fff; */
-  overflow: none !important;
+  overflow: none;
   /* figure out the best box shadow */
   /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -64,13 +64,21 @@ tab-butler-modal-body {
 /* USE IDS FOR EVERYTHING */
 /* would css modules work */
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .tab_butler_modal_visible {
