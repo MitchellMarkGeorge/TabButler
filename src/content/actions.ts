@@ -25,16 +25,6 @@ import {
 export function getActions(): Action[] {
   return [
     {
-      name: "Close Tab",
-      message: Message.CLOSE_CURRENT_TAB,
-      icon: AiFillCloseCircle,
-    },
-    {
-      name: "Close Window",
-      message: Message.CLOSE_CURRENT_WINDOW,
-      icon: BiWindowClose,
-    },
-    {
       name: "New Tab",
       message: Message.OPEN_NEW_TAB,
       icon: BiPlusCircle,
@@ -48,6 +38,16 @@ export function getActions(): Action[] {
       name: "New Incognito Window",
       message: Message.OPEN_INCOGNITO_WINDOW,
       icon: AiFillEyeInvisible,
+    },
+    {
+      name: "Close Tab",
+      message: Message.CLOSE_CURRENT_TAB,
+      icon: AiFillCloseCircle,
+    },
+    {
+      name: "Close Window",
+      message: Message.CLOSE_CURRENT_WINDOW,
+      icon: BiWindowClose,
     },
     {
       name: "Open Downloads",
