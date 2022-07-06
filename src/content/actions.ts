@@ -1,25 +1,23 @@
 import { Action, Message } from "../common/types";
-import {
-  AiFillCloseCircle,
-  AiFillEyeInvisible,
-  AiFillSetting,
-  AiFillGithub,
-  AiFillGoogleCircle,
-  AiFillTwitterCircle,
-  AiFillYoutube,
-  AiFillFacebook,
-} from "react-icons/ai";
-import {
-  BiWindowClose,
-  BiWindowOpen,
-  BiPlusCircle,
-  BiDownload,
-  BiExtension,
-  BiHistory,
-  BiVolumeMute,
-  BiPin,
-  BiStar,
-} from "react-icons/bi";
+
+import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
+import { AiFillEyeInvisible } from "@react-icons/all-files/ai/AiFillEyeInvisible";
+import { AiFillSetting } from "@react-icons/all-files/ai/AiFillSetting";
+import { AiFillGithub } from "@react-icons/all-files/ai/AiFillGithub";
+import { AiFillGoogleCircle } from "@react-icons/all-files/ai/AiFillGoogleCircle";
+import { AiFillTwitterCircle } from "@react-icons/all-files/ai/AiFillTwitterCircle";
+import { AiFillYoutube } from "@react-icons/all-files/ai/AiFillYoutube";
+import { AiFillFacebook } from "@react-icons/all-files/ai/AiFillFacebook";
+
+import { BiWindowClose } from "@react-icons/all-files/bi/BiWindowClose";
+import { BiWindowOpen } from "@react-icons/all-files/bi/BiWindowOpen";
+import { BiPlusCircle } from "@react-icons/all-files/bi/BiPlusCircle";
+import { BiDownload } from "@react-icons/all-files/bi/BiDownload";
+import { BiExtension } from "@react-icons/all-files/bi/BiExtension";
+import { BiHistory } from "@react-icons/all-files/bi/BiHistory";
+import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
+import { BiPin } from "@react-icons/all-files/bi/BiPin";
+import { BiStar } from "@react-icons/all-files/bi/BiStar";
 
 // using black icon color for now
 export function getActions(): Action[] {
@@ -89,7 +87,7 @@ export function getActions(): Action[] {
       name: "Open GitHub",
       message: Message.OPEN_GITHUB,
       icon: AiFillGithub,
-    //   iconColor: "rgba(0, 0, 0, 0.64)",
+      //   iconColor: "rgba(0, 0, 0, 0.64)",
     },
     {
       name: "Open Google",

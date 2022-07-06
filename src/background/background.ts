@@ -15,7 +15,9 @@ import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
   // right now this code is slow if there are a lot of tabs opne (like A LOT)
+  // also causes a lot of errors and requires extra host_permissions
   if (reason === "install" || reason === "update") {
+    // should it only work on install?
     // IMPORTANT inject content script into all tabs on isntall so it is ready to be used once installed
     // do the same thing on updates
     // unfortunately, if doing this on update, this leaves the previous content script still on the page
@@ -90,15 +92,12 @@ browser.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
 
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {
-    // turn this into switch statement
+    // should I be relying on the sender.tab?
+    // https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
     switch (messagePayload.message) {
-      case Message.GET_TAB_DATA: {
+      case Message.GET_TAB_DATA: 
         return Promise.resolve(getTabsInCurrentWindow());
-        // getTabsInCurrentVWindow().then((currentTabs) => {
-        //   return Promise.resolve(currentTabs);
-        // }); // send message is error occured (.catch())
-        // return true;
-      }
+      
       case Message.CHANGE_TAB:
         const { tabId } = messagePayload as ChangeTabMessagePayload;
         browser.tabs.update(tabId, {

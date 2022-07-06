@@ -183,6 +183,7 @@ const unmountOnEscape = (event: MouseEvent) => {
   }
 };
 
+// need to make sure this works as intended
 const onKeyDown = (event: KeyboardEvent) => {
   // this is neccessary to stop some sites from preventing some key strokes from being registered
   event.stopPropagation();

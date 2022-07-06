@@ -1,6 +1,5 @@
 import React from "react";
 import { Action } from "../../common/types";
-import { ChipIcon } from "@heroicons/react/outline";
 import { ListItem, ListItemProps } from "./ListItem";
 import { useIsDarkMode, useScroll } from "./hooks";
 
@@ -26,14 +25,6 @@ export const ActionListItem = ({
             : "rgba(0, 0, 0, 0.36)"
         }
       />
-      {/* <ChipIcon
-          width="24px"
-          height="24px"
-          color={
-            isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"
-          }  
-        /> */}
-
       <div className="main_text">{data.name}</div>
     </ListItem>
   );

@@ -122,6 +122,7 @@ export const Search = (props: Props) => {
     }
   };
 
+// need to make sure this works as intended
   const onKeyDown = (event: any) => {
     if (event.key === "ArrowUp") {
       event.preventDefault();

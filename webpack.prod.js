@@ -2,6 +2,7 @@ const { merge } = require('webpack-merge');
 const common = require('./webpack.config.js');
 const TerserPlugin = require('terser-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 module.exports = merge(common, {
     mode: 'production',
     devtool: "source-map",
@@ -12,11 +13,13 @@ module.exports = merge(common, {
         minimizer: [
           new TerserPlugin({
             terserOptions: {
+
               compress: {
                 drop_console: true,
               },
             },
           }),
+          new CssMinimizerPlugin(),
         ],
       },
   });

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React, { useEffect, useRef, useState } from "react";
 import { TabData } from "../../common/types";
-import { GlobeIcon } from "@heroicons/react/outline";
+import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe"
 import { ListItem, ListItemProps } from "./ListItem";
 import { useIsDarkMode, useScroll } from "./hooks";
 
@@ -20,9 +20,8 @@ export const TabListItem = ({
     return new URL(url).hostname;
   };
   const getFallBackIcon = () => (
-    <GlobeIcon
-      width="24px"
-      height="24px"
+    <HiOutlineGlobe
+      size="24px"
       color={isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"}
     />
   );
