@@ -4,7 +4,6 @@
 
 A tab manager at your service.
 
-
 ## Instructions
 
 <details>
@@ -52,8 +51,8 @@ Note: For minified production build, use `npm run build` instead.
 Usage
 </summary>
 
-|        Shortcut       |             Description            |
-| --------------------- | ---------------------------------- |
+| Shortcut               | Description                        |
+| ---------------------- | ---------------------------------- |
 | `ctrl` + `shift` + `s` | Toggle tab search in current page  |
 | `ctrl` + `shift` + `k` | Toggle tab actions in current page |
 
@@ -62,6 +61,7 @@ Note: For Mac, `cmd` is used instead of `ctrl`.
 </details>
 
 ## Built With
+
 - TypeScript (both content and background script)
 - React (for the actual search modal in content script)
 - CSS (for some minor styling in content script)

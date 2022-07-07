@@ -32,7 +32,8 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
         if (
           tab.id &&
           tab.id !== browser.tabs.TAB_ID_NONE &&
-          !isChromeURL(tab.url!)
+          tab.url && // tab.url is only present if the permission is present, which it is
+          !isChromeURL(tab?.url)
         ) {
           await browser.scripting.executeScript({
             target: { tabId: tab.id, allFrames: false },
@@ -53,10 +54,11 @@ browser.commands.onCommand.addListener((command) => {
   getCurrentTab().then((currentTab) => {
     if (
       currentTab?.id &&
+      currentTab.url &&
       // chrome does not like content scripts acting on thier urls
-      !isChromeURL(currentTab.url!)
+      !isChromeURL(currentTab.url)
     ) {
-      let messagePayload: MessagePlayload = {
+      const messagePayload: MessagePlayload = {
         message:
           command === Commands.TOGGLE_TAB_ACTIONS
             ? Message.TOGGLE_TAB_ACTIONS
@@ -95,29 +97,29 @@ browser.runtime.onMessage.addListener(
     // should I be relying on the sender.tab?
     // https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
     switch (messagePayload.message) {
-      case Message.GET_TAB_DATA: 
+      case Message.GET_TAB_DATA:
         return Promise.resolve(getTabsInCurrentWindow());
-      
-      case Message.CHANGE_TAB:
+
+      case Message.CHANGE_TAB: {
         const { tabId } = messagePayload as ChangeTabMessagePayload;
         browser.tabs.update(tabId, {
           active: true,
           highlighted: true, // this might not be needed
         });
         break;
+      }
 
       case Message.CLOSE_CURRENT_TAB:
         // if not throw error?
         if (sender.tab?.id) {
           browser.tabs.remove(sender.tab.id);
-          break;
         }
+        break;
       case Message.CLOSE_CURRENT_WINDOW:
         if (sender.tab?.windowId) {
           browser.windows.remove(sender.tab.windowId);
-          break;
         }
-
+        break;
       case Message.OPEN_NEW_TAB:
         browser.tabs.create({ active: true });
         break;
@@ -133,14 +135,14 @@ browser.runtime.onMessage.addListener(
         // toggle pinned
         if (sender.tab?.id) {
           const currentPinnedSatus = sender.tab.pinned;
-          browser.tabs.update(sender.tab.id, { pinned: !currentPinnedSatus })
+          browser.tabs.update(sender.tab.id, { pinned: !currentPinnedSatus });
         }
         break;
       case Message.TOGGLE_MUTE_TAB:
         // toggle muted
         if (sender.tab?.id && sender.tab.mutedInfo) {
           const currentMutedStatus = sender.tab.mutedInfo.muted;
-          browser.tabs.update(sender.tab.id, { muted: !currentMutedStatus })
+          browser.tabs.update(sender.tab.id, { muted: !currentMutedStatus });
         }
         break;
       case Message.OPEN_DOWNLOADS:
@@ -152,12 +154,13 @@ browser.runtime.onMessage.addListener(
       case Message.OPEN_TWITTER:
       case Message.OPEN_YOUTUBE:
       case Message.OPEN_FACEBOOK:
-      case Message.OPEN_BOOKMARKS:
+      case Message.OPEN_BOOKMARKS: {
         const url = getUrl(messagePayload.message);
         browser.tabs.create({ active: true, url });
         break;
+      }
     }
-  }
+  },
 );
 
 const getUrl = (message: Message) => {
@@ -182,6 +185,6 @@ const getUrl = (message: Message) => {
     case Message.OPEN_FACEBOOK:
       return "https://www.facebook.com/";
     case Message.OPEN_BOOKMARKS:
-      return "chrome://bookmarks"
+      return "chrome://bookmarks";
   }
 };

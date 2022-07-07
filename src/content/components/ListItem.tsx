@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import React from "react";
 
 export interface ListItemProps<T> {
   data: T;
@@ -36,7 +35,7 @@ export const ListItem = styled.div<{ selected: boolean }>`
   }
 
   .text_container {
-/*  flex might not be needed here     */
+    /*  flex might not be needed here     */
     display: flex;
     flex-direction: column;
     line-height: normal !important;

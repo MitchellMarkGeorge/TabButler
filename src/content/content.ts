@@ -23,6 +23,7 @@ let currentSearchMode: SearchMode;
 // is there a better way to do this??? should i just attach it in the beggining and then move on?
 let reactRoot: ReactDOM.Root | null = null;
 
+// make this file into a class that will be easier to manage?
 browser.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
@@ -41,7 +42,7 @@ browser.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
       if (isOpen && currentSearchMode === SearchMode.TAB_SEARCH) {
         // most of the checks here are not needed, but it is still good to make sure
         updateTabSearchComponent(
-          (messagePayload as UpdatedTabDataMessagePayload).updatedTabData
+          (messagePayload as UpdatedTabDataMessagePayload).updatedTabData,
         );
       }
       break;
@@ -96,7 +97,7 @@ function unmountSearchComponentFromMessage(message: Message) {
   // NOTE: THIS FUNCTIONS IS ONLY RUN IF THE SEARCH COMPONENT IS OPEN, SO CODE IN THAT ASSUMPTIONKJ
   // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
   // get the accosiated search type of the message
-  let requestedSearchMode = getSearchMode(message);
+  const requestedSearchMode = getSearchMode(message);
   if (currentSearchMode === requestedSearchMode) {
     // if the search type of the currently open search compenent is the same
     // as the the received one, the user issued the same command
@@ -159,8 +160,6 @@ function updateTabSearchComponent(updatedTabData: TabData[]) {
   reactRoot?.render(searchComponentInstance);
   // no need for further updates as nothing really chanches (apart from the tab data)
 }
-
-
 
 const attachListeners = () => {
   // remove these listeners on page exit/ compoenent mount

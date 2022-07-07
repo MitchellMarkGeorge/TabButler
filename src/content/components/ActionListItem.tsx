@@ -14,7 +14,12 @@ export const ActionListItem = ({
   const isDarkMode = useIsDarkMode();
   const Icon = data.icon;
   return (
-    <ListItem onClick={() => onClick(data)} selected={selected} ref={ref} onMouseOver={onHover}>
+    <ListItem
+      onClick={() => onClick(data)}
+      selected={selected}
+      ref={ref}
+      onMouseOver={onHover}
+    >
       <Icon
         size="24px"
         color={

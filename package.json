@@ -6,18 +6,24 @@
   "scripts": {
     "start": "webpack --config webpack.config.js --watch",
     "build": "webpack --config webpack.prod.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint src",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
     "@types/webextension-polyfill": "^0.9.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/parser": "^5.30.5",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
     "file-loader": "^6.2.0",
     "mini-css-extract-plugin": "^2.6.1",
+    "prettier": "^2.7.1",
     "terser-webpack-plugin": "^5.3.3",
     "ts-loader": "^9.3.0",
     "typescript": "^4.7.3",

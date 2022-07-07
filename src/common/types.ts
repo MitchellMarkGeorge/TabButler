@@ -75,9 +75,6 @@ export interface UpdatedTabDataMessagePayload extends MessagePlayload {
   updatedTabData: TabData[];
 }
 
-
-
-
 export interface TabData {
   tabId: number;
   favIcon: string | null;
@@ -88,6 +85,6 @@ export interface TabData {
 export interface Action {
   name: string;
   message: Message; // the message that the action sends to the backgrpond sctipt
-  icon: IconType, // for now
+  icon: IconType; // for now
   iconColor?: string;
 }

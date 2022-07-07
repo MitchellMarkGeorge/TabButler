@@ -3,18 +3,18 @@ import { Message, SearchMode, TabData } from "../common/types";
 import browser from "webextension-polyfill";
 
 export async function getCurrentTab() {
-  let [tab] = await browser.tabs.query({ active: true, currentWindow: true }); // what is the difference between currentWindow and lastFocused?
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true }); // what is the difference between currentWindow and lastFocused?
   return tab;
 }
 
 export async function getTabIdWithSearchOpen(
-  windowId: number
+  windowId: number,
 ): Promise<number | null> {
   // wde only want the active tab as that is the only place it can be in
   // get the tab in the window with search modal open and in tab search mode
   const [tab] = await browser.tabs.query({ active: true, windowId });
-  return new Promise((resolve, reject) => {
-    if (tab?.id && !isChromeURL(tab.url!)) {
+  return new Promise((resolve) => {
+    if (tab?.id && tab.url && !isChromeURL(tab.url)) {
       browser.tabs
         .sendMessage(tab.id, { message: Message.CHECK_SEARCH_OPEN })
         .then(
@@ -23,10 +23,10 @@ export async function getTabIdWithSearchOpen(
               response &&
                 response.isOpen &&
                 response.currentSearchMode === SearchMode.TAB_SEARCH
-                ? tab.id!
-                : null
+                ? tab.id! // this part only executes if the id is present
+                : null,
             );
-          }
+          },
         );
     } else {
       resolve(null);
@@ -36,13 +36,13 @@ export async function getTabIdWithSearchOpen(
 
 export async function getTabsInCurrentWindow() {
   // should it return the current tab??
-  let tabs = await browser.tabs.query({ currentWindow: true });
+  const tabs = await browser.tabs.query({ currentWindow: true });
   return tabs
     .filter((tab) => {
       // will all pages have a title?
       return tab.id && tab.id !== browser.tabs.TAB_ID_NONE && tab.url;
     })
-    .map(({ id, favIconUrl, index, title, url }) => {
+    .map(({ id, favIconUrl, title, url }) => {
       // we know that these properties will be present
       const tabData: TabData = {
         tabId: id!,

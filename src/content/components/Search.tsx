@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
@@ -18,7 +18,7 @@ import { TabListItem } from "./TabListItem";
 import { ActionListItem } from "./ActionListItem";
 import BottomBar from "./BottomBar";
 import FocusTrap from "focus-trap-react";
-import browser from "webextension-polyfill"
+import browser from "webextension-polyfill";
 
 // NOTE: SHOW URL IN TABDATA LIST ITEM
 // should it be full url or just basename
@@ -57,7 +57,7 @@ export const Search = (props: Props) => {
     createCache({
       key: "tab-butler",
       container: props.shadowRoot,
-    })
+    }),
   );
 
   useEffect(() => {
@@ -74,20 +74,20 @@ export const Search = (props: Props) => {
   }
 
   const isTabActionsMode = () => props.searchMode === SearchMode.TAB_ACTIONS;
-  const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
+  // const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
 
   const filterTabs = (currentTabs: TabData[]) => {
     return currentTabs.filter(
       (tabData) =>
         // try to filter based on the tab title and the tab url
         tabData.tabTitle.toLowerCase().includes(value.toLowerCase()) ||
-        tabData.tabUrl.toLowerCase().includes(value.toLowerCase())
+        tabData.tabUrl.toLowerCase().includes(value.toLowerCase()),
     );
   };
 
   const filterActions = (actions: Action[]) => {
     return actions.filter((action) =>
-      action.name.toLowerCase().includes(value.toLowerCase())
+      action.name.toLowerCase().includes(value.toLowerCase()),
     );
   };
 
@@ -98,7 +98,7 @@ export const Search = (props: Props) => {
     };
     browser.runtime.sendMessage(messagePayload);
     // better here as users can also click on items
-    props.close(); 
+    props.close();
   };
 
   const onActionItemClick = (action: Action) => {
@@ -107,7 +107,7 @@ export const Search = (props: Props) => {
     };
     console.log(messagePayload);
     browser.runtime.sendMessage(messagePayload);
-    props.close(); 
+    props.close();
   };
 
   const onSubmit = () => {
@@ -122,8 +122,8 @@ export const Search = (props: Props) => {
     }
   };
 
-// need to make sure this works as intended
-  const onKeyDown = (event: any) => {
+  // need to make sure this works as intended
+  const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === "ArrowUp") {
       event.preventDefault();
       if (selectedIndex !== 0) {
@@ -212,7 +212,7 @@ export const Search = (props: Props) => {
             autoFocus
             onChange={(e) => {
               // reset selected to first element in search result
-              setSelectedIndex(0)
+              setSelectedIndex(0);
               setValue(e.target.value);
             }}
           />

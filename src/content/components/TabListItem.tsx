@@ -1,7 +1,6 @@
-import styled from "@emotion/styled";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { TabData } from "../../common/types";
-import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe"
+import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
 import { ListItem, ListItemProps } from "./ListItem";
 import { useIsDarkMode, useScroll } from "./hooks";
 
