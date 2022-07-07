@@ -7,7 +7,9 @@
     "start": "webpack --config webpack.config.js --watch",
     "build": "webpack --config webpack.prod.js",
     "lint": "eslint src",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "start:firefox": "BROWSER='firefox' webpack --config webpack.config.js --watch",
+    "build:firefox": "BROWSER='firefox' webpack --config webpack.prod.js"
   },
   "devDependencies": {
     "@types/react": "^18.0.14",

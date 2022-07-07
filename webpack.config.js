@@ -3,6 +3,12 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
+let isFirefox = process.env.BROWSER === 'firefox';
+let manifestPattern = isFirefox ? 
+    { from: "manifestFirefox.json", to: "manifest.json" } 
+  : 
+    { from: "manifest.json", to: "manifest.json" }
+
 module.exports = {
   mode: "development",
   devtool: "inline-source-map",
