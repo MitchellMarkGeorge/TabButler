@@ -49,7 +49,8 @@ module.exports = {
 
     new CopyPlugin({
       patterns: [
-        { from: "manifest.json", to: "manifest.json" },
+        //{ from: "manifest.json", to: "manifest.json" },
+        manifestPattern,
         { from: "src/icons", to: "icons" },
       ],
     }),

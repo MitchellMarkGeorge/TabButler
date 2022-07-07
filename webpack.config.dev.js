@@ -45,10 +45,8 @@ module.exports = {
   plugins: [new CleanWebpackPlugin(), new MiniCssExtractPlugin({
     filename: "content/[name].css"
   }), new CopyPlugin({
-    patterns: [{
-      from: "manifest.json",
-      to: "manifest.json"
-    }, {
+    patterns: [//{ from: "manifest.json", to: "manifest.json" },
+    manifestPattern, {
       from: "src/icons",
       to: "icons"
     }]
