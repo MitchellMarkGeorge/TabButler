@@ -4,10 +4,12 @@
   "description": "A tab manager at your service",
   "main": "index.js",
   "scripts": {
-    "start": "webpack --config webpack.config.js --watch",
-    "build": "webpack --config webpack.prod.js",
+    "start:chrome": "webpack --config webpack.config.js --watch",
+    "build:chrome": "webpack --config webpack.prod.js",
     "lint": "eslint src",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "start:firefox": "cross-env BROWSER='firefox' webpack --config webpack.config.js --watch",
+    "build:firefox": "cross-env BROWSER='firefox' webpack --config webpack.prod.js"
   },
   "devDependencies": {
     "@types/react": "^18.0.14",
@@ -17,6 +19,7 @@
     "@typescript-eslint/parser": "^5.30.5",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
     "eslint": "^8.19.0",
