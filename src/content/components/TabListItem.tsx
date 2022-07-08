@@ -43,6 +43,7 @@ export const TabListItem = ({
       )}
       <div className="text_container">
         <div className="main_text">{data.tabTitle}</div>
+        {/* go getHostname() in the background script instead          */}
         <div className="secondary_text">{getHostname(data.tabUrl)}</div>
       </div>
     </ListItem>

@@ -194,9 +194,12 @@ export const Search = (props: Props) => {
       <Global
         styles={css`
           * {
-            box-sizing: border-box;
+            box-sizing: border-box !important;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-              Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+              Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+              letter-spacing: normal !important;
+              -webkit-font-smoothing: antialiased;
+              /* use system font (San Fransisco or Segoe UI) */
           }
         `}
       />
