@@ -1,19 +1,24 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 2,
     "name": "Tab Butler",
     "short_name": "Tab Butler",
     "author": "Mitchell Mark-George",
     "version": "1.0",
     "description": "A tab manager at your service.",
-    "permissions": ["tabs", "scripting"],
-    "host_permissions": ["<all_urls>"],
+    "permissions": [
+      "tabs", 
+      "scripting",
+      "<all_urls>"
+    ],
     "offline_enabled": true,
     "icons": {
       "48": "icons/Tab Butler Logo 48.png",
       "128": "icons/Tab Butler Logo 128.png"
     },
     "background": {
-      "service_worker": "background/background.js"
+      "scripts": [
+        "background/background.js"
+      ]
     },
     "content_scripts": [
       {
@@ -25,11 +30,15 @@
     ],
     "commands": {
       "toggle-tab-search": {
-        "suggested_key": "Ctrl+Shift+S",
+        "suggested_key": {
+          "default": "Ctrl+Shift+S"
+        },
         "description": "Toggle tab search in current page"
       },
       "toggle-tab-actions": {
-        "suggested_key": "Ctrl+Shift+K",
+        "suggested_key": {
+          "default": "Ctrl+Shift+K"
+        },
         "description": "Toggle tab actions in current page"
       }
     }

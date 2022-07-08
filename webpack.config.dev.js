@@ -11,7 +11,7 @@ var _require = require("clean-webpack-plugin"),
 
 var isFirefox = process.env.BROWSER === 'firefox';
 var manifestPattern = isFirefox ? {
-  from: "manifestFirefox.json",
+  from: "manifest.firefox.json",
   to: "manifest.json"
 } : {
   from: "manifest.json",
@@ -45,8 +45,7 @@ module.exports = {
   plugins: [new CleanWebpackPlugin(), new MiniCssExtractPlugin({
     filename: "content/[name].css"
   }), new CopyPlugin({
-    patterns: [//{ from: "manifest.json", to: "manifest.json" },
-    manifestPattern, {
+    patterns: [manifestPattern, {
       from: "src/icons",
       to: "icons"
     }]
