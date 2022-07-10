@@ -14,38 +14,8 @@ import {
 import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
-  // right now this code is slow if there are a lot of tabs opne (like A LOT)
-  // also causes a lot of errors and requires extra host_permissions
   if (reason === "install" || reason === "update") {
-    // should it only work on install?
-    // IMPORTANT inject content script into all tabs on isntall so it is ready to be used once installed
-    // do the same thing on updates
-    // unfortunately, if doing this on update, this leaves the previous content script still on the page
-    // and it might still try and comunicate with the extension, resulting in an error
-    const manifest = browser.runtime.getManifest();
-    // in our case there will only be one but just in case we decide to change that
-    const extensionContentScripts = manifest.content_scripts![0].js!;
-    const extensionCss = manifest.content_scripts![0].css![0];
-    // inject the extension into all tabs
-    browser.tabs.query({}).then((tabs) => {
-      tabs.forEach(async (tab) => {
-        if (
-          tab.id &&
-          tab.id !== browser.tabs.TAB_ID_NONE &&
-          tab.url && // tab.url is only present if the permission is present, which it is
-          !isChromeURL(tab?.url)
-        ) {
-          await browser.scripting.executeScript({
-            target: { tabId: tab.id, allFrames: false },
-            files: extensionContentScripts,
-          });
-          await browser.scripting.insertCSS({
-            target: { tabId: tab.id, allFrames: false },
-            css: extensionCss,
-          });
-        }
-      });
-    });
+    console.log("install")
   }
 });
 

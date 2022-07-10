@@ -19,7 +19,6 @@ import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
 import { BiPin } from "@react-icons/all-files/bi/BiPin";
 import { BiStar } from "@react-icons/all-files/bi/BiStar";
 
-// using black icon color for now
 export function getActions(): Action[] {
   return [
     {
@@ -84,7 +83,7 @@ export function getActions(): Action[] {
     },
 
     {
-      name: "Open GitHub",
+      name: "Open GitHub", // might remove this one
       message: Message.OPEN_GITHUB,
       icon: AiFillGithub,
       //   iconColor: "rgba(0, 0, 0, 0.64)",
@@ -114,6 +113,5 @@ export function getActions(): Action[] {
       icon: AiFillFacebook,
       //   iconColor: "#2c5282"
     },
-    // mute tab
   ];
 }

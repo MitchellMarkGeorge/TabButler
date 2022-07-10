@@ -26,11 +26,11 @@
   ],
   "commands": {
     "toggle-tab-search": {
-      "suggested_key": "Ctrl+Shift+S",
+      "suggested_key": "Ctrl+Shift+Space",
       "description": "Toggle tab search in current page"
     },
     "toggle-tab-actions": {
-      "suggested_key": "Ctrl+Shift+K",
+      "suggested_key": "Alt+Shift+Space",
       "description": "Toggle tab actions in current page"
     }
   }

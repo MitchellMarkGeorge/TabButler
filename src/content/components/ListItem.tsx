@@ -10,7 +10,6 @@ export interface ListItemProps<T> {
 // figure out best hover/selected colors
 export const ListItem = styled.div<{ selected: boolean }>`
   width: 100%;
-  /* height: 24px; */
   height: 50px;
   display: flex;
   flex-direction: row;
