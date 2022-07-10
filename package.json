@@ -25,6 +25,7 @@
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
     "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.1",
     "prettier": "^2.7.1",
     "terser-webpack-plugin": "^5.3.3",

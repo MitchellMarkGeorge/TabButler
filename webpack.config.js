@@ -2,6 +2,7 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 let isFirefox = process.env.BROWSER === 'firefox';
 let manifestPattern = isFirefox ? 
@@ -15,6 +16,7 @@ module.exports = {
   entry: {
     content: path.resolve(__dirname, `src/content/content.ts`),
     background: path.resolve(__dirname, `src/background/background.ts`),
+    welcome: path.resolve(__dirname, `src/welcome/welcome.ts`),
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -44,7 +46,14 @@ module.exports = {
     new CleanWebpackPlugin(),
 
     new MiniCssExtractPlugin({
-      filename: "content/[name].css",
+      filename: "[name]/[name].css",
+    }),
+
+    new HtmlWebpackPlugin({
+      title: "Thanks for installing Tab Butler 🥳🤗!",
+      filename: path.resolve(__dirname, `dist/welcome/welcome.html`),
+      template: `src/welcome/welcome.html`,
+      chunks: ["welcome"]
     }),
 
     new CopyPlugin({

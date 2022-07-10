@@ -14,8 +14,10 @@ import {
 import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
-  if (reason === "install" || reason === "update") {
-    console.log("install")
+  if (reason === "install") {
+    // open the welcome page
+    const welcomeUrl = browser.runtime.getURL("welcome/welcome.html")
+    browser.tabs.create({ url: welcomeUrl });
   }
 });
 
