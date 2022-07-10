@@ -47,12 +47,12 @@ Note: For minified production build, use `npm run build` instead.
 Usage
 </summary>
 
-| Shortcut               | Description                        |
-| ---------------------- | ---------------------------------- |
-| `ctrl` + `shift` + `s` | Toggle tab search in current page  |
-| `ctrl` + `shift` + `k` | Toggle tab actions in current page |
+| Shortcut                   | Description                        |
+| -------------------------- | ---------------------------------- |
+| `ctrl` + `shift` + `space` | Toggle tab search in current page  |
+| `alt` + `shift` + `space`  | Toggle tab actions in current page |
 
-Note: For Mac, `cmd` is used instead of `ctrl`.
+Note: For Mac, `cmd` is used instead of `ctrl` and `option` is used insead of `alt`.
 
 </details>
 
