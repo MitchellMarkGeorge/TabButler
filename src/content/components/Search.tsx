@@ -163,29 +163,39 @@ export const Search = (props: Props) => {
   }
 
   const showList = () => {
+    const listItems = new Array<JSX.Element>(filteredData.length);
+
     // look into using sections for things like bookmarks, history items, etc.
     if (isTabActionsMode()) {
       // change selected on mouse over
-      return (filteredData as Action[]).map((action, index) => (
-        <ActionListItem
-          onClick={onActionItemClick}
-          data={action}
-          key={index}
-          onHover={() => setSelectedIndex(index)}
-          selected={selectedIndex === index}
-        />
-      ));
+      const actions = filteredData as Action[];
+      for (let i = 0; i < listItems.length; i++) {
+        listItems[i] = (
+          <ActionListItem
+            onClick={onActionItemClick}
+            data={actions[i]}
+            key={i}
+            onHover={() => setSelectedIndex(i)}
+            selected={selectedIndex === i}
+          />
+        );
+      }
     } else {
-      return (filteredData as TabData[]).map((tabData, index) => (
-        <TabListItem
-          onClick={onTabItemClick}
-          data={tabData}
-          key={tabData.tabId}
-          onHover={() => setSelectedIndex(index)}
-          selected={selectedIndex === index}
-        />
-      ));
+      const tabData = filteredData as TabData[];
+      for (let i = 0; i < listItems.length; i++) {
+        listItems[i] = (
+          <TabListItem
+            onClick={onTabItemClick}
+            data={tabData[i]}
+            key={tabData[i].tabId}
+            onHover={() => setSelectedIndex(i)}
+            selected={selectedIndex === i}
+          />
+        );
+      }
     }
+
+    return listItems;
   };
 
   return (
