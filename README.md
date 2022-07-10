@@ -73,9 +73,9 @@ We use [SemVer](http://semver.org/) for versioning.
 
 See also the list of [contributors](https://github.com/MitchellMarkGeorge/TabButler/contributors) who participated in this project.
 
-<!-- ## Contributing
+## Contributing
 
-Please read [CONTRIBUTING.md] for details on our code of conduct, and the process for submitting pull requests to us. -->
+Please read [CONTRIBUTING.md] for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## License
 
