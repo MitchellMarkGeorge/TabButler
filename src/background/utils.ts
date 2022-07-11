@@ -37,20 +37,24 @@ export async function getTabIdWithSearchOpen(
 export async function getTabsInCurrentWindow() {
   // should it return the current tab??
   const tabs = await browser.tabs.query({ currentWindow: true });
-  return tabs
-    .filter((tab) => {
-      // will all pages have a title?
-      return tab.id && tab.id !== browser.tabs.TAB_ID_NONE && tab.url;
-    })
-    .map(({ id, favIconUrl, title, url }) => {
+  const results: TabData[] = [];
+  const tabNum = tabs.length;
+
+  for (let i = 0; i < tabNum; i++) {
+    const tab = tabs[i];
+    // will all pages have a title?
+    if (tab.id && tab.id !== browser.tabs.TAB_ID_NONE && tab.url) {
       // we know that these properties will be present
       const tabData: TabData = {
-        tabId: id!,
-        favIcon: favIconUrl || null,
-        tabTitle: title!,
-        tabUrl: url!,
+        tabId: tab.id!,
+        favIcon: tab.favIconUrl || null,
+        tabTitle: tab.title!,
+        tabUrl: tab.url!,
         // muted info
       };
-      return tabData;
-    });
+      results.push(tabData);
+    }
+  }
+
+  return results;
 }
