@@ -164,12 +164,13 @@ export const Search = (props: Props) => {
 
   const showList = () => {
     const listItems = new Array<JSX.Element>(filteredData.length);
+    const listItemsNum = listItems.length;
 
     // look into using sections for things like bookmarks, history items, etc.
     if (isTabActionsMode()) {
       // change selected on mouse over
       const actions = filteredData as Action[];
-      for (let i = 0; i < listItems.length; i++) {
+      for (let i = 0; i < listItemsNum; i++) {
         listItems[i] = (
           <ActionListItem
             onClick={onActionItemClick}
@@ -182,7 +183,7 @@ export const Search = (props: Props) => {
       }
     } else {
       const tabData = filteredData as TabData[];
-      for (let i = 0; i < listItems.length; i++) {
+      for (let i = 0; i < listItemsNum; i++) {
         listItems[i] = (
           <TabListItem
             onClick={onTabItemClick}

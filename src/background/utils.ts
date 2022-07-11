@@ -38,16 +38,18 @@ export async function getTabsInCurrentWindow() {
   // should it return the current tab??
   const tabs = await browser.tabs.query({ currentWindow: true });
   const results: TabData[] = [];
+  const tabNum = tabs.length;
 
-  for (let i = 0; i < tabs.length; i++) {
+  for (let i = 0; i < tabNum; i++) {
+    const tab = tabs[i];
     // will all pages have a title?
-    if (tabs[i].id && tabs[i].id !== browser.tabs.TAB_ID_NONE && tabs[i].url) {
+    if (tab.id && tab.id !== browser.tabs.TAB_ID_NONE && tab.url) {
       // we know that these properties will be present
       const tabData: TabData = {
-        tabId: tabs[i].id!,
-        favIcon: tabs[i].favIconUrl || null,
-        tabTitle: tabs[i].title!,
-        tabUrl: tabs[i].url!,
+        tabId: tab.id!,
+        favIcon: tab.favIconUrl || null,
+        tabTitle: tab.title!,
+        tabUrl: tab.url!,
         // muted info
       };
       results.push(tabData);
