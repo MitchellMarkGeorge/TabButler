@@ -31,13 +31,13 @@
     "commands": {
       "toggle-tab-search": {
         "suggested_key": {
-          "default": "Ctrl+Shift+S"
+          "default": "Ctrl+Shift+Space"
         },
         "description": "Toggle tab search in current page"
       },
       "toggle-tab-actions": {
         "suggested_key": {
-          "default": "Ctrl+Shift+K"
+          "default": "Alt+Shift+Space"
         },
         "description": "Toggle tab actions in current page"
       }
