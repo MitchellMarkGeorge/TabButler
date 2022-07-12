@@ -5,10 +5,20 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 let isFirefox = process.env.BROWSER === 'firefox';
-let manifestPattern = isFirefox ? 
-    { from: "manifest.firefox.json", to: "manifest.json" } 
-  : 
-    { from: "manifest.json", to: "manifest.json" }
+
+let manifestPattern = { 
+  from: "manifest.json", 
+  to: "manifest.json" 
+};
+let distPath = "dist/chrome";
+
+if(isFirefox){
+  manifestPattern = { 
+    from: "manifest.firefox.json", 
+    to: "manifest.json" 
+  };
+  distPath = "dist/firefox";
+}
 
 module.exports = {
   mode: "development",
@@ -19,7 +29,7 @@ module.exports = {
     welcome: path.resolve(__dirname, `src/welcome/welcome.ts`),
   },
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, distPath),
     filename: "[name]/[name].js",
   },
   module: {
@@ -51,7 +61,7 @@ module.exports = {
 
     new HtmlWebpackPlugin({
       title: "Thanks for installing Tab Butler 🥳🤗!",
-      filename: path.resolve(__dirname, `dist/welcome/welcome.html`),
+      filename: path.resolve(__dirname, `${distPath}/welcome/welcome.html`),
       template: `src/welcome/welcome.html`,
       chunks: ["welcome"]
     }),
