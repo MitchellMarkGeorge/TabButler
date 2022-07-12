@@ -37,6 +37,11 @@ If you are developing for Firefox, use
 npm run start:firefox
 ```
 
+If you are developing for both Chrome and Firefox, use
+```bash
+npm run start:all
+```
+
 Note: For minified production build, use respective `npm run build` instead.
 
 ### Add To Chrome/Chromeium Browsers
