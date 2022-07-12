@@ -1,3 +1,7 @@
+# Tab Butler
+
+[![Discord](https://img.shields.io/discord/996098605364543529?color=7389D8&label=Join%20Chat&logo=discord&logoColor=7389D8&style=for-the-badge)](https://discord.gg/vf8mfTTNN3)
+
 ![Tab Butler Promo Image](src/assets/Tab%20Butler%20Large%20Promo%20Image.png)
 
 ## Instructions
