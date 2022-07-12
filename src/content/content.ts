@@ -14,9 +14,8 @@ import "./content.css";
 import browser from "webextension-polyfill";
 
 const tabButlerModalRoot = document.createElement("tab-butler-modal");
-const tabButlerModalBody = document.createElement("tab-butler-modal-body");
-const shadow = tabButlerModalBody.attachShadow({ mode: "open" });
-tabButlerModalRoot.appendChild(tabButlerModalBody);
+// needs to be open so that the click event can buble up
+const shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
 let isOpen = false;
 let isPageActive = true;
 let currentSearchMode: SearchMode;
@@ -176,8 +175,11 @@ const removeListeners = () => {
 };
 
 const unmountOnEscape = (event: MouseEvent) => {
-  // dont like this
-  if (event.target === tabButlerModalRoot) {
+  console.log(event);
+  // this details the path that the document click event bubbled up from
+  const [ firstElementTarget ] = (event as PointerEvent).composedPath();
+  // if the user clicked on the overlay
+  if (firstElementTarget === tabButlerModalRoot) {
     unmountSearchComponent();
   }
 };

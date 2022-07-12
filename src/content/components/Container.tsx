@@ -6,4 +6,5 @@ export const Container = styled.div`
   row-gap: 10px;
   height: 100%;
   width: 100%;
+  background-color: transparent;
 `;

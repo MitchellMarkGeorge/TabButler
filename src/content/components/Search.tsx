@@ -19,6 +19,7 @@ import { ActionListItem } from "./ActionListItem";
 import BottomBar from "./BottomBar";
 import FocusTrap from "focus-trap-react";
 import browser from "webextension-polyfill";
+import { ModalBody } from "./ModalBody";
 
 // NOTE: SHOW URL IN TABDATA LIST ITEM
 // should it be full url or just basename
@@ -217,6 +218,7 @@ export const Search = (props: Props) => {
       {/* allowing outside click to only deactivate it  */}
       <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
         {/* with focus trap on, you cant click on the overlay to close it           */}
+        <ModalBody>
         <Container>
           <Input
             placeholder={
@@ -244,6 +246,7 @@ export const Search = (props: Props) => {
             resultNum={filteredData.length}
           />
         </Container>
+        </ModalBody>
       </FocusTrap>
     </CacheProvider>
   );

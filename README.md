@@ -54,7 +54,7 @@ Note: For minified production build, use respective `npm run build` instead.
 - Enable Development mode
 - Click Load Unpacked button
 - Navigate to repository
-- Select `dist` directory
+- Select `dist/chrome` directory
 
 ### Add To Firefox
 
@@ -62,7 +62,7 @@ Note: For minified production build, use respective `npm run build` instead.
 - Click the `This Firefox` options 
 - Click the `Load Temporary Add-on` button
 - Navigate to repository
-- Select the `manifest.json` file in the `dist` directory
+- Select the `manifest.json` file in the `dist/firefox` directory
 
 </details>
 <details>
