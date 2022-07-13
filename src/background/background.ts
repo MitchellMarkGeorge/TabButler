@@ -10,14 +10,19 @@ import {
   getCurrentTab,
   getTabIdWithSearchOpen,
   getTabsInCurrentWindow,
+  injectExtension,
 } from "./utils";
 import browser from "webextension-polyfill";
 
-browser.runtime.onInstalled.addListener(({ reason }) => {
+browser.runtime.onInstalled.addListener(async ({ reason }) => {
+  // should this be async?
   if (reason === "install") {
+    // inject extension
     // open the welcome page
+    // opening the welcome page first buys the extension time to inject into the avalible pages
     const welcomeUrl = browser.runtime.getURL("welcome/welcome.html")
-    browser.tabs.create({ url: welcomeUrl });
+    await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
+    await injectExtension();
   }
 });
 

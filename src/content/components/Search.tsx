@@ -21,13 +21,6 @@ import FocusTrap from "focus-trap-react";
 import browser from "webextension-polyfill";
 import { ModalBody } from "./ModalBody";
 
-// NOTE: SHOW URL IN TABDATA LIST ITEM
-// should it be full url or just basename
-
-// Add focus lock
-// update tabData array props if tabs added/removed?
-// this is important as tabs can be closed with the search open...
-// Virtualization
 interface BaseProps {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
@@ -63,8 +56,16 @@ export const Search = (props: Props) => {
 
   useEffect(() => {
     // in the case of the search type changing, reset the input value and the selected index
-    setValue("");
-    setSelectedIndex(0);
+    // this also called on mount....
+    console.log("serchmode")
+    // reset values only if they are not the defaults
+    if (value) {
+      setValue("");
+    }
+
+    if (selectedIndex !== 0) {
+      setSelectedIndex(0);
+    }
   }, [props.searchMode]);
 
   let data: Action[] | TabData[];
@@ -98,7 +99,7 @@ export const Search = (props: Props) => {
       tabId: tabData.tabId,
     };
     browser.runtime.sendMessage(messagePayload);
-    // better here as users can also click on items
+    // shoud this be in the then clause?
     props.close();
   };
 
@@ -108,6 +109,7 @@ export const Search = (props: Props) => {
     };
     console.log(messagePayload);
     browser.runtime.sendMessage(messagePayload);
+    // shoud this be in the then clause?
     props.close();
   };
 
@@ -210,7 +212,7 @@ export const Search = (props: Props) => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
               letter-spacing: normal !important;
-              -webkit-font-smoothing: antialiased;
+              /* remove firefox scroll bar */
               /* use system font (San Fransisco or Segoe UI) */
           }
         `}

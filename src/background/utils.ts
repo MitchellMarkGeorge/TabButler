@@ -10,7 +10,7 @@ export async function getCurrentTab() {
 export async function getTabIdWithSearchOpen(
   windowId: number,
 ): Promise<number | null> {
-  // wde only want the active tab as that is the only place it can be in
+  // we only want the active tab as that is the only place it can be in
   // get the tab in the window with search modal open and in tab search mode
   const [tab] = await browser.tabs.query({ active: true, windowId });
   return new Promise((resolve) => {
@@ -57,4 +57,65 @@ export async function getTabsInCurrentWindow() {
   }
 
   return results;
+}
+
+export async function injectExtension() {
+  const manifest = browser.runtime.getManifest();
+  // we know that these values will be present
+  const extensionContentScripts = manifest.content_scripts![0].js!;
+  const extensionCss = manifest.content_scripts![0].css!;
+  // inject the extension into all tabs
+  const tabs = await browser.tabs.query({ status: "complete" }); // think about this
+  const tabsLength = tabs.length;
+  // use while loop?
+  // this is O(n);
+  for (let i = 0; i < tabsLength; i++) {
+    const tab = tabs[i];
+    if (
+      tab.id &&
+      tab.id !== browser.tabs.TAB_ID_NONE &&
+      tab.url && // tab.url is only present if the permission is present, which it is
+      !isChromeURL(tab?.url)
+    ) {
+      await browser.scripting.executeScript({
+        target: { tabId: tab.id, allFrames: false },
+        files: extensionContentScripts,
+      });
+      await browser.scripting.insertCSS({
+        target: { tabId: tab.id, allFrames: false },
+        files: extensionCss,
+      });
+    }
+  }
+  // popular way I have seen it done in othe extensions, this changes the time complexity to O(n^2)
+
+  // const windows = await browser.windows.getAll({ populate: true}); // what does populate mean
+  // const windowLength = windows.length;
+  // for (let i = 0; i < windowLength; i++) {
+  //   const window = windows[i];
+  //   const tabs = window.tabs;
+  //   if (tabs) {
+  //     const tabsLength = tabs.length;
+  //     for (let j = 0; j < tabsLength; j++) {
+  //       const tab = tabs[j];
+  //       console.log(tab);
+  //       if (
+  //         tab.id &&
+  //         tab.id !== browser.tabs.TAB_ID_NONE &&
+  //         tab.url && // tab.url is only present if the permission is present, which it is
+  //         !isChromeURL(tab?.url)
+  //         && tab?.status === "complete"
+  //       ) {
+  //         await browser.scripting.executeScript({
+  //           target: { tabId: tab.id, allFrames: false },
+  //           files: extensionContentScripts,
+  //         });
+  //         await browser.scripting.insertCSS({
+  //           target: { tabId: tab.id, allFrames: false },
+  //           files: extensionCss
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 }

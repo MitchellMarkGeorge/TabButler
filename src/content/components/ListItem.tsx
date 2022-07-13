@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 
 export interface ListItemProps<T> {
   data: T;
-  selected: boolean;
+  selected: boolean; // isSelected
   onClick: (data: T) => void;
   onHover: () => void;
 }

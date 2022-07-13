@@ -43,7 +43,7 @@ export const TabListItem = ({
       )}
       <div className="text_container">
         <div className="main_text">{data.tabTitle}</div>
-        {/* go getHostname() in the background script instead          */}
+        { /* getHostname() could return an empty host name - should the secondary text be conditionally rendered? */}
         <div className="secondary_text">{getHostname(data.tabUrl)}</div>
       </div>
     </ListItem>
