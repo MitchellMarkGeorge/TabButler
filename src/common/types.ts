@@ -6,6 +6,8 @@ export const enum Commands {
   TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
 }
 
+// name space Messagees according to their use using a union(?) of enums
+// type Message =  CommandMessage | TabSearchMessage | TabActionMessage
 export const enum Message {
   // command specific
   TOGGLE_TAB_SEARCH = "toggle-search",
@@ -15,8 +17,6 @@ export const enum Message {
   GET_TAB_DATA = "get-tab-data",
   CHANGE_TAB = "change-tab",
   TAB_DATA_UPDATE = "tab-data-update",
-
-  UPDATE_BACKGROUND_STATE = "update-background-state",
 
   // tab action specific
   CLOSE_CURRENT_TAB = "close-current-tab",

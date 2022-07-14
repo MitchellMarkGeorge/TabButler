@@ -1,29 +1,26 @@
-import React from "react";
-import * as ReactDOM from "react-dom/client";
+import browser from "webextension-polyfill";
 import {
   getSearchMode,
   Message,
   MessagePlayload,
   SearchMode,
   TabData,
-  UpdatedTabDataMessagePayload,
+  UpdatedTabDataMessagePayload
 } from "../common/types";
 import { getActions } from "./actions";
-import { Search } from "./components/Search";
 import "./content.css";
-import browser from "webextension-polyfill";
+import { SearchUIHandler } from "./SearchUIHandler";
+import { getCurrentTabData } from "./utils";
 
 const tabButlerModalRoot = document.createElement("tab-butler-modal");
 // needs to be open so that the click event can buble up
 const shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
-let isOpen = false;
-let isPageActive = true;
+let isOpen = false; // technically no longer needed
 let currentSearchMode: SearchMode;
-// is there a better way to do this??? should i just attach it in the beggining and then move on?
-let reactRoot: ReactDOM.Root | null = null;
-
+const searchUiHandler = new SearchUIHandler();
 // make this file into a class that will be easier to manage?
-browser.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
+const messageListener = (messagePayload: MessagePlayload) => {
+
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
   switch (message) {
@@ -40,16 +37,17 @@ browser.runtime.onMessage.addListener((messagePayload: MessagePlayload) => {
     case Message.TAB_DATA_UPDATE:
       if (isOpen && currentSearchMode === SearchMode.TAB_SEARCH) {
         // most of the checks here are not needed, but it is still good to make sure
-        updateTabSearchComponent(
-          (messagePayload as UpdatedTabDataMessagePayload).updatedTabData,
-        );
+        const { updatedTabData } =
+          messagePayload as UpdatedTabDataMessagePayload;
+        searchUiHandler.updateProps({ currentTabs: updatedTabData });
       }
       break;
 
     case Message.CHECK_SEARCH_OPEN:
       return Promise.resolve({ isOpen, currentSearchMode });
   }
-});
+}
+browser.runtime.onMessage.addListener(messageListener);
 
 function mountSearchComponent(message: Message) {
   // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
@@ -57,34 +55,29 @@ function mountSearchComponent(message: Message) {
     // render it normally with actions as the received data
     // should we moint the compoenent first before we make it visible
     attachListeners();
-    reactRoot = ReactDOM.createRoot(shadow);
-    const searchComponentInstance = React.createElement(Search, {
+    searchUiHandler.mount(shadow, {
       shadowRoot: shadow,
       searchMode: SearchMode.TAB_ACTIONS,
       actions: getActions(),
       close: unmountSearchComponent,
+      hasError: false,
     });
-    reactRoot.render(searchComponentInstance);
     tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
     currentSearchMode = SearchMode.TAB_ACTIONS;
     isOpen = true;
   } else {
     // default to search
-    const messagePayload = {
-      message: Message.GET_TAB_DATA,
-    };
-    browser.runtime.sendMessage(messagePayload).then((response: TabData[]) => {
+    getCurrentTabData().then((response) => {
       // going to leave this in here as we need to wait for the responce before making the modal root visible
       // all the needed data should be present before anything is mounted
       attachListeners();
-      reactRoot = ReactDOM.createRoot(shadow);
-      const searchComponentInstance = React.createElement(Search, {
+      searchUiHandler.mount(shadow, {
         shadowRoot: shadow,
         searchMode: SearchMode.TAB_SEARCH,
         currentTabs: response,
         close: unmountSearchComponent,
+        hasError: false,
       });
-      reactRoot.render(searchComponentInstance);
       tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
       currentSearchMode = SearchMode.TAB_SEARCH;
       isOpen = true;
@@ -107,29 +100,22 @@ function unmountSearchComponentFromMessage(message: Message) {
     // update the props of the component with the nessecary information
     // and update the cuttent search mode
     if (requestedSearchMode === SearchMode.TAB_ACTIONS) {
-      const newComponentInstance = React.createElement(Search, {
-        shadowRoot: shadow,
+      searchUiHandler.updateProps({
         searchMode: requestedSearchMode,
         actions: getActions(),
-        close: unmountSearchComponent,
       });
-      reactRoot?.render(newComponentInstance);
       currentSearchMode = requestedSearchMode;
     } else {
-      const messagePayload = {
-        message: Message.GET_TAB_DATA,
-      };
-      browser.runtime
-        .sendMessage(messagePayload)
-        .then((response: TabData[]) => {
-          const searchComponentInstance = React.createElement(Search, {
-            shadowRoot: shadow,
+      getCurrentTabData()
+        .then((response) => {
+          searchUiHandler.updateProps({
             searchMode: requestedSearchMode,
             currentTabs: response,
-            close: unmountSearchComponent,
           });
-          reactRoot?.render(searchComponentInstance);
           currentSearchMode = requestedSearchMode;
+        })
+        .catch(() => {
+          searchUiHandler.updateProps({ hasError: true });
         });
     }
   }
@@ -139,31 +125,17 @@ function unmountSearchComponent() {
   // doing this first here so it disapears as soon as possible
   tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
   removeListeners();
-  reactRoot?.unmount();
+  searchUiHandler.unMount();
   // clear the remaining styles in the shadow root
   while (shadow.firstChild) {
     shadow.removeChild(shadow.firstChild);
   }
-  reactRoot = null;
   isOpen = false;
   // should i reset currentSearchMode?
 }
 
-function updateTabSearchComponent(updatedTabData: TabData[]) {
-  const searchComponentInstance = React.createElement(Search, {
-    shadowRoot: shadow,
-    searchMode: currentSearchMode, // in this case, we know that this is SearchMode.TAB_SEARCH
-    currentTabs: updatedTabData,
-    close: unmountSearchComponent,
-  });
-  reactRoot?.render(searchComponentInstance);
-  // no need for further updates as nothing really chanches (apart from the tab data)
-}
-
 const attachListeners = () => {
-  // remove these listeners on page exit/ compoenent mount
   document.addEventListener("keydown", onKeyDown, true);
-  // remove these listeners on page exit
   document.addEventListener("visibilitychange", onVisibilityChange, false);
   document.addEventListener("click", unmountOnEscape);
 };
@@ -175,9 +147,9 @@ const removeListeners = () => {
 };
 
 const unmountOnEscape = (event: MouseEvent) => {
-  console.log(event);
+  // see if there is a better way to do this
   // this details the path that the document click event bubbled up from
-  const [ firstElementTarget ] = (event as PointerEvent).composedPath();
+  const [firstElementTarget] = (event as PointerEvent).composedPath();
   // if the user clicked on the overlay
   if (firstElementTarget === tabButlerModalRoot) {
     unmountSearchComponent();
@@ -188,9 +160,7 @@ const unmountOnEscape = (event: MouseEvent) => {
 const onKeyDown = (event: KeyboardEvent) => {
   // this is neccessary to stop some sites from preventing some key strokes from being registered
   event.stopPropagation();
-  const eventKey = event.key.toLowerCase();
-  if (eventKey === "escape" && isOpen) {
-    // toggleModal();
+  if (event.key === "Escape" && isOpen) {
     unmountSearchComponent();
   }
 };
@@ -198,32 +168,33 @@ const onKeyDown = (event: KeyboardEvent) => {
 const onVisibilityChange = () => {
   // think about this... do users want it to remain open once they leave a page
   // AS OF RIGHT NOW: if the user switch tabs using the modal (or any action), it should automatically close
-  // if the user simply goes to another tab manually (like they usually would), it should stay open incase they still want to use it
-  if (document.visibilityState === "hidden") {
-    // unmountSearchComponent();
-    isPageActive = false;
-  } else if (
+  // if the user simply goes to another tab manually (like they usually would), it should stay open in case they still want to use it
+  // this is called only when the page was once not visible (like the user whent to another tab) and it has become visible again.
+  if (
     document.visibilityState === "visible" &&
-    !isPageActive &&
     isOpen &&
     currentSearchMode === SearchMode.TAB_SEARCH
   ) {
     // if the document is now visible and was previously inactive and a tab search modal was open
     // get the updated tab data
     // should this be here??
-    isPageActive = true;
+    // isPageActive = true;
     // for some reason this event keeps throwing an Extension context invalidated error... this might
     // the probelem is that a potential previous content script is still trying to send this message
     // and since it has been "cut off" by the extension, it is invalidated
     // functionality still works, but might need a way to handle this
     // can probably make this into a promise like method
-    const messagePayload = {
-      message: Message.GET_TAB_DATA,
-    };
-    browser.runtime
-      .sendMessage(messagePayload)
+    // this is only a problem in devlopment due to the ammount of times we "update"/refresh the extension
+    // in production, this might only happen if the user updates the extension and the old content script is stll there
+    getCurrentTabData()
       .then((updatedTabData: TabData[]) => {
-        updateTabSearchComponent(updatedTabData);
+        searchUiHandler.updateProps({ currentTabs: updatedTabData });
+      })
+      .catch(() => { 
+          // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
+          // show error telling user to reload page
+          searchUiHandler.updateProps({ hasError: true });
+        // }
       });
   }
 };

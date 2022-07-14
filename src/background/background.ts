@@ -20,7 +20,7 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
     // inject extension
     // open the welcome page
     // opening the welcome page first buys the extension time to inject into the avalible pages
-    const welcomeUrl = browser.runtime.getURL("welcome/welcome.html")
+    const welcomeUrl = browser.runtime.getURL("welcome/welcome.html");
     await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
     await injectExtension();
   }
@@ -72,6 +72,7 @@ browser.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {
     // should I be relying on the sender.tab?
+    // should be present if the sender is a content script (would equate to the current tab)
     // https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
     switch (messagePayload.message) {
       case Message.GET_TAB_DATA:
@@ -81,7 +82,6 @@ browser.runtime.onMessage.addListener(
         const { tabId } = messagePayload as ChangeTabMessagePayload;
         browser.tabs.update(tabId, {
           active: true,
-          highlighted: true, // this might not be needed
         });
         break;
       }

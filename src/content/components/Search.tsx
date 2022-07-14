@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
@@ -24,6 +24,7 @@ import { ModalBody } from "./ModalBody";
 interface BaseProps {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
+  hasError: boolean;
   close: () => void; // function to completly unmount the modal
 }
 interface TabSearchProps extends BaseProps {
@@ -34,7 +35,7 @@ interface TabActionsProps extends BaseProps {
   actions: Action[];
 }
 
-type Props = TabActionsProps | TabSearchProps;
+export type Props = TabActionsProps | TabSearchProps;
 
 // tidy up this component
 export const Search = (props: Props) => {
@@ -54,29 +55,34 @@ export const Search = (props: Props) => {
     }),
   );
 
+  const isTabActionsMode = () => props.searchMode === SearchMode.TAB_ACTIONS;
+  // const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
+
   useEffect(() => {
     // in the case of the search type changing, reset the input value and the selected index
-    // this also called on mount....
-    console.log("serchmode")
-    // reset values only if they are not the defaults
     if (value) {
       setValue("");
     }
-
     if (selectedIndex !== 0) {
       setSelectedIndex(0);
     }
   }, [props.searchMode]);
 
-  let data: Action[] | TabData[];
-  if (props.searchMode === SearchMode.TAB_ACTIONS) {
-    data = (props as TabActionsProps).actions;
-  } else {
-    data = (props as TabSearchProps).currentTabs;
-  }
+  // let data: Action[] | TabData[];
+  // only change when search mode changes
+  const data = useMemo(() => {
+    if (isTabActionsMode()) {
+      return (props as TabActionsProps).actions;
+    } else {
+      return (props as TabSearchProps).currentTabs;
+    }
+  }, [props.searchMode, (props as TabSearchProps).currentTabs]);
 
-  const isTabActionsMode = () => props.searchMode === SearchMode.TAB_ACTIONS;
-  // const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
+  // if (props.searchMode === SearchMode.TAB_ACTIONS) {
+  //   data = (props as TabActionsProps).actions;
+  // } else {
+  //   data = (props as TabSearchProps).currentTabs;
+  // }
 
   const filterTabs = (currentTabs: TabData[]) => {
     return currentTabs.filter(
@@ -91,6 +97,17 @@ export const Search = (props: Props) => {
     return actions.filter((action) =>
       action.name.toLowerCase().includes(value.toLowerCase()),
     );
+  };
+
+  const filterData = () => {
+    if (value) {
+      if (isTabActionsMode()) {
+        return filterActions(data as Action[]);
+      }
+      return filterTabs(data as TabData[]);
+    } else {
+      return data; // if there is no search query just return the data
+    }
   };
 
   const onTabItemClick = (tabData: TabData) => {
@@ -156,19 +173,22 @@ export const Search = (props: Props) => {
     };
   });
 
-  let filteredData: Action[] | TabData[];
-
-  if (isTabActionsMode()) {
-    // https://beta.reactjs.org/learn/you-might-not-need-an-effect#caching-expensive-calculations
-    filteredData = value ? filterActions(data as Action[]) : data;
-  } else {
-    filteredData = value ? filterTabs(data as TabData[]) : data;
-  }
+  const filteredData = useMemo(() => filterData(), [value, data]);
 
   const showList = () => {
+    if (filteredData.length === 0) {
+      return (
+        <Empty>
+          <Heading>
+            {isTabActionsMode() ? "No actions to show" : "No tabs to show"}
+          </Heading>
+        </Empty>
+      );
+    }
+
     const listItems = new Array<JSX.Element>(filteredData.length);
     const listItemsNum = listItems.length;
-
+    // do the list item compoenents need memoization?
     // look into using sections for things like bookmarks, history items, etc.
     if (isTabActionsMode()) {
       // change selected on mouse over
@@ -202,6 +222,20 @@ export const Search = (props: Props) => {
     return listItems;
   };
 
+  const showError = () => (
+
+          <Empty>
+            <div>
+              <Heading>
+                {`Unable to load your ${
+                  isTabActionsMode() ? "actions" : "tabs"
+                }.`}
+              </Heading>
+              <Heading>Try reloading the current tab or restarting your browser.</Heading>
+            </div>
+          </Empty>
+  )
+
   return (
     <CacheProvider value={customCache.current}>
       {/*  add all colors to variables       */}
@@ -211,45 +245,40 @@ export const Search = (props: Props) => {
             box-sizing: border-box !important;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
-              letter-spacing: normal !important;
-              /* remove firefox scroll bar */
-              /* use system font (San Fransisco or Segoe UI) */
+            letter-spacing: normal !important;
+            /* remove firefox scroll bar */
+            /* use system font (San Fransisco or Segoe UI) */
           }
         `}
       />
-      {/* allowing outside click to only deactivate it  */}
-      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
-        {/* with focus trap on, you cant click on the overlay to close it           */}
-        <ModalBody>
-        <Container>
-          <Input
-            placeholder={
-              isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
-            }
-            value={value}
-            autoFocus
-            onChange={(e) => {
-              // reset selected to first element in search result
-              setSelectedIndex(0);
-              setValue(e.target.value);
-            }}
-          />
-          {filteredData.length === 0 ? (
-            <Empty>
-              <Heading>
-                {isTabActionsMode() ? "No actions to show" : "No tabs to show"}
-              </Heading>
-            </Empty>
-          ) : (
-            <DataList>{showList()}</DataList>
-          )}
-          <BottomBar
-            isTabActionsMode={isTabActionsMode()}
-            resultNum={filteredData.length}
-          />
-        </Container>
-        </ModalBody>
-      </FocusTrap>
+      <ModalBody>
+        {props.hasError ? (
+          showError()
+        ) : (
+          /* allowing outside click to allow modal close */
+          <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
+            <Container>
+              <Input
+                placeholder={
+                  isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
+                }
+                value={value}
+                autoFocus
+                onChange={(e) => {
+                  // reset selected to first element in search result
+                  setSelectedIndex(0);
+                  setValue(e.target.value);
+                }}
+              />
+              <DataList>{showList()}</DataList>
+              <BottomBar
+                isTabActionsMode={isTabActionsMode()}
+                resultNum={filteredData.length}
+              />
+            </Container>
+          </FocusTrap>
+        )}
+      </ModalBody>
     </CacheProvider>
   );
 };

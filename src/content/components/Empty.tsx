@@ -7,4 +7,10 @@ export const Empty = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+
+  div {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 `;
