@@ -1,4 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
@@ -20,7 +25,7 @@ import BottomBar from "./BottomBar";
 import FocusTrap from "focus-trap-react";
 import browser from "webextension-polyfill";
 import { ModalBody } from "./ModalBody";
-import { FixedSizeList } from "react-window";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
 interface BaseProps {
   shadowRoot: ShadowRoot;
@@ -43,7 +48,7 @@ export const Search = (props: Props) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const dataListElementRef = useRef<HTMLDivElement | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const ref = useRef<VirtuosoHandle>(null);
   // VERY IMPORTANT
   // this has to be in a ref so it is not recreated every rerender (when the state changes)
   // causing the cache provider to think the value has changed
@@ -71,19 +76,20 @@ export const Search = (props: Props) => {
     }
   }, [props.searchMode]);
 
-  useEffect(() => {
-    // useEffect to wait for ref to be avalible
-    // make sure the needed values are avalible
-    // console.log(dataListElementRef.current?.getBoundingClientRect().height)
-    if (
-      dataListElementRef.current?.clientHeight &&
-      dataListElementRef.current?.clientWidth
-    ) {
-      setIsLoading(false); // shou
-    } else {
-      // should it error out?
-    }
-  }, []);
+  // useEffect(() => {
+  //   // useEffect to wait for ref to be avalible
+  //   // make sure the needed values are avalible
+  //   // console.log(dataListElementRef.current?.getBoundingClientRect().height)
+  //   if (
+  //     dataListElementRef.current?.clientHeight &&
+  //     dataListElementRef.current?.clientWidth
+  //   ) {
+  //     setIsLoading(false); // shou
+  //   } else {
+  //     // should it error out?
+  //     // technically not possible... right?
+  //   }
+  // }, []);
 
   // only change data when search mode changes
   const data = useMemo(() => {
@@ -155,15 +161,33 @@ export const Search = (props: Props) => {
   const onKeyDown = (event: KeyboardEvent) => {
     // cant use circular navigation because of virtualization
     // plus it might confuse users
+      let nextIndex = 0;
     if (event.key === "ArrowUp") {
       event.preventDefault();
       if (selectedIndex !== 0) {
-        setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
+        nextIndex = selectedIndex - 1;
+        // ref.current.sc
+        ref?.current?.scrollIntoView({
+          index: nextIndex,
+          behavior: 'auto',
+          done: () => {
+            setSelectedIndex(nextIndex)
+          },
+        })
+        // setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
       }
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       if (selectedIndex !== filteredData.length - 1) {
-        setSelectedIndex((selectectedIndex) => selectectedIndex + 1);
+        nextIndex = selectedIndex + 1;
+        ref?.current?.scrollIntoView({
+          index: nextIndex,
+          behavior: 'smooth',
+          done: () => {
+            setSelectedIndex(nextIndex)
+          },
+        })
+        // setSelectedIndex((selectectedIndex) => selectectedIndex + 1);
       }
     } else if (event.key === "Enter") {
       event.preventDefault();
@@ -173,7 +197,6 @@ export const Search = (props: Props) => {
 
   useEffect(() => {
     document.addEventListener("keydown", onKeyDown, true);
-
     return () => {
       document.removeEventListener("keydown", onKeyDown, true);
     };
@@ -183,13 +206,6 @@ export const Search = (props: Props) => {
   const filteredData = useMemo(() => filterData(), [value, data]);
 
   const showList = () => {
-    if (isLoading) {
-      return (
-        <Empty>
-          <Heading>Loading...</Heading>
-        </Empty>
-      );
-    }
     if (filteredData.length === 0) {
       return (
         <Empty>
@@ -199,21 +215,16 @@ export const Search = (props: Props) => {
         </Empty>
       );
     }
-    // at this point we know that the height and width are avalible
-    // we are using tis ref as 
-    const { clientHeight: height, clientWidth: width } =
-      dataListElementRef.current!;
     return (
-      <FixedSizeList
-        height={height}
-        width={width}
-        itemCount={filteredData.length}
-        itemSize={50}
-        itemData={filteredData}
+      <Virtuoso
+        ref={ref}
+        style={{ height: "100%", width: "100%" }}
+        fixedItemHeight={50}
+        // data={filteredData as any[]} // only way to make this work
+        totalCount={filteredData.length}
         className="tab-butler-virtual-list"
-      >
-        {({ index, style, data }) => {
-          const item = data[index];
+        itemContent={(index) => {
+          const item = filteredData[index];
           return isTabActionsMode() ? (
             <ActionListItem
               onClick={onActionItemClick}
@@ -221,20 +232,18 @@ export const Search = (props: Props) => {
               key={index}
               onHover={() => setSelectedIndex(index)}
               selected={selectedIndex === index}
-              style={style}
             />
           ) : (
             <TabListItem
               onClick={onTabItemClick}
               data={item as TabData}
-              key={index}
+              key={(item as TabData).tabId}
               onHover={() => setSelectedIndex(index)}
               selected={selectedIndex === index}
-              style={style}
             />
           );
         }}
-      </FixedSizeList>
+      />
     );
   };
 
@@ -253,15 +262,15 @@ export const Search = (props: Props) => {
 
   return (
     <CacheProvider value={customCache.current}>
-      {/*  add all colors to variables       */}
+      {/*  add all colors as variables       */}
       <Global
         styles={css`
           * {
             box-sizing: border-box !important;
+            /* use system font (San Fransisco or Segoe UI) */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
             letter-spacing: normal !important;
-            /* use system font (San Fransisco or Segoe UI) */
             /* disable scrollbar for virtualized list */
             .tab-butler-virtual-list::-webkit-scrollbar {
               display: none;
