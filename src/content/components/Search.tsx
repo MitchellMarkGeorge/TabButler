@@ -21,22 +21,14 @@ import FocusTrap from "focus-trap-react";
 import browser from "webextension-polyfill";
 import { ModalBody } from "./ModalBody";
 import { FixedSizeList } from "react-window";
+import { getCurrentTabData } from "../utils";
+import { getActions } from "../actions";
 
-interface BaseProps {
+export interface Props {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
-  hasError: boolean;
   close: () => void; // function to completly unmount the modal
 }
-interface TabSearchProps extends BaseProps {
-  currentTabs: TabData[];
-}
-
-interface TabActionsProps extends BaseProps {
-  actions: Action[];
-}
-
-export type Props = TabActionsProps | TabSearchProps;
 
 // tidy up this component
 export const Search = (props: Props) => {
@@ -44,6 +36,10 @@ export const Search = (props: Props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const dataListElementRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<Action[] | TabData[]>([]);
+  const [hasError, setHasError] = useState(false);
+  // const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>();
+  console.log("isLoading", isLoading);
   // VERY IMPORTANT
   // this has to be in a ref so it is not recreated every rerender (when the state changes)
   // causing the cache provider to think the value has changed
@@ -59,17 +55,18 @@ export const Search = (props: Props) => {
   );
 
   const isTabActionsMode = () => props.searchMode === SearchMode.TAB_ACTIONS;
-  // const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
+  const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
 
-  useEffect(() => {
-    // in the case of the search type changing, reset the input value and the selected index
-    if (value) {
-      setValue("");
-    }
-    if (selectedIndex !== 0) {
-      setSelectedIndex(0);
-    }
-  }, [props.searchMode]);
+  // useEffect(() => {
+  //   // in the case of the search type changing, reset the input value and the selected index
+  //   if (value) {
+  //     setValue("");
+  //   }
+  //   if (selectedIndex !== 0) {
+  //     setSelectedIndex(0);
+  //   }
+  //   // setCurrentSearchMode(props.searchMode);
+  // }, [props.searchMode]);
 
   useEffect(() => {
     // useEffect to wait for ref to be avalible
@@ -81,18 +78,36 @@ export const Search = (props: Props) => {
     ) {
       setIsLoading(false); // shou
     } else {
+      // setIsLoading(false);
+      setHasError(true);
       // should it error out?
     }
   }, []);
 
   // only change data when search mode changes
-  const data = useMemo(() => {
-    if (isTabActionsMode()) {
-      return (props as TabActionsProps).actions;
-    } else {
-      return (props as TabSearchProps).currentTabs;
+  useMemo(() => {
+    console.log("fetching data");
+    if (!isLoading) {
+      setIsLoading(true);
     }
-  }, [props.searchMode, (props as TabSearchProps).currentTabs]);
+    if (isTabActionsMode()) {
+      console.log("here");
+      setTimeout(() => {
+        setData(getActions());
+        setIsLoading(false);
+      }, 100);
+    } else {
+      getCurrentTabData()
+        .then((results) => {
+          setData(results);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+          setHasError(true);
+        });
+    }
+  }, [props.searchMode]);
 
   const filterTabs = (currentTabs: TabData[]) => {
     return currentTabs.filter(
@@ -171,10 +186,63 @@ export const Search = (props: Props) => {
     }
   };
 
+  const onVisibilityChange = () => {
+    // think about this... do users want it to remain open once they leave a page
+    // AS OF RIGHT NOW: if the user switch tabs using the modal (or any action), it should automatically close
+    // if the user simply goes to another tab manually (like they usually would), it should stay open in case they still want to use it
+    // this is called only when the page was once not visible (like the user whent to another tab) and it has become visible again.
+    if (document.visibilityState === "visible" && isTabSearchMode()) {
+      // if the document is now visible and was previously inactive and a tab search modal was open
+      // get the updated tab data
+      // should this be here??
+      // isPageActive = true;
+      // for some reason this event keeps throwing an Extension context invalidated error... this might
+      // the probelem is that a potential previous content script is still trying to send this message
+      // and since it has been "cut off" by the extension, it is invalidated
+      // functionality still works, but might need a way to handle this
+      // can probably make this into a promise like method
+      // this is only a problem in devlopment due to the ammount of times we "update"/refresh the extension
+      // in production, this might only happen if the user updates the extension and the old content script is stll there
+      if (!isLoading) {
+        setIsLoading(true);
+      }
+
+      getCurrentTabData()
+        .then((updatedTabData) => {
+          setData(updatedTabData);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+          setHasError(true);
+          // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
+          // show error telling user to reload page
+          // }
+        });
+    }
+  };
+
+  const unmountOnEscape = (event: KeyboardEvent) => {
+    // this is neccessary to stop some sites from preventing some key strokes from being registered
+    event.stopPropagation();
+    if (event.key === "Escape") {
+      props.close();
+    }
+  };
+
   useEffect(() => {
+    // should i add a message listener here?
+    document.addEventListener("keydown", unmountOnEscape, true);
+    document.addEventListener("visibilitychange", onVisibilityChange, false);
     document.addEventListener("keydown", onKeyDown, true);
 
     return () => {
+      document.removeEventListener("keydown", unmountOnEscape, true);
+      document.removeEventListener(
+        "visibilitychange",
+        onVisibilityChange,
+        false,
+      );
       document.removeEventListener("keydown", onKeyDown, true);
     };
   });
@@ -200,7 +268,8 @@ export const Search = (props: Props) => {
       );
     }
     // at this point we know that the height and width are avalible
-    // we are using tis ref as 
+    // we are using tis ref as
+    console.log(data);
     const { clientHeight: height, clientWidth: width } =
       dataListElementRef.current!;
     return (
@@ -270,7 +339,7 @@ export const Search = (props: Props) => {
         `}
       />
       <ModalBody>
-        {props.hasError ? (
+        {hasError ? (
           showError()
         ) : (
           /* allowing outside click to allow modal close */
