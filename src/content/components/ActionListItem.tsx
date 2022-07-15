@@ -8,6 +8,7 @@ export const ActionListItem = ({
   onClick,
   onHover,
   selected,
+  style,
 }: ListItemProps<Action>) => {
   const ref = useScroll(selected);
   // is it fine to be used like this???
@@ -15,6 +16,7 @@ export const ActionListItem = ({
   const Icon = data.icon;
   return (
     <ListItem
+      style={style}
       onClick={() => onClick(data)}
       selected={selected}
       ref={ref}

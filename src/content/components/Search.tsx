@@ -20,6 +20,7 @@ import BottomBar from "./BottomBar";
 import FocusTrap from "focus-trap-react";
 import browser from "webextension-polyfill";
 import { ModalBody } from "./ModalBody";
+import { FixedSizeList } from "react-window";
 
 interface BaseProps {
   shadowRoot: ShadowRoot;
@@ -41,6 +42,8 @@ export type Props = TabActionsProps | TabSearchProps;
 export const Search = (props: Props) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const dataListElementRef = useRef<HTMLDivElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   // VERY IMPORTANT
   // this has to be in a ref so it is not recreated every rerender (when the state changes)
   // causing the cache provider to think the value has changed
@@ -68,8 +71,21 @@ export const Search = (props: Props) => {
     }
   }, [props.searchMode]);
 
-  // let data: Action[] | TabData[];
-  // only change when search mode changes
+  useEffect(() => {
+    // useEffect to wait for ref to be avalible
+    // make sure the needed values are avalible
+    // console.log(dataListElementRef.current?.getBoundingClientRect().height)
+    if (
+      dataListElementRef.current?.clientHeight &&
+      dataListElementRef.current?.clientWidth
+    ) {
+      setIsLoading(false); // shou
+    } else {
+      // should it error out?
+    }
+  }, []);
+
+  // only change data when search mode changes
   const data = useMemo(() => {
     if (isTabActionsMode()) {
       return (props as TabActionsProps).actions;
@@ -77,12 +93,6 @@ export const Search = (props: Props) => {
       return (props as TabSearchProps).currentTabs;
     }
   }, [props.searchMode, (props as TabSearchProps).currentTabs]);
-
-  // if (props.searchMode === SearchMode.TAB_ACTIONS) {
-  //   data = (props as TabActionsProps).actions;
-  // } else {
-  //   data = (props as TabSearchProps).currentTabs;
-  // }
 
   const filterTabs = (currentTabs: TabData[]) => {
     return currentTabs.filter(
@@ -124,7 +134,6 @@ export const Search = (props: Props) => {
     const messagePayload: MessagePlayload = {
       message: action.message,
     };
-    console.log(messagePayload);
     browser.runtime.sendMessage(messagePayload);
     // shoud this be in the then clause?
     props.close();
@@ -144,19 +153,17 @@ export const Search = (props: Props) => {
 
   // need to make sure this works as intended
   const onKeyDown = (event: KeyboardEvent) => {
+    // cant use circular navigation because of virtualization
+    // plus it might confuse users
     if (event.key === "ArrowUp") {
       event.preventDefault();
       if (selectedIndex !== 0) {
         setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
-      } else {
-        setSelectedIndex(filteredData.length - 1); // scroll to the buttom
       }
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       if (selectedIndex !== filteredData.length - 1) {
         setSelectedIndex((selectectedIndex) => selectectedIndex + 1);
-      } else {
-        setSelectedIndex(0); // scroll up to the start
       }
     } else if (event.key === "Enter") {
       event.preventDefault();
@@ -165,7 +172,6 @@ export const Search = (props: Props) => {
   };
 
   useEffect(() => {
-    // can also use window
     document.addEventListener("keydown", onKeyDown, true);
 
     return () => {
@@ -173,9 +179,17 @@ export const Search = (props: Props) => {
     };
   });
 
+  // only filter the data when either the data or value changes
   const filteredData = useMemo(() => filterData(), [value, data]);
 
   const showList = () => {
+    if (isLoading) {
+      return (
+        <Empty>
+          <Heading>Loading...</Heading>
+        </Empty>
+      );
+    }
     if (filteredData.length === 0) {
       return (
         <Empty>
@@ -185,56 +199,57 @@ export const Search = (props: Props) => {
         </Empty>
       );
     }
-
-    const listItems = new Array<JSX.Element>(filteredData.length);
-    const listItemsNum = listItems.length;
-    // do the list item compoenents need memoization?
-    // look into using sections for things like bookmarks, history items, etc.
-    if (isTabActionsMode()) {
-      // change selected on mouse over
-      const actions = filteredData as Action[];
-      for (let i = 0; i < listItemsNum; i++) {
-        listItems[i] = (
-          <ActionListItem
-            onClick={onActionItemClick}
-            data={actions[i]}
-            key={i}
-            onHover={() => setSelectedIndex(i)}
-            selected={selectedIndex === i}
-          />
-        );
-      }
-    } else {
-      const tabData = filteredData as TabData[];
-      for (let i = 0; i < listItemsNum; i++) {
-        listItems[i] = (
-          <TabListItem
-            onClick={onTabItemClick}
-            data={tabData[i]}
-            key={tabData[i].tabId}
-            onHover={() => setSelectedIndex(i)}
-            selected={selectedIndex === i}
-          />
-        );
-      }
-    }
-
-    return listItems;
+    // at this point we know that the height and width are avalible
+    // we are using tis ref as 
+    const { clientHeight: height, clientWidth: width } =
+      dataListElementRef.current!;
+    return (
+      <FixedSizeList
+        height={height}
+        width={width}
+        itemCount={filteredData.length}
+        itemSize={50}
+        itemData={filteredData}
+        className="tab-butler-virtual-list"
+      >
+        {({ index, style, data }) => {
+          const item = data[index];
+          return isTabActionsMode() ? (
+            <ActionListItem
+              onClick={onActionItemClick}
+              data={item as Action}
+              key={index}
+              onHover={() => setSelectedIndex(index)}
+              selected={selectedIndex === index}
+              style={style}
+            />
+          ) : (
+            <TabListItem
+              onClick={onTabItemClick}
+              data={item as TabData}
+              key={index}
+              onHover={() => setSelectedIndex(index)}
+              selected={selectedIndex === index}
+              style={style}
+            />
+          );
+        }}
+      </FixedSizeList>
+    );
   };
 
   const showError = () => (
-
-          <Empty>
-            <div>
-              <Heading>
-                {`Unable to load your ${
-                  isTabActionsMode() ? "actions" : "tabs"
-                }.`}
-              </Heading>
-              <Heading>Try reloading the current tab or restarting your browser.</Heading>
-            </div>
-          </Empty>
-  )
+    <Empty>
+      <div>
+        <Heading>
+          {`Unable to load your ${isTabActionsMode() ? "actions" : "tabs"}.`}
+        </Heading>
+        <Heading>
+          Try reloading the current tab or restarting your browser.
+        </Heading>
+      </div>
+    </Empty>
+  );
 
   return (
     <CacheProvider value={customCache.current}>
@@ -246,8 +261,11 @@ export const Search = (props: Props) => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
             letter-spacing: normal !important;
-            /* remove firefox scroll bar */
             /* use system font (San Fransisco or Segoe UI) */
+            /* disable scrollbar for virtualized list */
+            .tab-butler-virtual-list::-webkit-scrollbar {
+              display: none;
+            }
           }
         `}
       />
@@ -270,7 +288,7 @@ export const Search = (props: Props) => {
                   setValue(e.target.value);
                 }}
               />
-              <DataList>{showList()}</DataList>
+              <DataList ref={dataListElementRef}>{showList()}</DataList>
               <BottomBar
                 isTabActionsMode={isTabActionsMode()}
                 resultNum={filteredData.length}
