@@ -122,6 +122,11 @@ browser.runtime.onMessage.addListener(
           browser.tabs.update(sender.tab.id, { muted: !currentMutedStatus });
         }
         break;
+      case Message.DUPLICATE_TAB:
+        if (sender.tab?.id) {
+          browser.tabs.duplicate(sender.tab.id);
+        }
+        break;
       case Message.OPEN_DOWNLOADS:
       case Message.OPEN_EXTENSION:
       case Message.OPEN_SETTINGS:
