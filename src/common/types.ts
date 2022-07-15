@@ -32,6 +32,7 @@ export const enum Message {
 
   TOGGLE_PIN_TAB = "toggle-pin-tab",
   TOGGLE_MUTE_TAB = "toggle-mute-tab",
+  DUPLICATE_TAB = "duplicate-tab",
 
   CHECK_SEARCH_OPEN = "check-search-open",
 

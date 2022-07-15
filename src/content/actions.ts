@@ -18,6 +18,7 @@ import { BiHistory } from "@react-icons/all-files/bi/BiHistory";
 import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
 import { BiPin } from "@react-icons/all-files/bi/BiPin";
 import { BiStar } from "@react-icons/all-files/bi/BiStar";
+import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
 
 export function getActions(): Action[] {
   return [
@@ -80,6 +81,11 @@ export function getActions(): Action[] {
       name: "Toggle Pin Tab",
       message: Message.TOGGLE_PIN_TAB,
       icon: BiPin,
+    },
+    {
+      name: "Duplicate Tab",
+      message: Message.DUPLICATE_TAB,
+      icon: BiDuplicate,
     },
 
     {
