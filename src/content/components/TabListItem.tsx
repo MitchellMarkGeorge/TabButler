@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { TabData } from "../../common/types";
 import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
 import { ListItem, ListItemProps } from "./ListItem";
-import { useIsDarkMode, useScroll } from "./hooks";
+import { useIsDarkMode } from "./hooks";
 
 export const TabListItem = ({
   data,
   onClick,
   onHover,
   selected,
-  style,
+  // style,
 }: ListItemProps<TabData>) => {
-  const ref = useScroll(selected);
+  // const ref = useScroll(selected);
   const [hasImageError, setHasImageError] = useState(false);
   // is it fine to be used like this???
   const isDarkMode = useIsDarkMode();
@@ -27,10 +27,10 @@ export const TabListItem = ({
   );
   return (
     <ListItem
-      style={style}
+      // style={style}
       onClick={() => onClick(data)}
       selected={selected}
-      ref={ref}
+      // ref={ref}
       onMouseOver={onHover}
     >
       {/* handle potential image error when trying to load favicon  */}
