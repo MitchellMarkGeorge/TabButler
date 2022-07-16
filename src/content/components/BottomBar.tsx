@@ -1,9 +1,13 @@
 import styled from "@emotion/styled";
 import React from "react";
+import { SearchMode } from "../../common/types";
 import { Kbd } from "./Kbd";
 
 const BottomBarContainer = styled.div`
+  /* it seems it increasd height? */
   height: 20px;
+  /* min-height: 20px; */
+  /* max-height: 20px; */
   width: 100%;
   /* flex: none; */
   /* padding: 8px; */
@@ -17,16 +21,21 @@ const BottomBarContainer = styled.div`
   /* column-gap: 8px; */
   color: rgba(255, 255, 255, 0.36);
 
-  .help_items {
+  .help_items,
+  .bottom_info {
     display: flex;
     align-items: center;
     flex-direction: row;
     column-gap: 8px;
   }
 
-  .result_num {
+  .bottom_info {
     font-size: 12px;
     font-weight: 450;
+  }
+
+  .bottom_info input {
+    margin: 0;
   }
 
   @media (prefers-color-scheme: light) {
@@ -35,13 +44,32 @@ const BottomBarContainer = styled.div`
 `;
 
 interface Props {
-  isTabActionsMode: boolean;
+  currentSeachMode: SearchMode;
   resultNum: number;
+  showOnlyCurrentWindow: boolean;
+  toggleShowOnlyCurrentWindow: () => void;
 }
-export default function BottomBar({ isTabActionsMode, resultNum }: Props) {
+export default function BottomBar({
+  currentSeachMode,
+  resultNum,
+  showOnlyCurrentWindow,
+  toggleShowOnlyCurrentWindow,
+}: Props) {
   return (
     <BottomBarContainer>
-      <div className="result_num">{resultNum} Results</div>
+      <div className="bottom_info">
+        <span>{resultNum} Results</span>
+        {currentSeachMode === SearchMode.TAB_SEARCH && (
+          <>
+            <input
+              type="checkbox"
+              checked={showOnlyCurrentWindow}
+              onChange={toggleShowOnlyCurrentWindow}
+            />
+            <label>In current window</label>
+          </>
+        )}
+      </div>
       <div className="help_items">
         <div>
           <Kbd>&uarr;</Kbd>
@@ -55,7 +83,9 @@ export default function BottomBar({ isTabActionsMode, resultNum }: Props) {
 
         <div>
           <Kbd>Enter</Kbd>
-          {isTabActionsMode ? "Execute action" : "Go to tab"}
+          {currentSeachMode === SearchMode.TAB_ACTIONS
+            ? "Execute action"
+            : "Go to tab"}
         </div>
 
         <div>

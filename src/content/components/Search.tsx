@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
 import { Input } from "./Input";
@@ -48,6 +43,8 @@ export const Search = (props: Props) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const dataListElementRef = useRef<HTMLDivElement | null>(null);
+  const [showOnlyCurrentWindow, setShowOnlyCurrentWindow] = useState(false);
+  // const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>();
   const ref = useRef<VirtuosoHandle>(null);
   // VERY IMPORTANT
   // this has to be in a ref so it is not recreated every rerender (when the state changes)
@@ -74,6 +71,15 @@ export const Search = (props: Props) => {
     if (selectedIndex !== 0) {
       setSelectedIndex(0);
     }
+
+    if (props.searchMode === SearchMode.TAB_ACTIONS && !showOnlyCurrentWindow) {
+      setShowOnlyCurrentWindow(false);
+    }
+
+    // if (showOnlyCurrentWindow) {
+    //   // reset this
+    //   setShowOnlyCurrentWindow(false);
+    // }
   }, [props.searchMode]);
 
   // useEffect(() => {
@@ -91,21 +97,36 @@ export const Search = (props: Props) => {
   //   }
   // }, []);
 
+  const filterByCurrentWindow = (currentTabs: TabData[]) => {
+    if (showOnlyCurrentWindow) {
+      return currentTabs.filter((tabData) => tabData.inCurrentWindow);
+    } else {
+      return currentTabs;
+    }
+  };
+
   // only change data when search mode changes
   const data = useMemo(() => {
     if (isTabActionsMode()) {
       return (props as TabActionsProps).actions;
     } else {
-      return (props as TabSearchProps).currentTabs;
+      const { currentTabs } = props as TabSearchProps;
+      return filterByCurrentWindow(currentTabs);
     }
-  }, [props.searchMode, (props as TabSearchProps).currentTabs]);
+  }, [
+    props.searchMode,
+    (props as TabSearchProps).currentTabs,
+    showOnlyCurrentWindow,
+  ]);
+
+  const tabMatchesValue = (tabData: TabData) =>
+    tabData.tabTitle.toLowerCase().includes(value.toLowerCase()) ||
+    tabData.tabUrl.toLowerCase().includes(value.toLowerCase());
 
   const filterTabs = (currentTabs: TabData[]) => {
     return currentTabs.filter(
-      (tabData) =>
-        // try to filter based on the tab title and the tab url
-        tabData.tabTitle.toLowerCase().includes(value.toLowerCase()) ||
-        tabData.tabUrl.toLowerCase().includes(value.toLowerCase()),
+      (tabData) => tabMatchesValue(tabData),
+      // try to filter based on the tab title and the tab url
     );
   };
 
@@ -130,6 +151,7 @@ export const Search = (props: Props) => {
     const messagePayload: ChangeTabMessagePayload = {
       message: Message.CHANGE_TAB,
       tabId: tabData.tabId,
+      windowId: tabData.windowId,
     };
     browser.runtime.sendMessage(messagePayload);
     // shoud this be in the then clause?
@@ -161,7 +183,7 @@ export const Search = (props: Props) => {
   const onKeyDown = (event: KeyboardEvent) => {
     // cant use circular navigation because of virtualization
     // plus it might confuse users
-      let nextIndex = 0;
+    let nextIndex = 0;
     if (event.key === "ArrowUp") {
       event.preventDefault();
       if (selectedIndex !== 0) {
@@ -169,11 +191,11 @@ export const Search = (props: Props) => {
         // ref.current.sc
         ref?.current?.scrollIntoView({
           index: nextIndex,
-          behavior: 'auto',
+          behavior: "auto",
           done: () => {
-            setSelectedIndex(nextIndex)
+            setSelectedIndex(nextIndex);
           },
-        })
+        });
         // setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
       }
     } else if (event.key === "ArrowDown") {
@@ -182,11 +204,11 @@ export const Search = (props: Props) => {
         nextIndex = selectedIndex + 1;
         ref?.current?.scrollIntoView({
           index: nextIndex,
-          behavior: 'smooth',
+          behavior: "smooth",
           done: () => {
-            setSelectedIndex(nextIndex)
+            setSelectedIndex(nextIndex);
           },
-        })
+        });
         // setSelectedIndex((selectectedIndex) => selectectedIndex + 1);
       }
     } else if (event.key === "Enter") {
@@ -260,6 +282,12 @@ export const Search = (props: Props) => {
     </Empty>
   );
 
+  const toggleShowOnlyCurrentWindow = () => {
+    if (props.searchMode === SearchMode.TAB_SEARCH) {
+      setShowOnlyCurrentWindow(show => !show);
+    }
+  }
+
   return (
     <CacheProvider value={customCache.current}>
       {/*  add all colors as variables       */}
@@ -299,7 +327,9 @@ export const Search = (props: Props) => {
               />
               <DataList ref={dataListElementRef}>{showList()}</DataList>
               <BottomBar
-                isTabActionsMode={isTabActionsMode()}
+                currentSeachMode={props.searchMode}
+                showOnlyCurrentWindow={showOnlyCurrentWindow}
+                toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
                 resultNum={filteredData.length}
               />
             </Container>

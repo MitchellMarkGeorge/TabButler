@@ -8,8 +8,8 @@ import {
 } from "../common/types";
 import {
   getCurrentTab,
-  getTabIdWithSearchOpen,
   getTabsInCurrentWindow,
+  getTabsWithSearchOpen,
   injectExtension,
 } from "./utils";
 import browser from "webextension-polyfill";
@@ -51,20 +51,23 @@ browser.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
   // should I make these async?
   // send updated tab data if a tab is closed
   // does not like async await
+  // if we are doing browser wide search, need to hadle changes in other windows
+  // the idea is just to send all open tab search modals an update
   if (!removedTabInfo.isWindowClosing) {
     // essentially try and see if there is an active tab in that window with the search open and in tab search mode
     // if there is, send the tab the updated tab data
-    getTabIdWithSearchOpen(removedTabInfo.windowId).then((tabId) => {
-      if (tabId) {
+    getTabsWithSearchOpen().then((tabIds) => {
+      // for each active tab with their search open, send an update tto them
+      tabIds.forEach((id) => {
         getTabsInCurrentWindow().then((updatedTabData) => {
           const messagePayload: UpdatedTabDataMessagePayload = {
             message: Message.TAB_DATA_UPDATE,
             updatedTabData,
           };
           console.log("sending message");
-          browser.tabs.sendMessage(tabId, messagePayload);
+          browser.tabs.sendMessage(id, messagePayload);
         });
-      }
+      });
     });
   }
 });
@@ -79,9 +82,11 @@ browser.runtime.onMessage.addListener(
         return Promise.resolve(getTabsInCurrentWindow());
 
       case Message.CHANGE_TAB: {
-        const { tabId } = messagePayload as ChangeTabMessagePayload;
-        browser.tabs.update(tabId, {
-          active: true,
+        const { tabId, windowId } = messagePayload as ChangeTabMessagePayload;
+        browser.windows.update(windowId, { focused: true }).then(() => {
+          browser.tabs.update(tabId, {
+            active: true,
+          });
         });
         break;
       }
