@@ -22,10 +22,8 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
     // inject extension
     // open the welcome page
     // opening the welcome page first buys the extension time to inject into the avalible pages
-    if (reason === "install") {
       const welcomeUrl = "https://tabbutler.netlify.app/welcome"
       await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
-    }
     await injectExtension();
   }
 });
