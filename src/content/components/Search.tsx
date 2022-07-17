@@ -72,7 +72,7 @@ export const Search = (props: Props) => {
       setSelectedIndex(0);
     }
 
-    if (props.searchMode === SearchMode.TAB_ACTIONS && !showOnlyCurrentWindow) {
+    if (props.searchMode === SearchMode.TAB_ACTIONS && showOnlyCurrentWindow) {
       setShowOnlyCurrentWindow(false);
     }
 
@@ -82,20 +82,6 @@ export const Search = (props: Props) => {
     // }
   }, [props.searchMode]);
 
-  // useEffect(() => {
-  //   // useEffect to wait for ref to be avalible
-  //   // make sure the needed values are avalible
-  //   // console.log(dataListElementRef.current?.getBoundingClientRect().height)
-  //   if (
-  //     dataListElementRef.current?.clientHeight &&
-  //     dataListElementRef.current?.clientWidth
-  //   ) {
-  //     setIsLoading(false); // shou
-  //   } else {
-  //     // should it error out?
-  //     // technically not possible... right?
-  //   }
-  // }, []);
 
   const filterByCurrentWindow = (currentTabs: TabData[]) => {
     if (showOnlyCurrentWindow) {
@@ -273,7 +259,7 @@ export const Search = (props: Props) => {
     <Empty>
       <div>
         <Heading>
-          {`Unable to load your ${isTabActionsMode() ? "actions" : "tabs"}.`}
+          {`Unable to show your ${isTabActionsMode() ? "actions" : "tabs"}.`}
         </Heading>
         <Heading>
           Try reloading the current tab or restarting your browser.

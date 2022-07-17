@@ -16,12 +16,16 @@ import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(async ({ reason }) => {
   // should this be async?
+  // should I do this on update?
   if (reason === "install") {
+    // injectig on update might clash with already installed content script.
     // inject extension
     // open the welcome page
     // opening the welcome page first buys the extension time to inject into the avalible pages
-    const welcomeUrl = browser.runtime.getURL("welcome/welcome.html");
-    await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
+    if (reason === "install") {
+      const welcomeUrl = "https://tabbutler.netlify.app/welcome"
+      await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
+    }
     await injectExtension();
   }
 });
@@ -47,16 +51,17 @@ browser.commands.onCommand.addListener((command) => {
 });
 
 // SHOULD ONLY SEND UPDATED TAB DATA IF A TAB IN THE SAME WINDOW AS THE OPEN SEARCH IS CLOSED
-browser.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
+browser.tabs.onRemoved.addListener(() => {
   // should I make these async?
   // send updated tab data if a tab is closed
   // does not like async await
   // if we are doing browser wide search, need to hadle changes in other windows
   // the idea is just to send all open tab search modals an update
-  if (!removedTabInfo.isWindowClosing) {
+  // if (!removedTabInfo.isWindowClosing) { // what happens if an entire window is closing
     // essentially try and see if there is an active tab in that window with the search open and in tab search mode
     // if there is, send the tab the updated tab data
     getTabsWithSearchOpen().then((tabIds) => {
+      console.log(tabIds);
       // for each active tab with their search open, send an update tto them
       tabIds.forEach((id) => {
         getTabsInCurrentWindow().then((updatedTabData) => {
@@ -69,7 +74,7 @@ browser.tabs.onRemoved.addListener((removedTabId, removedTabInfo) => {
         });
       });
     });
-  }
+  // }
 });
 
 browser.runtime.onMessage.addListener(

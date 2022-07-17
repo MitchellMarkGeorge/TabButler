@@ -22,24 +22,73 @@ const BottomBarContainer = styled.div`
   color: rgba(255, 255, 255, 0.36);
 
   .help_items,
-  .bottom_info {
+  .bottom_info,
+  .window_toggle {
     display: flex;
     align-items: center;
     flex-direction: row;
     column-gap: 8px;
   }
 
-  .bottom_info {
+  .bottom_info,
+  .window_toggle {
     font-size: 12px;
     font-weight: 450;
   }
 
-  .bottom_info input {
+  .window_toggle {
+    column-gap: 4px;
+  }
+
+  .window_toggle label {
+    cursor: pointer;
+  }
+
+  .window_toggle input {
+    /* opacity: 0;
+    position: absolute; */
+    /* not sure about this */
+    /* need to find way to style this checkbox */
+    appearance: none;
+    -moz-appearance: none;
+    height: 14px;
+    width: 14px;
+    cursor: pointer;
+    background-color: transparent;
+    /* background-color: rgba(255, 255, 255, 0.36); */
+    display: inline-block;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.36);
     margin: 0;
+  }
+
+  .window_toggle input:focus {
+    outline: none;
+  }
+
+  .window_toggle input:checked {
+    background-color: #3182ce;
+    border: none;
+  }
+  .window_toggle input:checked::after {
+    /* styule for the check mark */
+    content: '\\2713';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f7fafc;
+    height: 100%;
+    width: 100%;
   }
 
   @media (prefers-color-scheme: light) {
     color: rgba(0, 0, 0, 0.48);
+
+    .window_toggle input {
+      background-color: #eee;
+    }
   }
 `;
 
@@ -57,19 +106,22 @@ export default function BottomBar({
 }: Props) {
   return (
     <BottomBarContainer>
+      {/* <span>{resultNum} Results</span> */}
+      {/* what is the best way to do this? should I just cave in and show all the tabs by default? */}
       <div className="bottom_info">
         <span>{resultNum} Results</span>
-        {currentSeachMode === SearchMode.TAB_SEARCH && (
-          <>
-            <input
-              type="checkbox"
-              checked={showOnlyCurrentWindow}
-              onChange={toggleShowOnlyCurrentWindow}
-            />
-            <label>In current window</label>
-          </>
-        )}
       </div>
+      {currentSeachMode === SearchMode.TAB_SEARCH && (
+        <div className="window_toggle">
+          <input
+            type="checkbox"
+            id="currentWindowToggle"
+            checked={showOnlyCurrentWindow}
+            onChange={toggleShowOnlyCurrentWindow}
+          />
+          <label htmlFor="currentWindowToggle">Current window</label>
+        </div>
+      )}
       <div className="help_items">
         <div>
           <Kbd>&uarr;</Kbd>

@@ -17,11 +17,13 @@ export async function getTabsWithSearchOpen(): Promise<number[]> {
   // we only want the active tab as that is the only place it can be in
   // get the tab in the window with search modal open and in tab search mode
   const activeTabs = await browser.tabs.query({ active: true });
+  console.log(activeTabs);
   const activeTabsLength = activeTabs.length;
   const result: number[] = [];
   for (let i = 0; i < activeTabsLength; i++) {
     const activeTab = activeTabs[i];
     if (activeTab?.id && activeTab.url && !isChromeURL(activeTab.url)) {
+      // if the page has an old content script, then it will throw an error
       const respose: CheackSearchOpenResponse = await browser.tabs.sendMessage(
         activeTab.id,
         {
