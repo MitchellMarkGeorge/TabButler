@@ -74,7 +74,7 @@ const BottomBarContainer = styled.div`
   }
   .window_toggle input:checked::after {
     /* styule for the check mark */
-    content: '\\2713';
+    content: "\\2713";
     display: flex;
     align-items: center;
     justify-content: center;
@@ -115,11 +115,11 @@ export default function BottomBar({
         <div className="window_toggle">
           <input
             type="checkbox"
-            id="currentWindowToggle"
+            id="current_window_toggle"
             checked={showOnlyCurrentWindow}
             onChange={toggleShowOnlyCurrentWindow}
           />
-          <label htmlFor="currentWindowToggle">Current window</label>
+          <label htmlFor="current_window_toggle">Only Current window</label>
         </div>
       )}
       <div className="help_items">
