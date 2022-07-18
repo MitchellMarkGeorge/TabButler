@@ -18,12 +18,14 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
   // should this be async?
   // should I do this on update?
   if (reason === "install") {
+    // uninstall survey
+    browser.runtime.setUninstallURL("https://forms.gle/Eqi9Hgs86hSVrvT57");
     // injectig on update might clash with already installed content script.
     // inject extension
     // open the welcome page
     // opening the welcome page first buys the extension time to inject into the avalible pages
-      const welcomeUrl = "https://tabbutler.netlify.app/welcome"
-      await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
+    const welcomeUrl = "https://tabbutler.netlify.app/welcome";
+    await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
     await injectExtension();
   }
 });
@@ -56,22 +58,22 @@ browser.tabs.onRemoved.addListener(() => {
   // if we are doing browser wide search, need to hadle changes in other windows
   // the idea is just to send all open tab search modals an update
   // if (!removedTabInfo.isWindowClosing) { // what happens if an entire window is closing
-    // essentially try and see if there is an active tab in that window with the search open and in tab search mode
-    // if there is, send the tab the updated tab data
-    getTabsWithSearchOpen().then((tabIds) => {
-      console.log(tabIds);
-      // for each active tab with their search open, send an update tto them
-      tabIds.forEach((id) => {
-        getTabsInCurrentWindow().then((updatedTabData) => {
-          const messagePayload: UpdatedTabDataMessagePayload = {
-            message: Message.TAB_DATA_UPDATE,
-            updatedTabData,
-          };
-          console.log("sending message");
-          browser.tabs.sendMessage(id, messagePayload);
-        });
+  // essentially try and see if there is an active tab in that window with the search open and in tab search mode
+  // if there is, send the tab the updated tab data
+  getTabsWithSearchOpen().then((tabIds) => {
+    console.log(tabIds);
+    // for each active tab with their search open, send an update tto them
+    tabIds.forEach((id) => {
+      getTabsInCurrentWindow().then((updatedTabData) => {
+        const messagePayload: UpdatedTabDataMessagePayload = {
+          message: Message.TAB_DATA_UPDATE,
+          updatedTabData,
+        };
+        console.log("sending message");
+        browser.tabs.sendMessage(id, messagePayload);
       });
     });
+  });
   // }
 });
 
