@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { TabData } from "../../common/types";
+import { TabData } from "../../../common/types";
 import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
 import { ListItem, ListItemProps } from "./ListItem";
-import { useIsDarkMode } from "./hooks";
+import { useIsDarkMode } from "../hooks";
 
 export const TabListItem = ({
   data,
