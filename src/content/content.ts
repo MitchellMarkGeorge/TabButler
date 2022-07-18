@@ -5,7 +5,7 @@ import {
   MessagePlayload,
   SearchMode,
   TabData,
-  UpdatedTabDataMessagePayload
+  UpdatedTabDataMessagePayload,
 } from "../common/types";
 import { getActions } from "./actions";
 import "./content.css";
@@ -20,7 +20,6 @@ let currentSearchMode: SearchMode;
 const searchUiHandler = new SearchUIHandler();
 // make this file into a class that will be easier to manage?
 const messageListener = (messagePayload: MessagePlayload) => {
-
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
   switch (message) {
@@ -46,11 +45,12 @@ const messageListener = (messagePayload: MessagePlayload) => {
     case Message.CHECK_SEARCH_OPEN:
       return Promise.resolve({ isOpen, currentSearchMode });
   }
-}
+};
 browser.runtime.onMessage.addListener(messageListener);
 
 function mountSearchComponent(message: Message) {
-  // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
+  // this definately needs to be refactored
+  // most of this stuff should reside in the Search component itself
   if (message === Message.TOGGLE_TAB_ACTIONS) {
     // render it normally with actions as the received data
     // should we moint the compoenent first before we make it visible
@@ -67,21 +67,35 @@ function mountSearchComponent(message: Message) {
     isOpen = true;
   } else {
     // default to search
-    getCurrentTabData().then((response) => {
-      // going to leave this in here as we need to wait for the responce before making the modal root visible
-      // all the needed data should be present before anything is mounted
-      attachListeners();
-      searchUiHandler.mount(shadow, {
-        shadowRoot: shadow,
-        searchMode: SearchMode.TAB_SEARCH,
-        currentTabs: response,
-        close: unmountSearchComponent,
-        hasError: false,
+    getCurrentTabData()
+      .then((response) => {
+        // going to leave this in here as we need to wait for the responce before making the modal root visible
+        // all the needed data should be present before anything is mounted
+        attachListeners();
+        searchUiHandler.mount(shadow, {
+          shadowRoot: shadow,
+          searchMode: SearchMode.TAB_SEARCH,
+          currentTabs: response,
+          close: unmountSearchComponent,
+          hasError: false,
+        });
+        tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
+        currentSearchMode = SearchMode.TAB_SEARCH;
+        isOpen = true;
+      })
+      .catch(() => {
+        attachListeners();
+        searchUiHandler.mount(shadow, {
+          shadowRoot: shadow,
+          searchMode: SearchMode.TAB_SEARCH,
+          currentTabs: [],
+          close: unmountSearchComponent,
+          hasError: true,
+        });
+        tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
+        currentSearchMode = SearchMode.TAB_SEARCH;
+        isOpen = true;
       });
-      tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
-      currentSearchMode = SearchMode.TAB_SEARCH;
-      isOpen = true;
-    });
   }
 }
 
@@ -135,18 +149,18 @@ function unmountSearchComponent() {
 }
 
 const attachListeners = () => {
-  document.addEventListener("keydown", onKeyDown, true);
+  document.addEventListener("keydown", unmountOnEscape, true);
   document.addEventListener("visibilitychange", onVisibilityChange, false);
-  document.addEventListener("click", unmountOnEscape);
+  document.addEventListener("click", unmountOnClick);
 };
 
 const removeListeners = () => {
-  document.removeEventListener("keydown", onKeyDown, true);
+  document.removeEventListener("keydown", unmountOnEscape, true);
   document.removeEventListener("visibilitychange", onVisibilityChange);
-  document.removeEventListener("click", unmountOnEscape);
+  document.removeEventListener("click", unmountOnClick);
 };
 
-const unmountOnEscape = (event: MouseEvent) => {
+const unmountOnClick = (event: MouseEvent) => {
   // see if there is a better way to do this
   // this details the path that the document click event bubbled up from
   const [firstElementTarget] = (event as PointerEvent).composedPath();
@@ -157,7 +171,7 @@ const unmountOnEscape = (event: MouseEvent) => {
 };
 
 // need to make sure this works as intended
-const onKeyDown = (event: KeyboardEvent) => {
+const unmountOnEscape = (event: KeyboardEvent) => {
   // this is neccessary to stop some sites from preventing some key strokes from being registered
   event.stopPropagation();
   if (event.key === "Escape" && isOpen) {
@@ -190,11 +204,11 @@ const onVisibilityChange = () => {
       .then((updatedTabData: TabData[]) => {
         searchUiHandler.updateProps({ currentTabs: updatedTabData });
       })
-      .catch(() => { 
-          // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
-          // show error telling user to reload page
-          // since we are injecting the extension on update, it might be wise to figgure out a better way to do this
-          searchUiHandler.updateProps({ hasError: true });
+      .catch(() => {
+        // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
+        // show error telling user to reload page
+        // since we are injecting the extension on update, it might be wise to figgure out a better way to do this
+        searchUiHandler.updateProps({ hasError: true });
         // }
       });
   }
