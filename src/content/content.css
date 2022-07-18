@@ -22,64 +22,6 @@ tab-butler-modal {
   z-index: 999999 !important;
 }
 
-tab-butler-modal-body::-webkit-scrollbar {
-  display: none;
-}
-
-/* default if dark mode styling */
-tab-butler-modal-body {
-  box-sizing: border-box !important;
-  position: relative !important;
-  width: 650px !important;
-  /* was cna use viewport units to make is scale to different screeens */
-  height: 500px !important;
-  max-height: 500px !important;
-  /* think about blured translucent background */
-  /* current background does not look so good in sites that use ark colors */
-  /* background: rgba(0, 0, 0, 0.5); */
-  /* backdrop-filter: saturate(180%) blur(10px); */
-  /* background-color: #1A202C;  */
-  /* find the best background color */
-  background-color: rgb(46, 49, 56);
-  /* display: flex; */
-  /* align-items: center; */
-  /* justify-content: center; */
-  padding: 16px;
-  /* max-height: 80vh; */
-  border-radius: 8px;
-  /* background-color: #fff; */
-  overflow: none;
-  /* figure out the best box shadow */
-  /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-}
-
-@media (prefers-color-scheme: light) {
-  tab-butler-modal-body {
-    background-color: #fff;
-  }
-}
-
-/* USE IDS FOR EVERYTHING */
-/* would css modules work */
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
 .tab_butler_modal_visible {
   visibility: visible;
   opacity: 1;

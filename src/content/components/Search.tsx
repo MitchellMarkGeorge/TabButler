@@ -1,11 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
-import { Input } from "./Input";
-import { Container } from "./Container";
-import { DataList } from "./DataList";
-import { Empty } from "./Empty";
-import { Heading } from "./Heading";
+import FocusTrap from "focus-trap-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
+import browser from "webextension-polyfill";
 import {
   Action,
   ChangeTabMessagePayload,
@@ -14,15 +12,22 @@ import {
   SearchMode,
   TabData,
 } from "../../common/types";
-import { TabListItem } from "./TabListItem";
-import { ActionListItem } from "./ActionListItem";
-import BottomBar from "./BottomBar";
-import FocusTrap from "focus-trap-react";
-import browser from "webextension-polyfill";
-import { ModalBody } from "./ModalBody";
-import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { getCurrentTabData } from "../utils";
 import { getActions } from "../actions";
+import {
+  filterActions,
+  filterByCurrentWindow,
+  filterTabs,
+  getCurrentTabData,
+} from "../utils";
+import { ActionListItem } from "./ListItems/ActionListItem";
+import { BottomBar } from "./BottomBar";
+import { Container } from "./Container";
+import { DataList } from "./DataList";
+import { Empty } from "./Empty";
+import { Heading } from "./Heading";
+import { Input } from "./Input";
+import { ModalBody } from "./ModalBody";
+import { TabListItem } from "./ListItems/TabListItem";
 
 export interface Props {
   shadowRoot: ShadowRoot;
@@ -52,9 +57,22 @@ export const Search = (props: Props) => {
   const isTabActionsMode = () => currentSearchMode === SearchMode.TAB_ACTIONS;
   const isTabSearchMode = () => currentSearchMode === SearchMode.TAB_SEARCH;
 
+  const fetchTabData = () => {
+    getCurrentTabData()
+      .then((results) => {
+        setData(results);
+        setIsLoading(false);
+      })
+      .catch((err: Error) => {
+        console.log(err);
+        setIsLoading(false);
+        setHasError(true);
+      });
+  };
+
   useEffect(() => {
+    // when searchMode changes, reset some values
     if (!isLoading) {
-      console.log("loading");
       setIsLoading(true);
     }
     // update the current search mode
@@ -73,51 +91,18 @@ export const Search = (props: Props) => {
   }, [props.searchMode]);
 
   useEffect(() => {
+    // when currentSearchMode changes, get the associated data with that mode
     // need to wait for current search mode to be set
     if (isTabActionsMode()) {
-      console.log("here");
       setData(getActions());
       setIsLoading(false);
     } else {
-      console.log(currentSearchMode);
-      getCurrentTabData()
-        .then((results) => {
-          setData(results);
-          setIsLoading(false);
-        })
-        .catch((err: Error) => {
-          console.log(err);
-          setIsLoading(false);
-          setHasError(true);
-        });
+      fetchTabData();
     }
   }, [currentSearchMode]);
 
-  const filterByCurrentWindow = (currentTabs: TabData[]) => {
-    return currentTabs.filter((tabData) => tabData.inCurrentWindow);
-  };
-
-  // only change data when search mode changes
-
-  const tabMatchesValue = (tabData: TabData) =>
-    tabData.tabTitle.toLowerCase().includes(value.toLowerCase()) ||
-    tabData.tabUrl.toLowerCase().includes(value.toLowerCase());
-
-  const filterTabs = (currentTabs: TabData[]) => {
-    return currentTabs.filter(
-      (tabData) => tabMatchesValue(tabData),
-      // try to filter based on the tab title and the tab url
-    );
-  };
-
-  const filterActions = (actions: Action[]) => {
-    return actions.filter((action) =>
-      action.name.toLowerCase().includes(value.toLowerCase()),
-    );
-  };
-
   const filterData = () => {
-    // first off, if it is in the tab search mode, try and filter by by the current winodow (if applicable)
+    // first off, if it is in the tab search mode and showOnlyCurrentWindow is on, try and filter the data by the current winodow
     let initalData: TabData[] | Action[];
     if (isTabSearchMode() && showOnlyCurrentWindow) {
       initalData = filterByCurrentWindow(data as TabData[]);
@@ -128,9 +113,9 @@ export const Search = (props: Props) => {
     // then try and search the avalible data if there is a search value
     if (value) {
       if (isTabActionsMode()) {
-        return filterActions(initalData as Action[]);
+        return filterActions(value, initalData as Action[]);
       }
-      return filterTabs(initalData as TabData[]);
+      return filterTabs(value, initalData as TabData[]);
     } else {
       return initalData; // if there is no search query just return the data
     }
@@ -168,7 +153,6 @@ export const Search = (props: Props) => {
     }
   };
 
-  // need to make sure this works as intended
   const onKeyDown = (event: KeyboardEvent) => {
     // circular navigation might confuse users
     let nextIndex = 0;
@@ -176,7 +160,6 @@ export const Search = (props: Props) => {
       event.preventDefault();
       if (selectedIndex !== 0) {
         nextIndex = selectedIndex - 1;
-        // ref.current.sc
         virtuosoRef.current?.scrollIntoView({
           index: nextIndex,
           behavior: "smooth",
@@ -212,38 +195,25 @@ export const Search = (props: Props) => {
   };
 
   const onVisibilityChange = () => {
-    // think about this... do users want it to remain open once they leave a page
-    // AS OF RIGHT NOW: if the user switch tabs using the modal (or any action), it should automatically close
-    // if the user simply goes to another tab manually (like they usually would), it should stay open in case they still want to use it
     // this is called only when the page was once not visible (like the user whent to another tab) and it has become visible again.
     if (document.visibilityState === "visible" && isTabSearchMode()) {
       // if the document is now visible and was previously inactive and a tab search modal was open
       // get the updated tab data
-      // should this be here??
-      // isPageActive = true;
-      // for some reason this event keeps throwing an Extension context invalidated error... this might
-      // the probelem is that a potential previous content script is still trying to send this message
-      // and since it has been "cut off" by the extension, it is invalidated
-      // functionality still works, but might need a way to handle this
-      // can probably make this into a promise like method
-      // this is only a problem in devlopment due to the ammount of times we "update"/refresh the extension
-      // in production, this might only happen if the user updates the extension and the old content script is stll there
       if (!isLoading) {
         setIsLoading(true);
       }
+      fetchTabData();
+      // sometimes an error will be thrown here
+      // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
+      // show error telling user to reload page
+    }
+  };
 
-      getCurrentTabData()
-        .then((updatedTabData) => {
-          setData(updatedTabData);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setIsLoading(false);
-          setHasError(true);
-          // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
-          // show error telling user to reload page
-          // }
-        });
+  const updateTabDataListener = (messagePayLoad: MessagePlayload) => {
+    console.log("received message");
+    const { message } = messagePayLoad;
+    if (message === Message.TAB_DATA_UPDATE) {
+      fetchTabData();
     }
   };
 
@@ -251,6 +221,10 @@ export const Search = (props: Props) => {
     document.addEventListener("keydown", unmountOnEscape, true);
     document.addEventListener("visibilitychange", onVisibilityChange, false);
     document.addEventListener("keydown", onKeyDown, true);
+    // conditionally add message listener for tab data updates (only in tab search mode)
+    if (isTabSearchMode()) {
+      browser.runtime.onMessage.addListener(updateTabDataListener);
+    }
     return () => {
       document.removeEventListener("keydown", unmountOnEscape, true);
       document.removeEventListener(
@@ -259,6 +233,14 @@ export const Search = (props: Props) => {
         false,
       );
       document.removeEventListener("keydown", onKeyDown, true);
+
+      if (
+        isTabSearchMode() &&
+        browser.runtime.onMessage.hasListener(updateTabDataListener)
+      ) {
+        console.log("removing listener");
+        browser.runtime.onMessage.removeListener(updateTabDataListener);
+      }
     };
   });
 

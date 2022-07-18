@@ -3,7 +3,8 @@ import {
   getSearchModeFromMessage,
   Message,
   MessagePlayload,
-  SearchMode} from "../common/types";
+  SearchMode,
+} from "../common/types";
 import "./content.css";
 import { SearchUIHandler } from "./SearchUIHandler";
 
@@ -21,7 +22,6 @@ let currentSearchMode: SearchMode;
 const searchUiHandler = new SearchUIHandler();
 // make this file into a class that will be easier to manage?
 const messageListener = (messagePayload: MessagePlayload) => {
-
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
   switch (message) {
@@ -34,39 +34,26 @@ const messageListener = (messagePayload: MessagePlayload) => {
         mountSearchComponent(message);
       }
       break;
-
-    case Message.TAB_DATA_UPDATE:
-      if (isOpen && currentSearchMode === SearchMode.TAB_SEARCH) {
-        // most of the checks here are not needed, but it is still good to make sure
-        // const { updatedTabData } =
-        //   messagePayload as UpdatedTabDataMessagePayload;
-        // searchUiHandler.updateProps({ currentTabs: updatedTabData });
-      }
-      break;
-
     case Message.CHECK_SEARCH_OPEN:
       return Promise.resolve({ isOpen, currentSearchMode });
   }
-}
+};
 browser.runtime.onMessage.addListener(messageListener);
 
 function mountSearchComponent(message: Message) {
-  // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
   const requestedSearchMode = getSearchModeFromMessage(message);
-    attachListeners();
-    searchUiHandler.mount(shadow, {
-      shadowRoot: shadow,
-      searchMode: requestedSearchMode,
-      close: unmountSearchComponent,
-    });
-    tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
-    currentSearchMode = requestedSearchMode;
-    isOpen = true;
-  }
+  document.addEventListener("click", unmountOnClick);
+  searchUiHandler.mount(shadow, {
+    shadowRoot: shadow,
+    searchMode: requestedSearchMode,
+    close: unmountSearchComponent,
+  });
+  tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
+  currentSearchMode = requestedSearchMode;
+  isOpen = true;
+}
 
 function unmountSearchComponentFromMessage(message: Message) {
-  // NOTE: THIS FUNCTIONS IS ONLY RUN IF THE SEARCH COMPONENT IS OPEN, SO CODE IN THAT ASSUMPTIONKJ
-  // Message.TOGGLE_TAB_ACTIONS | Message.TOGGLE_TAB_SEARCH
   // get the accosiated search type of the message
   const requestedSearchMode = getSearchModeFromMessage(message);
   if (currentSearchMode === requestedSearchMode) {
@@ -75,20 +62,20 @@ function unmountSearchComponentFromMessage(message: Message) {
     // meaning they just want to toggle it off
     unmountSearchComponent();
   } else {
-    // in this case, the user wants to switch to a different search type
+    // in this case, the user wants to switch to a different search mode
     // update the props of the component with the nessecary information
-    // and update the cuttent search mode
-      searchUiHandler.updateProps({
-        searchMode: requestedSearchMode,
-      });
-      currentSearchMode = requestedSearchMode;
-    }
+    // and update the current search mode
+    searchUiHandler.updateProps({
+      searchMode: requestedSearchMode,
+    });
+    currentSearchMode = requestedSearchMode;
   }
+}
 
 function unmountSearchComponent() {
   // doing this first here so it disapears as soon as possible
   tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
-  removeListeners();
+  document.removeEventListener("click", unmountOnClick);
   searchUiHandler.unMount();
   // clear the remaining styles in the shadow root
   while (shadow.firstChild) {
@@ -97,14 +84,6 @@ function unmountSearchComponent() {
   isOpen = false;
   // should i reset currentSearchMode?
 }
-
-const attachListeners = () => {
-  document.addEventListener("click", unmountOnClick);
-};
-
-const removeListeners = () => {
-  document.removeEventListener("click", unmountOnClick);
-};
 
 const unmountOnClick = (event: MouseEvent) => {
   // see if there is a better way to do this
@@ -115,8 +94,6 @@ const unmountOnClick = (event: MouseEvent) => {
     unmountSearchComponent();
   }
 };
-
-
 
 window.addEventListener("beforeunload", () => {
   if (isOpen) {
