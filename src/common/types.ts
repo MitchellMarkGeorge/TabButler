@@ -68,7 +68,9 @@ export interface MessagePlayload {
 
 export interface ChangeTabMessagePayload extends MessagePlayload {
   message: Message.CHANGE_TAB;
+  // just send the TabData?
   tabId: number;
+  windowId: number;
 }
 
 export interface UpdatedTabDataMessagePayload extends MessagePlayload {
@@ -78,9 +80,11 @@ export interface UpdatedTabDataMessagePayload extends MessagePlayload {
 
 export interface TabData {
   tabId: number;
+  windowId: number;
   favIcon: string | null;
   tabTitle: string;
   tabUrl: string;
+  inCurrentWindow: boolean;
 }
 
 export interface Action {
@@ -88,4 +92,9 @@ export interface Action {
   message: Message; // the message that the action sends to the backgrpond sctipt
   icon: IconType; // for now
   iconColor?: string;
+}
+
+export interface CheackSearchOpenResponse {
+  isOpen: boolean;
+  currentSearchMode: SearchMode;
 }

@@ -1,5 +1,10 @@
 import { isChromeURL } from "../common/common";
-import { Message, SearchMode, TabData } from "../common/types";
+import {
+  CheackSearchOpenResponse,
+  Message,
+  SearchMode,
+  TabData,
+} from "../common/types";
 import browser from "webextension-polyfill";
 
 export async function getCurrentTab() {
@@ -7,49 +12,64 @@ export async function getCurrentTab() {
   return tab;
 }
 
-export async function getTabIdWithSearchOpen(
-  windowId: number,
-): Promise<number | null> {
+export async function getTabsWithSearchOpen(): Promise<number[]> {
+  // get the active tabs that have an open tab search modal
   // we only want the active tab as that is the only place it can be in
   // get the tab in the window with search modal open and in tab search mode
-  const [tab] = await browser.tabs.query({ active: true, windowId });
-  return new Promise((resolve) => {
-    if (tab?.id && tab.url && !isChromeURL(tab.url)) {
-      browser.tabs
-        .sendMessage(tab.id, { message: Message.CHECK_SEARCH_OPEN })
-        .then(
-          (response: { isOpen: boolean; currentSearchMode: SearchMode }) => {
-            resolve(
-              response &&
-                response.isOpen &&
-                response.currentSearchMode === SearchMode.TAB_SEARCH
-                ? tab.id! // this part only executes if the id is present
-                : null,
-            );
-          },
-        );
-    } else {
-      resolve(null);
+  const activeTabs = await browser.tabs.query({ active: true });
+  console.log(activeTabs);
+  const activeTabsLength = activeTabs.length;
+  const result: number[] = [];
+  for (let i = 0; i < activeTabsLength; i++) {
+    const activeTab = activeTabs[i];
+    if (activeTab?.id && activeTab.url && !isChromeURL(activeTab.url)) {
+      // if the page has an old content script, then it will throw an error
+      const respose: CheackSearchOpenResponse = await browser.tabs.sendMessage(
+        activeTab.id,
+        {
+          message: Message.CHECK_SEARCH_OPEN,
+        },
+      );
+      if (
+        respose &&
+        respose.isOpen &&
+        respose.currentSearchMode === SearchMode.TAB_SEARCH
+      ) {
+        result.push(activeTab.id);
+      }
     }
-  });
+  }
+
+  return result;
 }
 
 export async function getTabsInCurrentWindow() {
   // should it return the current tab??
-  const tabs = await browser.tabs.query({ currentWindow: true });
+  // should we be using the lastFocused?
+  const tabs = await browser.tabs.query({});
+  // for windows, the current window is the window that the code is being run from
+  const currentWindowId = (await browser.windows.getLastFocused()).id;
   const results: TabData[] = [];
   const tabNum = tabs.length;
 
   for (let i = 0; i < tabNum; i++) {
     const tab = tabs[i];
     // will all pages have a title?
-    if (tab.id && tab.id !== browser.tabs.TAB_ID_NONE && tab.url) {
+    if (
+      tab.id &&
+      tab.id !== browser.tabs.TAB_ID_NONE && // does this need to be checked
+      tab.url &&
+      tab.windowId &&
+      tab.windowId !== browser.windows.WINDOW_ID_NONE // does this need to be checked
+    ) {
       // we know that these properties will be present
       const tabData: TabData = {
-        tabId: tab.id!,
+        tabId: tab.id,
+        windowId: tab.windowId,
         favIcon: tab.favIconUrl || null,
         tabTitle: tab.title!,
         tabUrl: tab.url!,
+        inCurrentWindow: currentWindowId === tab.windowId,
         // muted info
       };
       results.push(tabData);

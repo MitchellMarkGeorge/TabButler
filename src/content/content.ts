@@ -172,7 +172,7 @@ const onVisibilityChange = () => {
   // this is called only when the page was once not visible (like the user whent to another tab) and it has become visible again.
   if (
     document.visibilityState === "visible" &&
-    isOpen &&
+    isOpen && // technically not needed as we know that will be
     currentSearchMode === SearchMode.TAB_SEARCH
   ) {
     // if the document is now visible and was previously inactive and a tab search modal was open
@@ -193,6 +193,7 @@ const onVisibilityChange = () => {
       .catch(() => { 
           // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
           // show error telling user to reload page
+          // since we are injecting the extension on update, it might be wise to figgure out a better way to do this
           searchUiHandler.updateProps({ hasError: true });
         // }
       });
