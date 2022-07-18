@@ -289,6 +289,10 @@ export const Search = (props: Props) => {
             .tab-butler-virtual-list::-webkit-scrollbar {
               display: none;
             }
+            /* disable scrollbar for firefox */
+            .tab-butler-virtual-list {
+              scrollbar-width: none;
+            }
           }
         `}
       />
