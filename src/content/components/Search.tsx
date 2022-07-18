@@ -285,9 +285,14 @@ export const Search = (props: Props) => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
             letter-spacing: normal !important;
+
             /* disable scrollbar for virtualized list */
             .tab-butler-virtual-list::-webkit-scrollbar {
               display: none;
+            }
+
+            .tab-butler-virtual-list {
+              scrollbar-width: none;
             }
           }
         `}
