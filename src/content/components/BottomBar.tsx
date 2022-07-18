@@ -93,7 +93,7 @@ const BottomBarContainer = styled.div`
 `;
 
 interface Props {
-  currentSeachMode: SearchMode;
+  currentSeachMode: SearchMode | undefined;
   resultNum: number;
   showOnlyCurrentWindow: boolean;
   toggleShowOnlyCurrentWindow: () => void;
