@@ -119,7 +119,7 @@ export default function BottomBar({
             checked={showOnlyCurrentWindow}
             onChange={toggleShowOnlyCurrentWindow}
           />
-          <label htmlFor="current_window_toggle">Only Current window</label>
+          <label htmlFor="current_window_toggle">Only Current Window</label>
         </div>
       )}
       <div className="help_items">
