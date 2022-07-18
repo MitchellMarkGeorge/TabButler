@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 
-// rename this to List/ ListContainer
-export const DataList = styled.div`
+export const ListContainer = styled.div`
   height: 100%;
   /* is this needed? */
   max-height: 100%;

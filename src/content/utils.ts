@@ -11,8 +11,6 @@ export function getCurrentTabData() {
 export function isInvalidatedContextError(error: Error) {
   return error.message.includes("context invalidated");
 }
-<<<<<<< HEAD
-=======
 
 
 export const filterByCurrentWindow = (currentTabs: TabData[]) => {
@@ -36,4 +34,3 @@ export const filterActions = (searchValue: string, actions: Action[]) => {
     action.name.toLowerCase().includes(searchValue.toLowerCase()),
   );
 };
->>>>>>> 141c07c (rearanged and cleaned up some files)

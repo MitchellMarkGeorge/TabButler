@@ -11,6 +11,7 @@ import {
   MessagePlayload,
   SearchMode,
   TabData,
+  UpdatedTabDataMessagePayload,
 } from "../../common/types";
 import { getActions } from "../actions";
 import {
@@ -22,7 +23,7 @@ import {
 import { ActionListItem } from "./ListItems/ActionListItem";
 import { BottomBar } from "./BottomBar";
 import { Container } from "./Container";
-import { DataList } from "./DataList";
+import { ListContainer } from "./ListContainer";
 import { Empty } from "./Empty";
 import { Heading } from "./Heading";
 import { Input } from "./Input";
@@ -61,22 +62,36 @@ export const Search = (props: Props) => {
     getCurrentTabData()
       .then((results) => {
         setData(results);
-        setIsLoading(false);
+        // will it be the correct value?
+        if (isLoading) {
+          setIsLoading(false);
+        }
       })
       .catch((err: Error) => {
         console.log(err);
-        setIsLoading(false);
+        // will it be the correct value?
+        if (isLoading) {
+          setIsLoading(false);
+        }
         setHasError(true);
       });
   };
 
+  // all useEffect hooks are run on inital render
+
   useEffect(() => {
-    // when searchMode changes, reset some values
+    // this is called on inital render
+    // when received searchMode changes, reset some values
     if (!isLoading) {
       setIsLoading(true);
     }
     // update the current search mode
-    setCurrentSearchMode(props.searchMode);
+
+    // only update the currentSearchmode if the incomming searchMode from the props is not the same as the current one
+    // on mount, the value of currentSearch mode is set from the props sho it should not be set again
+    if (currentSearchMode !== props.searchMode) {
+      setCurrentSearchMode(props.searchMode);
+    }
 
     if (value) {
       setValue("");
@@ -91,8 +106,12 @@ export const Search = (props: Props) => {
   }, [props.searchMode]);
 
   useEffect(() => {
-    // when currentSearchMode changes, get the associated data with that mode
+    // run on inital render
+    // whenever currentSearchMode changes, get the associated data with that mode
     // need to wait for current search mode to be set
+
+    // using currentSearchMode is needed (instead of just using props.searchMode) when the v1 ui is implmented
+    // where the users will be able to change the current mode themselves using the ui.
     if (isTabActionsMode()) {
       setData(getActions());
       setIsLoading(false);
@@ -199,9 +218,10 @@ export const Search = (props: Props) => {
     if (document.visibilityState === "visible" && isTabSearchMode()) {
       // if the document is now visible and was previously inactive and a tab search modal was open
       // get the updated tab data
-      if (!isLoading) {
-        setIsLoading(true);
-      }
+      // if (!isLoading) {
+      //   setIsLoading(true);
+      // }
+      // it should just update
       fetchTabData();
       // sometimes an error will be thrown here
       // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
@@ -210,10 +230,12 @@ export const Search = (props: Props) => {
   };
 
   const updateTabDataListener = (messagePayLoad: MessagePlayload) => {
-    console.log("received message");
     const { message } = messagePayLoad;
     if (message === Message.TAB_DATA_UPDATE) {
-      fetchTabData();
+      console.log(messagePayLoad);
+      const { updatedTabData } = messagePayLoad as UpdatedTabDataMessagePayload;
+      // just update the data
+      setData(updatedTabData);
     }
   };
 
@@ -235,10 +257,9 @@ export const Search = (props: Props) => {
       document.removeEventListener("keydown", onKeyDown, true);
 
       if (
-        isTabSearchMode() &&
+        isTabSearchMode() && 
         browser.runtime.onMessage.hasListener(updateTabDataListener)
       ) {
-        console.log("removing listener");
         browser.runtime.onMessage.removeListener(updateTabDataListener);
       }
     };
@@ -364,7 +385,7 @@ export const Search = (props: Props) => {
                   setValue(e.target.value);
                 }}
               />
-              <DataList>{showList()}</DataList>
+              <ListContainer>{showList()}</ListContainer>
               <BottomBar
                 currentSeachMode={currentSearchMode}
                 showOnlyCurrentWindow={showOnlyCurrentWindow}
