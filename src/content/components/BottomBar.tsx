@@ -87,7 +87,7 @@ const BottomBarContainer = styled.div`
     color: rgba(0, 0, 0, 0.48);
 
     .window_toggle input {
-      background-color: #eee;
+      border: 1px solid rgba(0, 0, 0, 0.48);
     }
   }
 `;
