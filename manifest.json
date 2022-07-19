@@ -13,7 +13,6 @@
     "128": "icons/Tab Butler Logo 128.png"
   },
   "minimum_chrome_version": "88",
-  "options_page": "welcome/welcome.html",
   "background": {
     "service_worker": "background/background.js"
   },

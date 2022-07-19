@@ -2,20 +2,20 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-let isFirefox = process.env.BROWSER === 'firefox';
+let isFirefox = process.env.BROWSER === "firefox";
 
-let manifestPattern = { 
-  from: "manifest.json", 
-  to: "manifest.json" 
+let manifestPattern = {
+  from: "manifest.json",
+  to: "manifest.json",
 };
 let distPath = "dist/chrome";
 
-if(isFirefox){
-  manifestPattern = { 
-    from: "manifest.firefox.json", 
-    to: "manifest.json" 
+if (isFirefox) {
+  manifestPattern = {
+    from: "manifest.firefox.json",
+    to: "manifest.json",
   };
   distPath = "dist/firefox";
 }
@@ -26,7 +26,6 @@ module.exports = {
   entry: {
     content: path.resolve(__dirname, `src/content/content.ts`),
     background: path.resolve(__dirname, `src/background/background.ts`),
-    welcome: path.resolve(__dirname, `src/welcome/welcome.ts`),
   },
   output: {
     path: path.resolve(__dirname, distPath),
@@ -59,18 +58,8 @@ module.exports = {
       filename: "[name]/[name].css",
     }),
 
-    new HtmlWebpackPlugin({
-      title: "Thanks for installing Tab Butler 🥳🤗!",
-      filename: path.resolve(__dirname, `${distPath}/welcome/welcome.html`),
-      template: `src/welcome/welcome.html`,
-      chunks: ["welcome"]
-    }),
-
     new CopyPlugin({
-      patterns: [
-        manifestPattern,
-        { from: "src/icons", to: "icons" },
-      ],
+      patterns: [manifestPattern, { from: "src/icons", to: "icons" }],
     }),
   ],
 
