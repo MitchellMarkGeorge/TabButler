@@ -27,12 +27,19 @@
   ],
   "commands": {
     "toggle-tab-search": {
-      "suggested_key": "Ctrl+Shift+Space",
-      "description": "Toggle tab search in current page"
+      "suggested_key": {
+        "default": "Ctrl+Shift+Space"
+      },
+      "description": "Toggle the Tab Search Modal in the current tab"
     },
     "toggle-tab-actions": {
-      "suggested_key": "Alt+Shift+Space",
-      "description": "Toggle tab actions in current page"
+      "suggested_key": {
+        "default": "Alt+Shift+Space",
+        "windows": "Alt+Shift+K",
+        "linux": "Alt+Shift+K",
+        "mac": "Alt+Shift+Space"
+      },
+      "description": "Toggle Tab Actions Modal in the current tab"
     }
   }
 }

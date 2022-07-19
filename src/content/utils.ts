@@ -12,4 +12,3 @@ export function isInvalidatedContextError(error: Error) {
   return error.message.includes("context invalidated");
 }
 
-// Unchecked runtime.lastError: Could not establish connection. Receiving end does not exist.

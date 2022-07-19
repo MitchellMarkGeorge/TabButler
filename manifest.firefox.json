@@ -1,46 +1,42 @@
 {
-    "manifest_version": 2,
-    "name": "Tab Butler",
-    "short_name": "Tab Butler",
-    "author": "Mitchell Mark-George",
-    "version": "1.0",
-    "description": "A tab manager at your service.",
-    "permissions": [
-      "tabs", 
-      "scripting",
-      "<all_urls>"
-    ],
-    "offline_enabled": true,
-    "icons": {
-      "48": "icons/Tab Butler Logo 48.png",
-      "128": "icons/Tab Butler Logo 128.png"
-    },
-    "background": {
-      "scripts": [
-        "background/background.js"
-      ]
-    },
-    "content_scripts": [
-      {
-        "matches": ["<all_urls>"],
-        "run_at": "document_idle",
-        "js": ["content/content.js"],
-        "css": ["content/content.css"]
-      }
-    ],
-    "commands": {
-      "toggle-tab-search": {
-        "suggested_key": {
-          "default": "Ctrl+Shift+Space"
-        },
-        "description": "Toggle tab search in current page"
+  "manifest_version": 2,
+  "name": "Tab Butler",
+  "short_name": "Tab Butler",
+  "author": "Mitchell Mark-George",
+  "version": "1.0",
+  "description": "A tab manager at your service.",
+  "permissions": ["tabs", "scripting", "<all_urls>"],
+  "offline_enabled": true,
+  "icons": {
+    "48": "icons/Tab Butler Logo 48.png",
+    "128": "icons/Tab Butler Logo 128.png"
+  },
+  "background": {
+    "scripts": ["background/background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at": "document_idle",
+      "js": ["content/content.js"],
+      "css": ["content/content.css"]
+    }
+  ],
+  "commands": {
+    "toggle-tab-search": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Space"
       },
-      "toggle-tab-actions": {
-        "suggested_key": {
-          "default": "Alt+Shift+Space"
-        },
-        "description": "Toggle tab actions in current page"
-      }
+      "description": "Toggle the Tab Search Modal in the current tab"
+    },
+    "toggle-tab-actions": {
+      "suggested_key": {
+        "default": "Alt+Shift+Space",
+        "windows": "Alt+Shift+K",
+        "mac": "Alt+Shift+Space",
+        "linux": "Alt+Shift+K"
+      },
+      "description": "Toggle Tab Actions Modal in the current tab"
     }
   }
-  
+}
