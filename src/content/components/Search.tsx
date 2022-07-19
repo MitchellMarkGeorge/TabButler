@@ -45,7 +45,7 @@ export const Search = (props: Props) => {
   const dataListElementRef = useRef<HTMLDivElement | null>(null);
   const [showOnlyCurrentWindow, setShowOnlyCurrentWindow] = useState(false);
   // const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>();
-  const ref = useRef<VirtuosoHandle>(null);
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
   // VERY IMPORTANT
   // this has to be in a ref so it is not recreated every rerender (when the state changes)
   // causing the cache provider to think the value has changed
@@ -175,9 +175,9 @@ export const Search = (props: Props) => {
       if (selectedIndex !== 0) {
         nextIndex = selectedIndex - 1;
         // ref.current.sc
-        ref?.current?.scrollIntoView({
+        virtuosoRef.current?.scrollIntoView({
           index: nextIndex,
-          behavior: "auto",
+          behavior: "smooth",
           done: () => {
             setSelectedIndex(nextIndex);
           },
@@ -188,7 +188,7 @@ export const Search = (props: Props) => {
       event.preventDefault();
       if (selectedIndex !== filteredData.length - 1) {
         nextIndex = selectedIndex + 1;
-        ref?.current?.scrollIntoView({
+        virtuosoRef.current?.scrollIntoView({
           index: nextIndex,
           behavior: "smooth",
           done: () => {
@@ -225,10 +225,9 @@ export const Search = (props: Props) => {
     }
     return (
       <Virtuoso
-        ref={ref}
+        ref={virtuosoRef}
         style={{ height: "100%", width: "100%" }}
         fixedItemHeight={50}
-        // data={filteredData as any[]} // only way to make this work
         totalCount={filteredData.length}
         className="tab-butler-virtual-list"
         itemContent={(index) => {
