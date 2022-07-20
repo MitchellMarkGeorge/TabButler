@@ -76,6 +76,7 @@ Usage
 | `alt` + `shift` + `space`  | Toggle tab actions in current page |
 
 Note: For Mac, `cmd` is used instead of `ctrl` and `option` is used insead of `alt`.
+On Windows and Linux, the Tab Actions modal is toggled with `alt` + `shift` + `K`
 
 </details>
 
