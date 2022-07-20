@@ -22,7 +22,7 @@ import browser from "webextension-polyfill";
 import { ModalBody } from "./ModalBody";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
-interface BaseProps {
+interface BaseProps { // should be compressed into one simple interface with data: T[];
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
   hasError: boolean;
@@ -101,7 +101,7 @@ export const Search = (props: Props) => {
     }
   }, [
     props.searchMode,
-    (props as TabSearchProps).currentTabs,
+    (props as TabSearchProps).currentTabs, // would be much easier if it was just props.data
     showOnlyCurrentWindow,
   ]);
 
