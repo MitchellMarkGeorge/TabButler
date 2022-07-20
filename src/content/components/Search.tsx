@@ -226,7 +226,7 @@ export const Search = (props: Props) => {
     return (
       <Virtuoso
         ref={virtuosoRef}
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%" }} // move this to the virtial list class
         fixedItemHeight={50}
         totalCount={filteredData.length}
         className="tab-butler-virtual-list"
