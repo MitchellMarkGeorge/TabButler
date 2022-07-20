@@ -55,6 +55,18 @@ export const Search = (props: Props) => {
     }),
   );
 
+  console.log("trying to render", data);
+
+
+  // do we need a loading state?
+  // using the 2 useEffects are fine for the the v1 ui where the currentSearchMode can be changed by the , but here it isnt really needed
+  // the problem here is that while on the first render the is fine, if the user tries to change to another mode, the props.currentMode will change
+  // prompting a rerender
+  // because the props.currentSearhMode has changed, the component would try to render the old data loaded from the previous mode using the ui of the ui compoenents of the new currentMode, causing an error
+
+  // why does this solution work?? shouldn't it also try and rende he wrong data? what if preventing it from rendering the wrong thing
+  // I added some comments so you can get a sense of when everythink is called and with what specific state they have at that time
+
   const isTabActionsMode = () => currentSearchMode === SearchMode.TAB_ACTIONS;
   const isTabSearchMode = () => currentSearchMode === SearchMode.TAB_SEARCH;
 
@@ -80,17 +92,28 @@ export const Search = (props: Props) => {
   // all useEffect hooks are run on inital render
 
   useEffect(() => {
+    console.log("props.searchMode updated");
     // this is called on inital render
     // when received searchMode changes, reset some values
+
+    // if (data.length > 0) {
+    //   // another alternative to a loading state would be to simply reset the data to an empty array
+    //  // this way all stale and "incorrect" data is completly cleared out and the only thing that can be rendered is an empty array
+    //   setData([]);
+    // }
+
     if (!isLoading) {
+      console.log("setting isLoading to true");
       setIsLoading(true);
     }
     // update the current search mode
-
     // only update the currentSearchmode if the incomming searchMode from the props is not the same as the current one
-    // on mount, the value of currentSearch mode is set from the props sho it should not be set again
+    // on mount, the value of currentSearch mode is set from the props so it should not be set again
     if (currentSearchMode !== props.searchMode) {
+      console.log("setting currentSearchMode with props.searchMode");
       setCurrentSearchMode(props.searchMode);
+      // having a seperate useEffect for the currentSearchMOde is because it is not updated imediately
+      // https://stackoverflow.com/questions/54069253/the-usestate-set-method-is-not-reflecting-a-change-immediately
     }
 
     if (value) {
@@ -106,6 +129,7 @@ export const Search = (props: Props) => {
   }, [props.searchMode]);
 
   useEffect(() => {
+    console.log("currentSearchMode updated");
     // run on inital render
     // whenever currentSearchMode changes, get the associated data with that mode
     // need to wait for current search mode to be set
@@ -241,6 +265,7 @@ export const Search = (props: Props) => {
 
   useEffect(() => {
     document.addEventListener("keydown", unmountOnEscape, true);
+    // this listerner only needs to be added in TAB_SEARCH mode
     document.addEventListener("visibilitychange", onVisibilityChange, false);
     document.addEventListener("keydown", onKeyDown, true);
     // conditionally add message listener for tab data updates (only in tab search mode)
@@ -257,7 +282,7 @@ export const Search = (props: Props) => {
       document.removeEventListener("keydown", onKeyDown, true);
 
       if (
-        isTabSearchMode() && 
+        isTabSearchMode() &&
         browser.runtime.onMessage.hasListener(updateTabDataListener)
       ) {
         browser.runtime.onMessage.removeListener(updateTabDataListener);
@@ -272,6 +297,13 @@ export const Search = (props: Props) => {
   );
 
   const showList = () => {
+    // doing this there in this case basically ignores any incorrect data that could be rendered 
+    // and gives the useEffects the time to update the data 
+
+    // the same thing can be acheived using an empty array (as described in useEffect) 
+    // completely clearing the array in the long run might be safer than leaving the stale and incorrect data in state
+    // and would also reduce us having to use another state value in the component
+    // it would also simplify the some of the code in the currentSearchMode useEffect and in the fetchTabData method.
     if (isLoading) {
       return (
         <Empty>
