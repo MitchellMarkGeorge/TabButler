@@ -66,6 +66,8 @@ export const Search = (props: Props) => {
 
   // why does this solution work?? shouldn't it also try and rende he wrong data? what if preventing it from rendering the wrong thing
   // I added some comments so you can get a sense of when everythink is called and with what specific state they have at that time
+  // part of the reason that this solution works is that when the props.searchMode is updated, the currentSearchMode is still the old value, so it will still try and render the old data with the correct data,
+  //instead of trying to render the old data with components related to the new props.searchMode
 
   const isTabActionsMode = () => currentSearchMode === SearchMode.TAB_ACTIONS;
   const isTabSearchMode = () => currentSearchMode === SearchMode.TAB_SEARCH;
