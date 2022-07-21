@@ -31,17 +31,20 @@ npm install
 
 ### Start Dev Build
 
-If you are developing for Chrome/Chromeium browsers, use 
+If you are developing for Chrome/Chromeium browsers, use
+
 ```bash
 npm run start:chrome
 ```
 
-If you are developing for Firefox, use 
+If you are developing for Firefox, use
+
 ```bash
 npm run start:firefox
 ```
 
 If you are developing for both Chrome and Firefox, use
+
 ```bash
 npm run start:all
 ```
@@ -59,7 +62,7 @@ Note: For minified production build, use respective `npm run build` instead.
 ### Add To Firefox
 
 - Open `about:debugging`
-- Click the `This Firefox` options 
+- Click the `This Firefox` options
 - Click the `Load Temporary Add-on` button
 - Navigate to repository
 - Select the `manifest.json` file in the `dist/firefox` directory
@@ -90,6 +93,10 @@ On Windows and Linux, the Tab Actions modal is toggled with `alt` + `shift` + `K
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.
+
+Note: Because of the way that browser extensions do versioning, the `"version"` field in the manifest files are used for internal puposes and do not represent the actual version of Tab Butler.
+
+To refer to the actual version, look either to the `"version_name"` field in the manifest file or the `"version"` field in the `package.json` (this is what the user will actually see).
 
 ## Authors
 
