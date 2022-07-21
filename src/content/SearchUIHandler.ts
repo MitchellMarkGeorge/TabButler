@@ -1,15 +1,15 @@
 import { Props, Search } from "./components/Search";
-import * as ReactDOM from "react-dom/client";
-import React from "react";
+import { createRoot, Root } from "react-dom/client";
+import { createElement } from "react";
 
 export class SearchUIHandler {
   private props!: Props;
-  private root: ReactDOM.Root | null = null;
+  private root: Root | null = null;
   private isMounted = false;
 
   public mount(domNode: Element | DocumentFragment, props: Props) {
     if (!this.isMounted) {
-      this.root = ReactDOM.createRoot(domNode);
+      this.root = createRoot(domNode);
       this.props = props;
       this.render();
       this.isMounted = true;
@@ -17,7 +17,7 @@ export class SearchUIHandler {
   }
 
   private render() {
-    const searchComponentInstance = React.createElement(Search, this.props);
+    const searchComponentInstance = createElement(Search, this.props);
     this.root?.render(searchComponentInstance);
   }
 
