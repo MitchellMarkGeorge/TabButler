@@ -8,6 +8,7 @@ import { AiFillGoogleCircle } from "@react-icons/all-files/ai/AiFillGoogleCircle
 import { AiFillTwitterCircle } from "@react-icons/all-files/ai/AiFillTwitterCircle";
 import { AiFillYoutube } from "@react-icons/all-files/ai/AiFillYoutube";
 import { AiFillFacebook } from "@react-icons/all-files/ai/AiFillFacebook";
+import { AiOutlineReload } from "@react-icons/all-files/ai/AiOutlineReload";
 
 import { BiWindowClose } from "@react-icons/all-files/bi/BiWindowClose";
 import { BiWindowOpen } from "@react-icons/all-files/bi/BiWindowOpen";
@@ -71,6 +72,11 @@ export function getActions(): Action[] {
       name: "Open Bookmarks",
       message: Message.OPEN_BOOKMARKS,
       icon: BiStar,
+    },
+    {
+      name: "Reload Tab",
+      message: Message.RELOAD_CURRENT_TAB,
+      icon: AiOutlineReload,
     },
     {
       name: "Toggle Mute Tab",

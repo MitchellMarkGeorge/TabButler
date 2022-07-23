@@ -30,6 +30,8 @@ export const enum Message {
   OPEN_HISTORY = "open-history",
   OPEN_BOOKMARKS = "open-bookmarks",
 
+  RELOAD_CURRENT_TAB = "reload-current-tab",
+
   TOGGLE_PIN_TAB = "toggle-pin-tab",
   TOGGLE_MUTE_TAB = "toggle-mute-tab",
   DUPLICATE_TAB = "duplicate-tab",

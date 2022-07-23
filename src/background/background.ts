@@ -118,6 +118,13 @@ browser.runtime.onMessage.addListener(
           incognito: messagePayload.message === Message.OPEN_INCOGNITO_WINDOW,
         });
         break;
+
+      case Message.RELOAD_CURRENT_TAB:
+        if (sender.tab?.id) {
+          browser.tabs.reload(sender.tab.id);
+        }
+        break;
+
       case Message.TOGGLE_PIN_TAB:
         // toggle pinned
         if (sender.tab?.id) {
