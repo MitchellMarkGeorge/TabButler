@@ -12,8 +12,14 @@ import "./content.css";
 import { SearchUIHandler } from "./SearchUIHandler";
 import { getCurrentTabData } from "./utils";
 
+// if there is already a modal element in the dom (meaning there was an update), remove the existing one and create a new one
+// this should unmount the react component and remove the shadow dom. for now this leaves some listeners attached but it should not affect any functionality
+const existingTabButlerModalRoot = document.querySelector("tab-butler-modal");
+if (existingTabButlerModalRoot) {
+  existingTabButlerModalRoot.remove();
+}
 const tabButlerModalRoot = document.createElement("tab-butler-modal");
-// needs to be open so that the click event can buble up
+// needs to be open so that the click event can bubble up
 const shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
 let isOpen = false; // technically no longer needed
 let currentSearchMode: SearchMode;
