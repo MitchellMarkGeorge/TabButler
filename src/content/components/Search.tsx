@@ -56,15 +56,16 @@ export const Search = (props: Props) => {
   );
 
   console.log("trying to render", data);
+  console.log("currentSearchMode on render", currentSearchMode)
 
 
   // do we need a loading state?
-  // using the 2 useEffects are fine for the the v1 ui where the currentSearchMode can be changed by the , but here it isnt really needed
+  // using the 2 useEffects are fine for the the v1 ui where the currentSearchMode can be changed by the user, but here it isnt really needed
   // the problem here is that while on the first render the is fine, if the user tries to change to another mode, the props.currentMode will change
   // prompting a rerender
   // because the props.currentSearhMode has changed, the component would try to render the old data loaded from the previous mode using the ui of the ui compoenents of the new currentMode, causing an error
 
-  // why does this solution work?? shouldn't it also try and rende he wrong data? what if preventing it from rendering the wrong thing
+  // why does this solution work?? shouldn't it also try and render the wrong data? what is preventing it from rendering the wrong thing
   // I added some comments so you can get a sense of when everythink is called and with what specific state they have at that time
   // part of the reason that this solution works is that when the props.searchMode is updated, the currentSearchMode is still the old value, so it will still try and render the old data with the correct data,
   //instead of trying to render the old data with components related to the new props.searchMode
@@ -306,13 +307,13 @@ export const Search = (props: Props) => {
     // completely clearing the array in the long run might be safer than leaving the stale and incorrect data in state
     // and would also reduce us having to use another state value in the component
     // it would also simplify the some of the code in the currentSearchMode useEffect and in the fetchTabData method.
-    if (isLoading) {
-      return (
-        <Empty>
-          <Heading>Loading...</Heading>
-        </Empty>
-      );
-    }
+    // if (isLoading) {
+    //   return (
+    //     <Empty>
+    //       <Heading>Loading...</Heading>
+    //     </Empty>
+    //   );
+    // }
     if (filteredData.length === 0) {
       return (
         <Empty>
