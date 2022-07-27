@@ -22,7 +22,8 @@ import browser from "webextension-polyfill";
 import { ModalBody } from "./ModalBody";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
-interface BaseProps { // should be compressed into one simple interface with data: T[];
+interface BaseProps {
+  // should be compressed into one simple interface with data: T[];
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
   hasError: boolean;
@@ -81,7 +82,6 @@ export const Search = (props: Props) => {
     //   setShowOnlyCurrentWindow(false);
     // }
   }, [props.searchMode]);
-
 
   const filterByCurrentWindow = (currentTabs: TabData[]) => {
     if (showOnlyCurrentWindow) {
@@ -269,9 +269,9 @@ export const Search = (props: Props) => {
 
   const toggleShowOnlyCurrentWindow = () => {
     if (props.searchMode === SearchMode.TAB_SEARCH) {
-      setShowOnlyCurrentWindow(show => !show);
+      setShowOnlyCurrentWindow((show) => !show);
     }
-  }
+  };
 
   return (
     <CacheProvider value={customCache.current}>
@@ -284,14 +284,20 @@ export const Search = (props: Props) => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
             letter-spacing: normal !important;
-            /* disable scrollbar for virtualized list */
-            .tab-butler-virtual-list::-webkit-scrollbar {
-              display: none;
-            }
-            /* disable scrollbar for firefox */
-            .tab-butler-virtual-list {
-              scrollbar-width: none;
-            }
+
+            /* think about these */
+            /* -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility; */
+          }
+
+          /* disable scrollbar for virtualized list */
+          .tab-butler-virtual-list::-webkit-scrollbar {
+            display: none;
+          }
+          /* disable scrollbar for firefox */
+          .tab-butler-virtual-list {
+            scrollbar-width: none;
           }
         `}
       />

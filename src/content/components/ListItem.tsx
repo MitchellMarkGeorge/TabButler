@@ -20,7 +20,7 @@ export const ListItem = styled.div<{ selected: boolean }>`
   padding: 8px;
   border-radius: 10px;
   /* if item is selected, the color should change (inspite of theme) */
-  color: ${(props) => (props.selected ? "#F7FAFC" : "inherit")};
+  color: ${(props) => (props.selected ? "#fff" : "inherit")};
   background-color: ${(props) => (props.selected ? "#3182ce" : "transparent")};
 
   // hover css is technocally no longer needed as the element becomes selected on mouse over
@@ -43,14 +43,16 @@ export const ListItem = styled.div<{ selected: boolean }>`
 
   .main_text {
     font-size: 16px;
-    font-weight: 450;
+    font-weight: 590;
+    /* color: #fff; */
   }
 
   .secondary_text {
     font-size: 10px;
     /* if selected use special color if not fall back to the default one*/
-    color: ${(props) =>
-      props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"};
+    /* color: ${(props) =>
+      props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"}; */
+    color: #cbd5e0;
   }
 
   /* :hover .secondary_text {
@@ -60,6 +62,7 @@ export const ListItem = styled.div<{ selected: boolean }>`
   .main_text,
   .secondary_text {
     white-space: nowrap;
+    /* set width for text overflow - might use percentage */
     width: 500px;
     max-width: 500px;
     overflow: hidden;

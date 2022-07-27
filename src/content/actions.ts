@@ -63,12 +63,12 @@ export function getActions(): Action[] {
       icon: AiFillSetting,
     },
     {
-      name: "Open History",
+      name: "Open History", // might no longer be needed
       message: Message.OPEN_HISTORY,
       icon: BiHistory,
     },
     {
-      name: "Open Bookmarks",
+      name: "Open Bookmarks", // might no longer ne needed
       message: Message.OPEN_BOOKMARKS,
       icon: BiStar,
     },
@@ -102,7 +102,7 @@ export function getActions(): Action[] {
     },
     {
       name: "Open Twitter",
-      message: Message.CLOSE_CURRENT_TAB,
+      message: Message.OPEN_TWITTER,
       icon: AiFillTwitterCircle,
       // iconColor: "#4299e1"
     },

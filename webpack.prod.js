@@ -4,7 +4,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const ZipPlugin = require("zip-webpack-plugin");
-const path = require("path")
+const path = require("path");
 
 let isFirefox = process.env.BROWSER === "firefox";
 

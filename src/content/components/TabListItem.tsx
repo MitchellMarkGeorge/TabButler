@@ -46,7 +46,15 @@ export const TabListItem = ({
         <div className="main_text">{data.tabTitle}</div>
         {/* getHostname() could return an empty host name - should the secondary text be conditionally rendered? */}
         {/* show if in current window */}
-        <div className="secondary_text">{getHostname(data.tabUrl)}</div>
+        {/* <div className="secondary_text">
+          {data.inCurrentWindow
+            ? `${getHostname(data.tabUrl)} \u00b7 Current Window`
+            : getHostname(data.tabUrl)}
+        </div> */}
+        <div className="secondary_text">
+          {/* incase getHostname() returns an empty string */}
+          {getHostname(data.tabUrl) || data.tabUrl}
+        </div>
       </div>
     </ListItem>
   );

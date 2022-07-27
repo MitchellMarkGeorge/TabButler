@@ -4,7 +4,6 @@ import { SearchMode } from "../../common/types";
 import { Kbd } from "./Kbd";
 
 const BottomBarContainer = styled.div`
-  /* it seems it increasd height? */
   height: 20px;
   /* min-height: 20px; */
   /* max-height: 20px; */
@@ -20,6 +19,8 @@ const BottomBarContainer = styled.div`
   justify-content: space-between;
   /* column-gap: 8px; */
   color: rgba(255, 255, 255, 0.36);
+  /* "medium" font weight */
+  font-weight: 510;
 
   .help_items,
   .bottom_info,
@@ -33,7 +34,6 @@ const BottomBarContainer = styled.div`
   .bottom_info,
   .window_toggle {
     font-size: 12px;
-    font-weight: 450;
   }
 
   .window_toggle {

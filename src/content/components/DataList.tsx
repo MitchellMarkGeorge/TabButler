@@ -8,7 +8,8 @@ export const DataList = styled.div`
   overflow: auto;
   width: 100%;
   flex: auto;
-  color: #f7fafc;
+  /* should I declare color here? */
+  color: #fff;
 
   /* remove the scroll bar */
   /* chromeium */
@@ -17,8 +18,6 @@ export const DataList = styled.div`
   }
   /* firefox */
   scrollbar-width: none;
-
-
 
   @media (prefers-color-scheme: light) {
     color: rgba(0, 0, 0, 0.8);

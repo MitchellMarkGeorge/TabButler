@@ -10,7 +10,7 @@ import {
 import { getActions } from "./actions";
 import "./content.css";
 import { SearchUIHandler } from "./SearchUIHandler";
-import { getCurrentTabData } from "./utils";
+import { getCurrentTabData, isInvalidatedContextError } from "./utils";
 
 // if there is already a modal element in the dom (meaning there was an update), remove the existing one and create a new one
 // this should unmount the react component and remove the shadow dom. for now this leaves some listeners attached but it should not affect any functionality
@@ -210,11 +210,16 @@ const onVisibilityChange = () => {
       .then((updatedTabData: TabData[]) => {
         searchUiHandler.updateProps({ currentTabs: updatedTabData });
       })
-      .catch(() => {
+      .catch((err) => {
         // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
         // show error telling user to reload page
-        // since we are injecting the extension on update, it might be wise to figgure out a better way to do this
-        searchUiHandler.updateProps({ hasError: true });
+        // unmount if it the extension has been updated
+        // else show a noral error
+        if (isInvalidatedContextError(err)) {
+          unmountSearchComponent();
+        } else {
+          searchUiHandler.updateProps({ hasError: true });
+        }
         // }
       });
   }

@@ -8,8 +8,8 @@ export const ActionListItem = ({
   onClick,
   onHover,
   selected,
-  // style,
-}: ListItemProps<Action>) => {
+}: 
+ListItemProps<Action>) => {
   // const ref = useScroll(selected);
   // is it fine to be used like this???
   const isDarkMode = useIsDarkMode();
