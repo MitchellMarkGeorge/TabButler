@@ -4,13 +4,12 @@ import {
   Commands,
   Message,
   MessagePlayload,
-  UpdatedTabDataMessagePayload,
 } from "../common/types";
 import {
   getCurrentTab,
   getTabsInCurrentWindow,
-  getTabsWithSearchOpen,
   injectExtension,
+  reactOnTabUpdate
 } from "./utils";
 import browser from "webextension-polyfill";
 
@@ -53,31 +52,15 @@ browser.commands.onCommand.addListener((command) => {
 });
 
 // SHOULD ONLY SEND UPDATED TAB DATA IF A TAB IN THE SAME WINDOW AS THE OPEN SEARCH IS CLOSED
-browser.tabs.onRemoved.addListener(() => {
-  // should I make these async?
-  // send updated tab data if a tab is closed
-  // does not like async await
-  // if we are doing browser wide search, need to hadle changes in other windows
-  // the idea is just to send all open tab search modals an update
-  // if (!removedTabInfo.isWindowClosing) { // what happens if an entire window is closing
-  // essentially try and see if there is an active tab in that window with the search open and in tab search mode
-  // if there is, send the tab the updated tab data
-  getTabsWithSearchOpen().then((tabIds) => {
-    console.log(tabIds);
-    // for each active tab with their search open, send an update tto them
-    tabIds.forEach((id) => {
-      getTabsInCurrentWindow().then((updatedTabData) => {
-        const messagePayload: UpdatedTabDataMessagePayload = {
-          message: Message.TAB_DATA_UPDATE,
-          updatedTabData,
-        };
-        console.log("sending message");
-        browser.tabs.sendMessage(id, messagePayload);
-      });
-    });
-  });
-  // }
-});
+
+browser.tabs.onRemoved.addListener(reactOnTabUpdate);
+browser.tabs.onCreated.addListener(reactOnTabUpdate);
+browser.tabs.onUpdated.addListener((_, changeInfo, tab) => {
+  // wait for the tab to complete its update?
+  if (tab.status === "complete" && changeInfo.url) { // would url changes also incluse favicon changes?
+    reactOnTabUpdate();
+  }
+})
 
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {

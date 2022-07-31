@@ -4,11 +4,12 @@ import {
   Message,
   SearchMode,
   TabData,
+  UpdatedTabDataMessagePayload,
 } from "../common/types";
 import browser from "webextension-polyfill";
 
 export async function getCurrentTab() {
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true }); // what is the difference between currentWindow and lastFocused?
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   return tab;
 }
 
@@ -141,3 +142,22 @@ export async function injectExtension() {
   //   }
   // }
 }
+
+export const reactOnTabUpdate = () => {
+  // send updated tab data to all open search modals in the browser
+  getTabsWithSearchOpen().then((tabIds) => {
+    console.log(tabIds);
+    // for each active tab with their search open, send an update to them
+    tabIds.forEach((id) => {
+      getTabsInCurrentWindow().then((updatedTabData) => {
+        const messagePayload: UpdatedTabDataMessagePayload = {
+          message: Message.TAB_DATA_UPDATE,
+          updatedTabData,
+        };
+        console.log("sending message");
+        browser.tabs.sendMessage(id, messagePayload);
+      });
+    });
+  });
+  // }
+};
