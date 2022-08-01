@@ -16,6 +16,8 @@ export async function getTabsWithSearchOpen(): Promise<number[]> {
   // get the active tabs that have an open tab search modal
   // we only want the active tab as that is the only place it can be in
   // get the tab in the window with search modal open and in tab search mode
+  // in development, if the there are multiple windows and one of the active tabs in those windows has an isolated content script,
+  // it will cause an error
   const activeTabs = await browser.tabs.query({ active: true });
   console.log(activeTabs);
   const activeTabsLength = activeTabs.length;

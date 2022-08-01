@@ -1,6 +1,6 @@
 import React from "react";
-import { Action } from "../../common/types";
-import { useIsDarkMode } from "./hooks";
+import { Action } from "../../../common/types";
+import { useIsDarkMode } from "../hooks";
 import { ListItem, ListItemProps } from "./ListItem";
 
 export const ActionListItem = ({

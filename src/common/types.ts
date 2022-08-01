@@ -52,7 +52,7 @@ export const enum SearchMode {
   TAB_SEARCH = "tab-search",
 }
 
-export function getSearchMode(message: Message) {
+export function getSearchModeFromMessage(message: Message) {
   if (message === Message.TOGGLE_TAB_ACTIONS) {
     return SearchMode.TAB_ACTIONS;
   }

@@ -98,7 +98,7 @@ interface Props {
   showOnlyCurrentWindow: boolean;
   toggleShowOnlyCurrentWindow: () => void;
 }
-export default function BottomBar({
+export function BottomBar({
   currentSeachMode,
   resultNum,
   showOnlyCurrentWindow,

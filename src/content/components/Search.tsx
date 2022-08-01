@@ -1,11 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
-import { Input } from "./Input";
-import { Container } from "./Container";
-import { DataList } from "./DataList";
-import { Empty } from "./Empty";
-import { Heading } from "./Heading";
+import FocusTrap from "focus-trap-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
+import browser from "webextension-polyfill";
 import {
   Action,
   ChangeTabMessagePayload,
@@ -13,47 +11,43 @@ import {
   MessagePlayload,
   SearchMode,
   TabData,
+  UpdatedTabDataMessagePayload,
 } from "../../common/types";
-import { TabListItem } from "./TabListItem";
-import { ActionListItem } from "./ActionListItem";
-import BottomBar from "./BottomBar";
-import FocusTrap from "focus-trap-react";
-import browser from "webextension-polyfill";
+import { getActions } from "../actions";
+import {
+  filterActions,
+  filterByCurrentWindow,
+  filterTabs,
+  getCurrentTabData,
+} from "../utils";
+import { ActionListItem } from "./ListItems/ActionListItem";
+import { BottomBar } from "./BottomBar";
+import { Container } from "./Container";
+import { ListContainer } from "./ListContainer";
+import { Empty } from "./Empty";
+import { Heading } from "./Heading";
+import { Input } from "./Input";
 import { ModalBody } from "./ModalBody";
-import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
+import { TabListItem } from "./ListItems/TabListItem";
 
-interface BaseProps {
-  // should be compressed into one simple interface with data: T[];
+export interface Props {
   shadowRoot: ShadowRoot;
   searchMode: SearchMode;
-  hasError: boolean;
-  close: () => void; // function to completly unmount the modal
-}
-interface TabSearchProps extends BaseProps {
-  currentTabs: TabData[];
+  close: () => void; // function to completely unmount the modal
 }
 
-interface TabActionsProps extends BaseProps {
-  actions: Action[];
-}
-
-export type Props = TabActionsProps | TabSearchProps;
-
-// tidy up this component
 export const Search = (props: Props) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const dataListElementRef = useRef<HTMLDivElement | null>(null);
   const [showOnlyCurrentWindow, setShowOnlyCurrentWindow] = useState(false);
-  // const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>();
+  const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>(
+    props.searchMode,
+  ); // make the inital value the searchMode that was passed in
+  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<Action[] | TabData[]>([]);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  // VERY IMPORTANT
-  // this has to be in a ref so it is not recreated every rerender (when the state changes)
-  // causing the cache provider to think the value has changed
-  // leading to new style tags being inserted everytime the state changes
-  // tldr; this is important because without it, new style tags will be inserted on every state change
-
-  // persist the cache between renders
+  // persist the cache between renders so new style tags are created when state changes
   const customCache = useRef(
     createCache({
       key: "tab-butler",
@@ -61,11 +55,70 @@ export const Search = (props: Props) => {
     }),
   );
 
-  const isTabActionsMode = () => props.searchMode === SearchMode.TAB_ACTIONS;
-  // const isTabSearchMode = () => props.searchMode === SearchMode.TAB_SEARCH;
+  console.log("trying to render", data);
+  console.log("currentSearchMode on render", currentSearchMode)
+
+
+  // do we need a loading state?
+  // using the 2 useEffects are fine for the the v1 ui where the currentSearchMode can be changed by the user, but here it isnt really needed
+  // the problem here is that while on the first render the is fine, if the user tries to change to another mode, the props.currentMode will change
+  // prompting a rerender
+  // because the props.currentSearhMode has changed, the component would try to render the old data loaded from the previous mode using the ui of the ui compoenents of the new currentMode, causing an error
+
+  // why does this solution work?? shouldn't it also try and render the wrong data? what is preventing it from rendering the wrong thing
+  // I added some comments so you can get a sense of when everythink is called and with what specific state they have at that time
+  // part of the reason that this solution works is that when the props.searchMode is updated, the currentSearchMode is still the old value, so it will still try and render the old data with the correct data,
+  //instead of trying to render the old data with components related to the new props.searchMode
+
+  const isTabActionsMode = () => currentSearchMode === SearchMode.TAB_ACTIONS;
+  const isTabSearchMode = () => currentSearchMode === SearchMode.TAB_SEARCH;
+
+  const fetchTabData = () => {
+    getCurrentTabData()
+      .then((results) => {
+        setData(results);
+        // will it be the correct value?
+        if (isLoading) {
+          setIsLoading(false);
+        }
+      })
+      .catch((err: Error) => {
+        console.log(err);
+        // will it be the correct value?
+        if (isLoading) {
+          setIsLoading(false);
+        }
+        setHasError(true);
+      });
+  };
+
+  // all useEffect hooks are run on inital render
 
   useEffect(() => {
-    // in the case of the search type changing, reset the input value and the selected index
+    console.log("props.searchMode updated");
+    // this is called on inital render
+    // when received searchMode changes, reset some values
+
+    // if (data.length > 0) {
+    //   // another alternative to a loading state would be to simply reset the data to an empty array
+    //  // this way all stale and "incorrect" data is completly cleared out and the only thing that can be rendered is an empty array
+    //   setData([]);
+    // }
+
+    if (!isLoading) {
+      console.log("setting isLoading to true");
+      setIsLoading(true);
+    }
+    // update the current search mode
+    // only update the currentSearchmode if the incomming searchMode from the props is not the same as the current one
+    // on mount, the value of currentSearch mode is set from the props so it should not be set again
+    if (currentSearchMode !== props.searchMode) {
+      console.log("setting currentSearchMode with props.searchMode");
+      setCurrentSearchMode(props.searchMode);
+      // having a seperate useEffect for the currentSearchMOde is because it is not updated imediately
+      // https://stackoverflow.com/questions/54069253/the-usestate-set-method-is-not-reflecting-a-change-immediately
+    }
+
     if (value) {
       setValue("");
     }
@@ -73,63 +126,44 @@ export const Search = (props: Props) => {
       setSelectedIndex(0);
     }
 
-    if (props.searchMode === SearchMode.TAB_ACTIONS && showOnlyCurrentWindow) {
+    if (currentSearchMode === SearchMode.TAB_ACTIONS && showOnlyCurrentWindow) {
       setShowOnlyCurrentWindow(false);
     }
-
-    // if (showOnlyCurrentWindow) {
-    //   // reset this
-    //   setShowOnlyCurrentWindow(false);
-    // }
   }, [props.searchMode]);
 
-  const filterByCurrentWindow = (currentTabs: TabData[]) => {
-    if (showOnlyCurrentWindow) {
-      return currentTabs.filter((tabData) => tabData.inCurrentWindow);
-    } else {
-      return currentTabs;
-    }
-  };
+  useEffect(() => {
+    console.log("currentSearchMode updated");
+    // run on inital render
+    // whenever currentSearchMode changes, get the associated data with that mode
+    // need to wait for current search mode to be set
 
-  // only change data when search mode changes
-  const data = useMemo(() => {
+    // using currentSearchMode is needed (instead of just using props.searchMode) when the v1 ui is implmented
+    // where the users will be able to change the current mode themselves using the ui.
     if (isTabActionsMode()) {
-      return (props as TabActionsProps).actions;
+      setData(getActions());
+      setIsLoading(false);
     } else {
-      const { currentTabs } = props as TabSearchProps;
-      return filterByCurrentWindow(currentTabs);
+      fetchTabData();
     }
-  }, [
-    props.searchMode,
-    (props as TabSearchProps).currentTabs, // would be much easier if it was just props.data
-    showOnlyCurrentWindow,
-  ]);
-
-  const tabMatchesValue = (tabData: TabData) =>
-    tabData.tabTitle.toLowerCase().includes(value.toLowerCase()) ||
-    tabData.tabUrl.toLowerCase().includes(value.toLowerCase());
-
-  const filterTabs = (currentTabs: TabData[]) => {
-    return currentTabs.filter(
-      (tabData) => tabMatchesValue(tabData),
-      // try to filter based on the tab title and the tab url
-    );
-  };
-
-  const filterActions = (actions: Action[]) => {
-    return actions.filter((action) =>
-      action.name.toLowerCase().includes(value.toLowerCase()),
-    );
-  };
+  }, [currentSearchMode]);
 
   const filterData = () => {
+    // first off, if it is in the tab search mode and showOnlyCurrentWindow is on, try and filter the data by the current winodow
+    let initalData: TabData[] | Action[];
+    if (isTabSearchMode() && showOnlyCurrentWindow) {
+      initalData = filterByCurrentWindow(data as TabData[]);
+    } else {
+      initalData = data as Action[];
+    }
+
+    // then try and search the avalible data if there is a search value
     if (value) {
       if (isTabActionsMode()) {
-        return filterActions(data as Action[]);
+        return filterActions(value, initalData as Action[]);
       }
-      return filterTabs(data as TabData[]);
+      return filterTabs(value, initalData as TabData[]);
     } else {
-      return data; // if there is no search query just return the data
+      return initalData; // if there is no search query just return the data
     }
   };
 
@@ -165,16 +199,13 @@ export const Search = (props: Props) => {
     }
   };
 
-  // need to make sure this works as intended
   const onKeyDown = (event: KeyboardEvent) => {
-    // cant use circular navigation because of virtualization
-    // plus it might confuse users
+    // circular navigation might confuse users
     let nextIndex = 0;
     if (event.key === "ArrowUp") {
       event.preventDefault();
       if (selectedIndex !== 0) {
         nextIndex = selectedIndex - 1;
-        // ref.current.sc
         virtuosoRef.current?.scrollIntoView({
           index: nextIndex,
           behavior: "smooth",
@@ -182,7 +213,6 @@ export const Search = (props: Props) => {
             setSelectedIndex(nextIndex);
           },
         });
-        // setSelectedIndex((selectectedIndex) => selectectedIndex - 1);
       }
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
@@ -195,7 +225,6 @@ export const Search = (props: Props) => {
             setSelectedIndex(nextIndex);
           },
         });
-        // setSelectedIndex((selectectedIndex) => selectectedIndex + 1);
       }
     } else if (event.key === "Enter") {
       event.preventDefault();
@@ -203,17 +232,88 @@ export const Search = (props: Props) => {
     }
   };
 
+  const unmountOnEscape = (event: KeyboardEvent) => {
+    // this is neccessary to stop some sites from preventing some key strokes from being registered
+    event.stopPropagation();
+    if (event.key === "Escape") {
+      props.close();
+    }
+  };
+
+  const onVisibilityChange = () => {
+    // this is called only when the page was once not visible (like the user whent to another tab) and it has become visible again.
+    if (document.visibilityState === "visible" && isTabSearchMode()) {
+      // if the document is now visible and was previously inactive and a tab search modal was open
+      // get the updated tab data
+      // if (!isLoading) {
+      //   setIsLoading(true);
+      // }
+      // it should just update
+      fetchTabData();
+      // sometimes an error will be thrown here
+      // this can happen if the context is invalidated (meaning that there has been an update and this tab is still trying to talk with the extension)
+      // show error telling user to reload page
+    }
+  };
+
+  const updateTabDataListener = (messagePayLoad: MessagePlayload) => {
+    const { message } = messagePayLoad;
+    if (message === Message.TAB_DATA_UPDATE) {
+      console.log(messagePayLoad);
+      const { updatedTabData } = messagePayLoad as UpdatedTabDataMessagePayload;
+      // just update the data
+      setData(updatedTabData);
+    }
+  };
+
   useEffect(() => {
+    document.addEventListener("keydown", unmountOnEscape, true);
+    // this listerner only needs to be added in TAB_SEARCH mode
+    document.addEventListener("visibilitychange", onVisibilityChange, false);
     document.addEventListener("keydown", onKeyDown, true);
+    // conditionally add message listener for tab data updates (only in tab search mode)
+    if (isTabSearchMode()) {
+      browser.runtime.onMessage.addListener(updateTabDataListener);
+    }
     return () => {
+      document.removeEventListener("keydown", unmountOnEscape, true);
+      document.removeEventListener(
+        "visibilitychange",
+        onVisibilityChange,
+        false,
+      );
       document.removeEventListener("keydown", onKeyDown, true);
+
+      if (
+        isTabSearchMode() &&
+        browser.runtime.onMessage.hasListener(updateTabDataListener)
+      ) {
+        browser.runtime.onMessage.removeListener(updateTabDataListener);
+      }
     };
   });
 
-  // only filter the data when either the data or value changes
-  const filteredData = useMemo(() => filterData(), [value, data]);
+  // only filter the data when either the data , value, or showOnlyCurrentWindow option changes changes
+  const filteredData = useMemo(
+    () => filterData(),
+    [value, data, showOnlyCurrentWindow],
+  );
 
   const showList = () => {
+    // doing this there in this case basically ignores any incorrect data that could be rendered 
+    // and gives the useEffects the time to update the data 
+
+    // the same thing can be acheived using an empty array (as described in useEffect) 
+    // completely clearing the array in the long run might be safer than leaving the stale and incorrect data in state
+    // and would also reduce us having to use another state value in the component
+    // it would also simplify the some of the code in the currentSearchMode useEffect and in the fetchTabData method.
+    // if (isLoading) {
+    //   return (
+    //     <Empty>
+    //       <Heading>Loading...</Heading>
+    //     </Empty>
+    //   );
+    // }
     if (filteredData.length === 0) {
       return (
         <Empty>
@@ -268,7 +368,7 @@ export const Search = (props: Props) => {
   );
 
   const toggleShowOnlyCurrentWindow = () => {
-    if (props.searchMode === SearchMode.TAB_SEARCH) {
+    if (currentSearchMode === SearchMode.TAB_SEARCH) {
       setShowOnlyCurrentWindow((show) => !show);
     }
   };
@@ -302,7 +402,7 @@ export const Search = (props: Props) => {
         `}
       />
       <ModalBody>
-        {props.hasError ? (
+        {hasError ? (
           showError()
         ) : (
           /* allowing outside click to allow modal close */
@@ -320,9 +420,9 @@ export const Search = (props: Props) => {
                   setValue(e.target.value);
                 }}
               />
-              <DataList ref={dataListElementRef}>{showList()}</DataList>
+              <ListContainer>{showList()}</ListContainer>
               <BottomBar
-                currentSeachMode={props.searchMode}
+                currentSeachMode={currentSearchMode}
                 showOnlyCurrentWindow={showOnlyCurrentWindow}
                 toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
                 resultNum={filteredData.length}
