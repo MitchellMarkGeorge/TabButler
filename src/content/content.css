@@ -17,8 +17,8 @@ tab-butler-modal {
   background-color: rgba(0, 0, 0, 0.5);
   /* background-color: transparent; */
   animation: fadeOut 0.5s;
-  opacity: 0;
-  visibility: hidden;
+  /* opacity: 0; */
+  /* visibility: hidden; */
   z-index: 999999 !important;
 }
 
