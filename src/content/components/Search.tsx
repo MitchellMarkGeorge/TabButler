@@ -307,13 +307,13 @@ export const Search = (props: Props) => {
     // completely clearing the array in the long run might be safer than leaving the stale and incorrect data in state
     // and would also reduce us having to use another state value in the component
     // it would also simplify the some of the code in the currentSearchMode useEffect and in the fetchTabData method.
-    // if (isLoading) {
-    //   return (
-    //     <Empty>
-    //       <Heading>Loading...</Heading>
-    //     </Empty>
-    //   );
-    // }
+    if (isLoading) {
+      return (
+        <Empty>
+          <Heading>Loading...</Heading>
+        </Empty>
+      );
+    }
     if (filteredData.length === 0) {
       return (
         <Empty>
