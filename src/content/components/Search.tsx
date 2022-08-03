@@ -386,9 +386,10 @@ export const Search = (props: Props) => {
             letter-spacing: normal !important;
 
             /* think about these */
-            /* -webkit-font-smoothing: antialiased;
+            /* things look slightly better with these selectors set */
+            -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility; */
+            text-rendering: optimizeLegibility;
           }
 
           /* disable scrollbar for virtualized list */

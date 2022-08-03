@@ -7,9 +7,9 @@ import {
 } from "../common/types";
 import {
   getCurrentTab,
-  getTabsInCurrentWindow,
+  getTabsInBrowser,
   injectExtension,
-  reactOnTabUpdate
+  reactOnTabUpdate,
 } from "./utils";
 import browser from "webextension-polyfill";
 
@@ -55,12 +55,21 @@ browser.commands.onCommand.addListener((command) => {
 
 browser.tabs.onRemoved.addListener(reactOnTabUpdate);
 browser.tabs.onCreated.addListener(reactOnTabUpdate);
-browser.tabs.onUpdated.addListener((_, changeInfo, tab) => {
-  // wait for the tab to complete its update?
-  if (tab.status === "complete" && changeInfo.url) { // would url changes also incluse favicon changes?
+browser.tabs.onUpdated.addListener((_, changeInfo) => {
+  // what if the active tab's url changes?
+  // only send the tab updates if the url, muted info, pinned status or favIconUrl is updated
+  if (
+    changeInfo.url || // would url changes also include favicon changes?
+    changeInfo.audible ||
+    changeInfo.mutedInfo ||
+    changeInfo.pinned ||
+    changeInfo.title ||
+    changeInfo.favIconUrl
+  ) {
+    console.log(changeInfo);
     reactOnTabUpdate();
   }
-})
+});
 
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {
@@ -69,7 +78,7 @@ browser.runtime.onMessage.addListener(
     // https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
     switch (messagePayload.message) {
       case Message.GET_TAB_DATA:
-        return Promise.resolve(getTabsInCurrentWindow());
+        return Promise.resolve(getTabsInBrowser());
 
       case Message.CHANGE_TAB: {
         const { tabId, windowId } = messagePayload as ChangeTabMessagePayload;
