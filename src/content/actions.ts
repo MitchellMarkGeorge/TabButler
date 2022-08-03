@@ -8,6 +8,7 @@ import { AiFillGoogleCircle } from "@react-icons/all-files/ai/AiFillGoogleCircle
 import { AiFillTwitterCircle } from "@react-icons/all-files/ai/AiFillTwitterCircle";
 import { AiFillYoutube } from "@react-icons/all-files/ai/AiFillYoutube";
 import { AiFillFacebook } from "@react-icons/all-files/ai/AiFillFacebook";
+import { AiFillPushpin } from "@react-icons/all-files/ai/AiFillPushpin";
 
 import { BiWindowClose } from "@react-icons/all-files/bi/BiWindowClose";
 import { BiWindowOpen } from "@react-icons/all-files/bi/BiWindowOpen";
@@ -72,15 +73,18 @@ export function getActions(): Action[] {
       message: Message.OPEN_BOOKMARKS,
       icon: BiStar,
     },
+    // this action will be removed
     {
       name: "Toggle Mute Tab",
       message: Message.TOGGLE_MUTE_TAB,
       icon: BiVolumeMute,
     },
+
+    // this action will be removed
     {
       name: "Toggle Pin Tab",
       message: Message.TOGGLE_PIN_TAB,
-      icon: BiPin,
+      icon: AiFillPushpin,
     },
     {
       name: "Duplicate Tab",
