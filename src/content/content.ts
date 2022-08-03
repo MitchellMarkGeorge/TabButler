@@ -15,7 +15,7 @@ if (existingTabButlerModalRoot) {
   existingTabButlerModalRoot.remove();
 }
 
-// by only creating and appending the element, dynamically when it is requested, it should save on memory and reduce some parts of the code
+// by only creating and appending the element dynamically when it is requested, it should save on memory and reduce some parts of the code
 // like the visibility toggeling and the style tag removal in the root
 // this should also help in sites where the dom might change from time to time, invalidating
 let tabButlerModalRoot: HTMLElement | null = null;
@@ -46,6 +46,7 @@ const messageListener = (messagePayload: MessagePlayload) => {
 browser.runtime.onMessage.addListener(messageListener);
 
 function mountSearchComponent(message: Message) {
+  // create a new modal root on mount and append as the last child of the body
   tabButlerModalRoot = document.createElement("tab-butler-modal");
 // needs to be open so that the click event can bubble up
   shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
@@ -84,6 +85,8 @@ function unmountSearchComponent() {
   document.removeEventListener("click", unmountOnClick);
   searchUiHandler.unMount();
   tabButlerModalRoot?.remove();
+  tabButlerModalRoot = null;
+  shadow = null;
   isOpen = false;
   // should i reset currentSearchMode?
 }
