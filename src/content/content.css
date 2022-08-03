@@ -16,22 +16,5 @@ tab-butler-modal {
   /* think about this */
   background-color: rgba(0, 0, 0, 0.5);
   /* background-color: transparent; */
-  animation: fadeOut 0.5s;
-  opacity: 0;
-  visibility: hidden;
   z-index: 999999 !important;
-}
-
-.tab_butler_modal_visible {
-  visibility: visible;
-  opacity: 1;
-  /* animation: fadeIn 0.5s; */
-}
-
-.tab_butler_fade_in {
-  animation: fadeIn 0.5s;
-}
-
-.tab_butler_fade_out {
-  animation: fadeOut 0.5s;
 }

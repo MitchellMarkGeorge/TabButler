@@ -14,13 +14,17 @@ const existingTabButlerModalRoot = document.querySelector("tab-butler-modal");
 if (existingTabButlerModalRoot) {
   existingTabButlerModalRoot.remove();
 }
-const tabButlerModalRoot = document.createElement("tab-butler-modal");
+
+// by only creating and appending the element dynamically when it is requested, it should save on memory and reduce some parts of the code
+// like the visibility toggeling and the style tag removal in the root
+// this should also help in sites where the dom might change from time to time, invalidating
+let tabButlerModalRoot: HTMLElement | null = null;
 // needs to be open so that the click event can bubble up
-const shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
+let shadow: ShadowRoot | null = null;
 let isOpen = false; // technically no longer needed
 let currentSearchMode: SearchMode;
 const searchUiHandler = new SearchUIHandler();
-// make this file into a class that will be easier to manage?
+
 const messageListener = (messagePayload: MessagePlayload) => {
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
@@ -31,6 +35,7 @@ const messageListener = (messagePayload: MessagePlayload) => {
         // special function to switch modes if the message is different
         unmountSearchComponentFromMessage(message);
       } else {
+        console.log("here")
         mountSearchComponent(message);
       }
       break;
@@ -41,6 +46,10 @@ const messageListener = (messagePayload: MessagePlayload) => {
 browser.runtime.onMessage.addListener(messageListener);
 
 function mountSearchComponent(message: Message) {
+  // create a new modal root on mount and append as the last child of the body
+  tabButlerModalRoot = document.createElement("tab-butler-modal");
+// needs to be open so that the click event can bubble up
+  shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
   const requestedSearchMode = getSearchModeFromMessage(message);
   document.addEventListener("click", unmountOnClick);
   searchUiHandler.mount(shadow, {
@@ -48,9 +57,9 @@ function mountSearchComponent(message: Message) {
     searchMode: requestedSearchMode,
     close: unmountSearchComponent,
   });
-  tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
   currentSearchMode = requestedSearchMode;
   isOpen = true;
+  document.body.appendChild(tabButlerModalRoot);
 }
 
 function unmountSearchComponentFromMessage(message: Message) {
@@ -73,14 +82,11 @@ function unmountSearchComponentFromMessage(message: Message) {
 }
 
 function unmountSearchComponent() {
-  // doing this first here so it disapears as soon as possible
-  tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
   document.removeEventListener("click", unmountOnClick);
   searchUiHandler.unMount();
-  // clear the remaining styles in the shadow root
-  while (shadow.firstChild) {
-    shadow.removeChild(shadow.firstChild);
-  }
+  tabButlerModalRoot?.remove();
+  tabButlerModalRoot = null;
+  shadow = null;
   isOpen = false;
   // should i reset currentSearchMode?
 }
@@ -100,5 +106,3 @@ window.addEventListener("beforeunload", () => {
     unmountSearchComponent();
   }
 });
-
-document.body.appendChild(tabButlerModalRoot); // is there a possibility that document.body is null?
