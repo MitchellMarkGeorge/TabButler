@@ -6,6 +6,7 @@ import {
   MessagePlayload,
 } from "../common/types";
 import {
+  checkCommands,
   getCurrentTab,
   getTabsInBrowser,
   injectExtension,
@@ -24,8 +25,13 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
     // opening the welcome page first buys the extension time to inject into the avalible pages
     if (reason === "install") {
       browser.runtime.setUninstallURL("https://forms.gle/Eqi9Hgs86hSVrvT57");
-      const welcomeUrl = "https://tabbutler.netlify.app/welcome";
-      await browser.tabs.create({ url: welcomeUrl }); // not really nessecary to await
+      const isMissingCommands = await checkCommands();
+      const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
+      if (isMissingCommands) {
+        // if there are missing/unbound commands, set a query param to show on the welcome page
+          welcomeUrl.searchParams.set("missing_commands", "true");
+      }
+      await browser.tabs.create({ url: welcomeUrl.toString() }); // not really nessecary to await
     }
     await injectExtension(); // not nessecary to await
   }

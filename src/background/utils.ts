@@ -161,3 +161,12 @@ export const reactOnTabUpdate = () => {
   });
   // }
 };
+
+export const checkCommands = async () => {
+  // simple function to check if ther are any unbound commands due to conflicts
+  const commands = await browser.commands.getAll();
+  for (const { shortcut } of commands) {
+    if (!shortcut) return true;
+  }
+  return false
+}
