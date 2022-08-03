@@ -14,13 +14,17 @@ const existingTabButlerModalRoot = document.querySelector("tab-butler-modal");
 if (existingTabButlerModalRoot) {
   existingTabButlerModalRoot.remove();
 }
+
+// by only creating and appending the element, dynamically when it is requested, it should save on memory and reduce some parts of the code
+// like the visibility toggeling and the style tag removal in the root
+// this should also help in sites where the dom might change from time to time, invalidating
 let tabButlerModalRoot: HTMLElement | null = null;
 // needs to be open so that the click event can bubble up
 let shadow: ShadowRoot | null = null;
 let isOpen = false; // technically no longer needed
 let currentSearchMode: SearchMode;
 const searchUiHandler = new SearchUIHandler();
-// make this file into a class that will be easier to manage?
+
 const messageListener = (messagePayload: MessagePlayload) => {
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
@@ -52,7 +56,6 @@ function mountSearchComponent(message: Message) {
     searchMode: requestedSearchMode,
     close: unmountSearchComponent,
   });
-  // tabButlerModalRoot.classList.toggle("tab_butler_modal_visible");
   currentSearchMode = requestedSearchMode;
   isOpen = true;
   document.body.appendChild(tabButlerModalRoot);
@@ -78,16 +81,9 @@ function unmountSearchComponentFromMessage(message: Message) {
 }
 
 function unmountSearchComponent() {
-  // doing this first here so it disapears as soon as possible
-  // tabButlerModalRoot?.classList.toggle("tab_butler_modal_visible");
   document.removeEventListener("click", unmountOnClick);
   searchUiHandler.unMount();
-  // clear the remaining styles in the shadow root
   tabButlerModalRoot?.remove();
-  // while (shadow.firstChild) {
-  //   shadow.removeChild(shadow.firstChild);
-  // }
-
   isOpen = false;
   // should i reset currentSearchMode?
 }
@@ -107,5 +103,3 @@ window.addEventListener("beforeunload", () => {
     unmountSearchComponent();
   }
 });
-
-// document.body.appendChild(tabButlerModalRoot); // is there a possibility that document.body is null?
