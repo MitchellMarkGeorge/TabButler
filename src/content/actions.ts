@@ -17,7 +17,6 @@ import { BiDownload } from "@react-icons/all-files/bi/BiDownload";
 import { BiExtension } from "@react-icons/all-files/bi/BiExtension";
 import { BiHistory } from "@react-icons/all-files/bi/BiHistory";
 import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
-import { BiPin } from "@react-icons/all-files/bi/BiPin";
 import { BiStar } from "@react-icons/all-files/bi/BiStar";
 import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
 
@@ -73,16 +72,16 @@ export function getActions(): Action[] {
       message: Message.OPEN_BOOKMARKS,
       icon: BiStar,
     },
-    // this action will be removed
+    // this action is used only for the current tab
     {
-      name: "Toggle Mute Tab",
+      name: "Mute Current Tab",
       message: Message.TOGGLE_MUTE_TAB,
       icon: BiVolumeMute,
     },
 
-    // this action will be removed
+    // this action is used only for the current tab
     {
-      name: "Toggle Pin Tab",
+      name: "Pin Current Tab",
       message: Message.TOGGLE_PIN_TAB,
       icon: AiFillPushpin,
     },

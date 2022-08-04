@@ -22,6 +22,7 @@ ListItemProps<Action>) => {
       // ref={ref}
       onMouseOver={onHover}
     >
+      <div className="main_info_container">
       <Icon
         size="24px"
         color={
@@ -33,6 +34,7 @@ ListItemProps<Action>) => {
         }
       />
       <div className="main_text">{data.name}</div>
+      </div>
     </ListItem>
   );
 };

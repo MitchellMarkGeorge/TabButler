@@ -18,6 +18,10 @@ export const enum Message {
   CHANGE_TAB = "change-tab",
   TAB_DATA_UPDATE = "tab-data-update",
 
+  CLOSE_GIVEN_TAB = "close-given-tab", // used to close a given tab
+  TOGGLE_MUTE_GIVEN_TAB = "toggle-mute-given-tab",
+  TOGGLE_PIN_GIVEN_TAB = "toggle-pin-given-tab",
+
   // tab action specific
   CLOSE_CURRENT_TAB = "close-current-tab",
   CLOSE_CURRENT_WINDOW = "close-current-window",
@@ -66,14 +70,28 @@ export interface MessagePlayload {
   // data: TabData[]
 }
 
-export interface ChangeTabMessagePayload extends MessagePlayload {
+export interface ChangeTabPayload extends MessagePlayload { // use GivenTabMessagePayload
   message: Message.CHANGE_TAB;
   // just send the TabData?
   tabId: number;
   windowId: number;
 }
 
-export interface UpdatedTabDataMessagePayload extends MessagePlayload {
+export interface GivenTabPayload extends MessagePlayload { // generic interface to handle tabs actions for a given tab
+  tabId: number;
+}
+
+export interface TogglePinTabPayload extends GivenTabPayload { 
+  isPinned: boolean
+}
+
+
+export interface ToggleMuteTabPayload extends GivenTabPayload { 
+  tabId: number;
+  isMuted: boolean
+}
+
+export interface UpdatedTabDataPayload extends MessagePlayload {
   message: Message.TAB_DATA_UPDATE;
   updatedTabData: TabData[];
 }
@@ -85,6 +103,10 @@ export interface TabData {
   tabTitle: string;
   tabUrl: string;
   inCurrentWindow: boolean;
+  isAudible: boolean;
+  isMuted: boolean;
+  isPinned: boolean;
+
 }
 
 export interface Action {

@@ -4,7 +4,7 @@ import {
   Message,
   SearchMode,
   TabData,
-  UpdatedTabDataMessagePayload,
+  UpdatedTabDataPayload,
 } from "../common/types";
 import browser from "webextension-polyfill";
 
@@ -73,6 +73,10 @@ export async function getTabsInBrowser() {
         tabTitle: tab.title!,
         tabUrl: tab.url!,
         inCurrentWindow: currentWindowId === tab.windowId,
+        // audible: tab.audible === undefined ? false : tab.audible
+        isAudible: Boolean(tab.audible), // if undefined, it will return false
+        isMuted: Boolean(tab?.mutedInfo?.muted), // think about this
+        isPinned: tab.pinned
         // muted info
       };
       results.push(tabData);
@@ -150,7 +154,7 @@ export const reactOnTabUpdate = () => {
     // for each active tab with their search open, send an update to them
     tabIds.forEach((id) => {
       getTabsInBrowser().then((updatedTabData) => {
-        const messagePayload: UpdatedTabDataMessagePayload = {
+        const messagePayload: UpdatedTabDataPayload = {
           message: Message.TAB_DATA_UPDATE,
           updatedTabData,
         };

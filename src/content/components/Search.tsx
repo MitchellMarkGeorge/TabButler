@@ -6,12 +6,12 @@ import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
 import {
   Action,
-  ChangeTabMessagePayload,
+  ChangeTabPayload,
   Message,
   MessagePlayload,
   SearchMode,
   TabData,
-  UpdatedTabDataMessagePayload,
+  UpdatedTabDataPayload,
 } from "../../common/types";
 import { getActions } from "../actions";
 import {
@@ -55,8 +55,12 @@ export const Search = (props: Props) => {
     }),
   );
 
-  console.log("trying to render", data);
-  console.log("currentSearchMode on render", currentSearchMode)
+  // console.log("trying to render", data);
+  // console.log("currentSearchMode on render", currentSearchMode)
+  
+
+  // create a SearchView component 
+  // create a React Context for the close function, searchMode, setData
 
 
   // do we need a loading state?
@@ -95,7 +99,7 @@ export const Search = (props: Props) => {
   // all useEffect hooks are run on inital render
 
   useEffect(() => {
-    console.log("props.searchMode updated");
+    // console.log("props.searchMode updated");
     // this is called on inital render
     // when received searchMode changes, reset some values
 
@@ -106,14 +110,14 @@ export const Search = (props: Props) => {
     // }
 
     if (!isLoading) {
-      console.log("setting isLoading to true");
+      // console.log("setting isLoading to true");
       setIsLoading(true);
     }
     // update the current search mode
     // only update the currentSearchmode if the incomming searchMode from the props is not the same as the current one
     // on mount, the value of currentSearch mode is set from the props so it should not be set again
     if (currentSearchMode !== props.searchMode) {
-      console.log("setting currentSearchMode with props.searchMode");
+      // console.log("setting currentSearchMode with props.searchMode");
       setCurrentSearchMode(props.searchMode);
       // having a seperate useEffect for the currentSearchMOde is because it is not updated imediately
       // https://stackoverflow.com/questions/54069253/the-usestate-set-method-is-not-reflecting-a-change-immediately
@@ -132,7 +136,7 @@ export const Search = (props: Props) => {
   }, [props.searchMode]);
 
   useEffect(() => {
-    console.log("currentSearchMode updated");
+    // console.log("currentSearchMode updated");
     // run on inital render
     // whenever currentSearchMode changes, get the associated data with that mode
     // need to wait for current search mode to be set
@@ -168,7 +172,7 @@ export const Search = (props: Props) => {
   };
 
   const onTabItemClick = (tabData: TabData) => {
-    const messagePayload: ChangeTabMessagePayload = {
+    const messagePayload: ChangeTabPayload = {
       message: Message.CHANGE_TAB,
       tabId: tabData.tabId,
       windowId: tabData.windowId,
@@ -259,8 +263,8 @@ export const Search = (props: Props) => {
   const updateTabDataListener = (messagePayLoad: MessagePlayload) => {
     const { message } = messagePayLoad;
     if (message === Message.TAB_DATA_UPDATE) {
-      console.log(messagePayLoad);
-      const { updatedTabData } = messagePayLoad as UpdatedTabDataMessagePayload;
+      // console.log(messagePayLoad);
+      const { updatedTabData } = messagePayLoad as UpdatedTabDataPayload;
       // just update the data
       setData(updatedTabData);
     }
