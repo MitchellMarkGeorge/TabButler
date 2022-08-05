@@ -46,12 +46,18 @@ export async function getTabsWithSearchOpen(): Promise<number[]> {
   return result;
 }
 
-export async function getTabsInBrowser() {
+export async function getTabsInBrowser(activeTabId?: number) {
   // should it return the current tab??
   // should we be using the lastFocused?
   const tabs = await browser.tabs.query({});
-  // for windows, the current window is the window that the code is being run from
-  const currentWindowId = (await browser.windows.getLastFocused()).id;
+  let currentWindowId: number | undefined; // what if it is undefined
+  // if the active tab is provided, use the currentWindow of that tab
+  if (activeTabId !== undefined) {
+    currentWindowId = (await browser.tabs.get(activeTabId)).windowId;
+  } else {
+  // for windows, the current window is the window that the code is being run from (not what we need)
+    currentWindowId = (await browser.windows.getLastFocused()).id;
+  }
   const results: TabData[] = [];
   const tabNum = tabs.length;
 
@@ -153,7 +159,8 @@ export const reactOnTabUpdate = () => {
     console.log(tabIds);
     // for each active tab with their search open, send an update to them
     tabIds.forEach((id) => {
-      getTabsInBrowser().then((updatedTabData) => {
+      // passing in the id for each active tab makes sure the currentWindow is correct
+      getTabsInBrowser(id).then((updatedTabData) => {
         const messagePayload: UpdatedTabDataPayload = {
           message: Message.TAB_DATA_UPDATE,
           updatedTabData,
