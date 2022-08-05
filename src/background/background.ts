@@ -1,9 +1,12 @@
 import { isChromeURL } from "../common/common";
 import {
-  ChangeTabMessagePayload,
   Commands,
   Message,
   MessagePlayload,
+  TogglePinTabPayload,
+  ToggleMuteTabPayload,
+  ChangeTabPayload,
+  GivenTabPayload,
 } from "../common/types";
 import {
   checkCommands,
@@ -29,7 +32,7 @@ browser.runtime.onInstalled.addListener(async ({ reason }) => {
       const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
       if (isMissingCommands) {
         // if there are missing/unbound commands, set a query param to show on the welcome page
-          welcomeUrl.searchParams.set("missing_commands", "true");
+        welcomeUrl.searchParams.set("missing_commands", "true");
       }
       await browser.tabs.create({ url: welcomeUrl.toString() }); // not really nessecary to await
     }
@@ -61,21 +64,8 @@ browser.commands.onCommand.addListener((command) => {
 
 browser.tabs.onRemoved.addListener(reactOnTabUpdate);
 browser.tabs.onCreated.addListener(reactOnTabUpdate);
-browser.tabs.onUpdated.addListener((_, changeInfo) => {
-  // what if the active tab's url changes?
-  // only send the tab updates if the url, muted info, pinned status or favIconUrl is updated
-  if (
-    changeInfo.url || // would url changes also include favicon changes?
-    changeInfo.audible ||
-    changeInfo.mutedInfo ||
-    changeInfo.pinned ||
-    changeInfo.title ||
-    changeInfo.favIconUrl
-  ) {
-    console.log(changeInfo);
-    reactOnTabUpdate();
-  }
-});
+// removed if statement as I also need to know when some of the fields are absent (like audible)
+browser.tabs.onUpdated.addListener(reactOnTabUpdate);
 
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {
@@ -87,7 +77,7 @@ browser.runtime.onMessage.addListener(
         return Promise.resolve(getTabsInBrowser());
 
       case Message.CHANGE_TAB: {
-        const { tabId, windowId } = messagePayload as ChangeTabMessagePayload;
+        const { tabId, windowId } = messagePayload as ChangeTabPayload;
         browser.windows.update(windowId, { focused: true }).then(() => {
           browser.tabs.update(tabId, {
             active: true,
@@ -107,6 +97,12 @@ browser.runtime.onMessage.addListener(
           browser.windows.remove(sender.tab.windowId);
         }
         break;
+
+      case Message.CLOSE_GIVEN_TAB: {
+        const { tabId } = messagePayload as GivenTabPayload;
+        browser.tabs.remove(tabId);
+        break;
+      }
       case Message.OPEN_NEW_TAB:
         browser.tabs.create({ active: true });
         break;
@@ -118,18 +114,34 @@ browser.runtime.onMessage.addListener(
           incognito: messagePayload.message === Message.OPEN_INCOGNITO_WINDOW,
         });
         break;
+      case Message.TOGGLE_PIN_GIVEN_TAB: {
+        // toggle pinned for given tab
+          const { tabId: giventabId, isPinned } = messagePayload as TogglePinTabPayload 
+          browser.tabs.update(giventabId, { pinned: !isPinned })
+        break;
+      }
+      case Message.TOGGLE_MUTE_GIVEN_TAB: {
+        // toggle mute for given tab
+          const { tabId: giventabId, isMuted } = messagePayload as ToggleMuteTabPayload 
+          browser.tabs.update(giventabId, { muted: !isMuted })
+        break;
+      }
       case Message.TOGGLE_PIN_TAB:
-        // toggle pinned
+        // toggle pinned for current tab
         if (sender.tab?.id) {
+          const tabId = sender.tab.id;
           const currentPinnedSatus = sender.tab.pinned;
-          browser.tabs.update(sender.tab.id, { pinned: !currentPinnedSatus });
+          browser.tabs
+            .update(tabId, { pinned: !currentPinnedSatus })
         }
         break;
       case Message.TOGGLE_MUTE_TAB:
-        // toggle muted
+        // toggle muted for current tab
         if (sender.tab?.id && sender.tab.mutedInfo) {
+          const tabId = sender.tab.id;
           const currentMutedStatus = sender.tab.mutedInfo.muted;
-          browser.tabs.update(sender.tab.id, { muted: !currentMutedStatus });
+          browser.tabs
+            .update(tabId, { muted: !currentMutedStatus })
         }
         break;
       case Message.DUPLICATE_TAB:

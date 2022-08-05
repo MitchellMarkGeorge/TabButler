@@ -11,14 +11,18 @@ export interface ListItemProps<T> {
 // figure out best hover/selected colors
 export const ListItem = styled.div<{ selected: boolean }>`
   width: 100%;
+  
   height: 50px;
   display: flex;
   flex-direction: row;
+  /* which one? */
   row-gap: 8px;
   column-gap: 8px;
   align-items: center;
   padding: 8px;
   border-radius: 10px;
+  /* justify-content: space-between; */
+  cursor: pointer;
   /* if item is selected, the color should change (inspite of theme) */
   color: ${(props) => (props.selected ? "#fff" : "inherit")};
   background-color: ${(props) => (props.selected ? "#3182ce" : "transparent")};
@@ -29,6 +33,19 @@ export const ListItem = styled.div<{ selected: boolean }>`
     background-color: #3182ce;
   } */
 
+  .main_info_container, .button_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    row-gap: 8px;
+    column-gap: 8px;
+  }
+
+  .main_info_container {
+    flex: 1;
+    min-width: 0;
+  }
+
   img {
     height: 24px;
     width: 24px;
@@ -36,6 +53,8 @@ export const ListItem = styled.div<{ selected: boolean }>`
 
   .text_container {
     /*  flex might not be needed here     */
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     line-height: normal !important;
@@ -61,14 +80,22 @@ export const ListItem = styled.div<{ selected: boolean }>`
 
   .main_text,
   .secondary_text {
+    flex: 1;
+    /* max-width: 100%; */
+    min-width: 0;
     white-space: nowrap;
     /* set width for text overflow - might use percentage */
-    width: 500px;
-    max-width: 500px;
+    /* 450px */
+    /* width: 475px;
+    max-width: 475px; */
     overflow: hidden;
     text-overflow: ellipsis;
     /* font-size: 16px; */
     user-select: none;
+  }
+
+  .icon_button {
+    cursor: pointer;
   }
 
   @media (prefers-color-scheme: light) {
