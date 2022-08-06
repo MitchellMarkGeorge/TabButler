@@ -1,6 +1,5 @@
 import createCache from "@emotion/cache";
 import { CacheProvider, css, Global } from "@emotion/react";
-import FocusTrap from "focus-trap-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import browser from "webextension-polyfill";
@@ -206,7 +205,7 @@ export const Search = (props: Props) => {
   const onKeyDown = (event: KeyboardEvent) => {
     // circular navigation might confuse users
     let nextIndex = 0;
-    if (event.key === "ArrowUp") {
+    if (event.key === "ArrowUp" || (event.shiftKey && event.key === "Tab")) {
       event.preventDefault();
       if (selectedIndex !== 0) {
         nextIndex = selectedIndex - 1;
@@ -218,7 +217,7 @@ export const Search = (props: Props) => {
           },
         });
       }
-    } else if (event.key === "ArrowDown") {
+    } else if (event.key === "ArrowDown" || (event.key === "Tab")) {
       event.preventDefault();
       if (selectedIndex !== filteredData.length - 1) {
         nextIndex = selectedIndex + 1;
@@ -410,8 +409,6 @@ export const Search = (props: Props) => {
         {hasError ? (
           showError()
         ) : (
-          /* allowing outside click to allow modal close */
-          <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
             <Container>
               <Input
                 placeholder={
@@ -433,7 +430,6 @@ export const Search = (props: Props) => {
                 resultNum={filteredData.length}
               />
             </Container>
-          </FocusTrap>
         )}
       </ModalBody>
     </CacheProvider>
