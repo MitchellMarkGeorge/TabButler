@@ -2,3 +2,4 @@ dist
 node_modules
 *.dev.js
 .DS_Store
+stats.json
