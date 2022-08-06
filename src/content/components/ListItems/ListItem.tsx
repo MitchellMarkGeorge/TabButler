@@ -16,8 +16,8 @@ export const ListItem = styled.div<{ selected: boolean }>`
   display: flex;
   flex-direction: row;
   /* which one? */
-  row-gap: 8px;
-  column-gap: 8px;
+  row-gap: 16px;
+  column-gap: 16px;
   align-items: center;
   padding: 8px;
   border-radius: 10px;
@@ -95,7 +95,10 @@ export const ListItem = styled.div<{ selected: boolean }>`
   }
 
   .icon_button {
+    /* center the buttons */
     cursor: pointer;
+    display: flex;
+    align-items: center;
   }
 
   @media (prefers-color-scheme: light) {

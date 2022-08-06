@@ -12,7 +12,8 @@ const zipFileName = isFirefox ? "firefox.zip" : "chrome.zip";
 
 module.exports = merge(common, {
   mode: "production",
-  devtool: "source-map",
+  devtool: false, // for smaller and faster build times
+  // devtool: "source-map"
   plugins: [
     new CleanWebpackPlugin(),
     new ZipPlugin({
@@ -21,13 +22,18 @@ module.exports = merge(common, {
     }),
   ],
   optimization: {
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         terserOptions: {
+          format: {
+            comments: false
+          },
           compress: {
             drop_console: true,
           },
         },
+        extractComments: false
       }),
       new CssMinimizerPlugin(),
     ],
