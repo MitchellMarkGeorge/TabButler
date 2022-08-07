@@ -45,6 +45,7 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<T[]>([]);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   
   const fetchData = () => {
     props
@@ -76,6 +77,8 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
 
   useEffect(() => {
     fetchData();
+    inputRef.current?.focus();
+    console.log("here")
   }, []);
 
   const filteredData = useMemo(
@@ -231,7 +234,7 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
               isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
             }
             value={value}
-            autoFocus
+            ref={inputRef}
             onChange={(e) => {
               // reset selected to first element in search result
               setSelectedIndex(0);
