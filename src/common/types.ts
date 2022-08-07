@@ -96,6 +96,8 @@ export interface UpdatedTabDataPayload extends MessagePlayload {
   updatedTabData: TabData[];
 }
 
+export type Data = TabData | ActionData;
+
 export interface TabData {
   tabId: number;
   windowId: number;
@@ -109,7 +111,7 @@ export interface TabData {
 
 }
 
-export interface Action {
+export interface ActionData {
   name: string;
   message: Message; // the message that the action sends to the backgrpond sctipt
   icon: IconType; // for now

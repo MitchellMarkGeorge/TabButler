@@ -18,13 +18,12 @@ import { ListItem, ListItemProps } from "./ListItem";
 
 import browser from "webextension-polyfill";
 
-export const TabListItem = ({
+export const TabListItem: React.FC<ListItemProps<TabData>> = ({
   data,
   onClick,
   onHover,
   selected,
 }: ListItemProps<TabData>) => {
-  console.log("isPinned", data.isPinned);
   // const ref = useScroll(selected);
   const [hasImageError, setHasImageError] = useState(false);
   // is it fine to be used like this???

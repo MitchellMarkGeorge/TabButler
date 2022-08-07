@@ -1,4 +1,4 @@
-import { Props, Search } from "./components/Search";
+import { Props, SearchModal } from "./components/SearchModal";
 import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
 
@@ -17,7 +17,7 @@ export class SearchUIHandler {
   }
 
   private render() {
-    const searchComponentInstance = createElement(Search, this.props);
+    const searchComponentInstance = createElement(SearchModal, this.props);
     this.root?.render(searchComponentInstance);
   }
 
