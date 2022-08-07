@@ -66,7 +66,6 @@ export const SearchModal = (props: Props) => {
   };
 
   const showSearchView = () => {
-    console.log(currentSearchMode);
     switch (currentSearchMode) {
       case SearchMode.TAB_ACTIONS:
         return ( // seperate into variables

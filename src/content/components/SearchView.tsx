@@ -1,21 +1,22 @@
+import FocusTrap from "focus-trap-react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
+import browser from "webextension-polyfill";
 import {
   Data,
   Message,
   MessagePlayload,
   SearchMode,
-  UpdatedTabDataPayload,
+  UpdatedTabDataPayload
 } from "../../common/types";
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import browser from "webextension-polyfill";
-import { Empty } from "./Empty";
-import { Heading } from "./Heading";
 import { BottomBar } from "./BottomBar";
 import { Container } from "./Container";
+import { Empty } from "./Empty";
+import { Heading } from "./Heading";
 import { Input } from "./Input";
 import { ListContainer } from "./ListContainer";
-import { ModalBody } from "./ModalBody";
 import { ListItemProps } from "./ListItems/ListItem";
+import { ModalBody } from "./ModalBody";
 
 interface Props<T> {
   currentSearchMode: SearchMode;
@@ -51,12 +52,10 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
     props
       .getData()
       .then((data) => {
-        console.log(data);
         setData(data);
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
         setIsLoading(false);
         setHasError(true);
       });
@@ -78,7 +77,6 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
   useEffect(() => {
     fetchData();
     inputRef.current?.focus();
-    console.log("here")
   }, []);
 
   const filteredData = useMemo(
@@ -228,6 +226,8 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
       {hasError ? (
         showError()
       ) : (
+        // focus trap is needed so the input is still focused when the currentSearchMode changes
+        <FocusTrap focusTrapOptions={{ allowOutsideClick: true}}>
         <Container>
           <Input
             placeholder={
@@ -249,6 +249,7 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
             resultNum={filteredData.length}
           />
         </Container>
+        </FocusTrap>
       )}
     </ModalBody>
   );
