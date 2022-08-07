@@ -10,7 +10,6 @@ export const ModalBody = styled.div`
   background-color: rgb(46, 49, 56);
   padding: 16px;
   border-radius: 8px;
-  overflow: none;
   z-index: 9999999 !important;
   /* figure out the best box shadow */
   /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */

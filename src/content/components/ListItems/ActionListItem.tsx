@@ -1,5 +1,5 @@
 import React from "react";
-import { Action } from "../../../common/types";
+import { ActionData } from "../../../common/types";
 import { useIsDarkMode } from "../hooks";
 import { ListItem, ListItemProps } from "./ListItem";
 
@@ -9,7 +9,8 @@ export const ActionListItem = ({
   onHover,
   selected,
 }: 
-ListItemProps<Action>) => {
+ListItemProps<ActionData>) => {
+  console.log("action")
   // const ref = useScroll(selected);
   // is it fine to be used like this???
   const isDarkMode = useIsDarkMode();

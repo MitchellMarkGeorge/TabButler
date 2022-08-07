@@ -1,4 +1,4 @@
-import { Action, Message } from "../common/types";
+import { ActionData, Message } from "../common/types";
 
 import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
 import { AiFillEyeInvisible } from "@react-icons/all-files/ai/AiFillEyeInvisible";
@@ -20,8 +20,8 @@ import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
 import { BiStar } from "@react-icons/all-files/bi/BiStar";
 import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
 
-export function getActions(): Action[] {
-  return [
+export function getActions(): Promise<ActionData[]> {
+  const actions =  [
     {
       name: "New Tab",
       message: Message.OPEN_NEW_TAB,
@@ -123,4 +123,6 @@ export function getActions(): Action[] {
       //   iconColor: "#2c5282"
     },
   ];
+
+  return Promise.resolve(actions);
 }
