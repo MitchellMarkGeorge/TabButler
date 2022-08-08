@@ -2,3 +2,4 @@ dist
 node_modules
 .eslintrc.js
 webpack.*.js
+*.config.js

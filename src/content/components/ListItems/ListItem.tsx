@@ -1,4 +1,4 @@
-import styled from "@emotion/styled";
+import React from "react";
 
 export interface ListItemProps<T> {
   data: T;
@@ -9,105 +9,121 @@ export interface ListItemProps<T> {
 }
 
 // figure out best hover/selected colors
-export const ListItem = styled.div<{ selected: boolean }>`
-  width: 100%;
-  
-  height: 50px;
-  display: flex;
-  flex-direction: row;
-  /* which one? */
-  row-gap: 16px;
-  column-gap: 16px;
-  align-items: center;
-  padding: 8px;
-  border-radius: 10px;
-  /* justify-content: space-between; */
-  cursor: pointer;
-  /* if item is selected, the color should change (inspite of theme) */
-  color: ${(props) => (props.selected ? "#fff" : "inherit")};
-  background-color: ${(props) => (props.selected ? "#3182ce" : "transparent")};
+// export const ListItem = styled.div<{ selected: boolean }>`
+//   width: 100%;
 
-  // hover css is technocally no longer needed as the element becomes selected on mouse over
-  /* :hover {
-    color: #f7fafc;
-    background-color: #3182ce;
-  } */
+//   height: 50px;
+//   display: flex;
+//   flex-direction: row;
+//   /* which one? */
+//   row-gap: 16px;
+//   column-gap: 16px;
+//   align-items: center;
+//   padding: 8px;
+//   border-radius: 10px;
+//   /* justify-content: space-between; */
+//   cursor: pointer;
+//   /* if item is selected, the color should change (inspite of theme) */
+//   color: ${(props) => (props.selected ? "#fff" : "inherit")};
+//   background-color: ${(props) => (props.selected ? "#3182ce" : "transparent")};
 
-  .main_info_container, .button_container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    row-gap: 8px;
-    column-gap: 8px;
-  }
+//   // hover css is technocally no longer needed as the element becomes selected on mouse over
+//   /* :hover {
+//     color: #f7fafc;
+//     background-color: #3182ce;
+//   } */
 
-  .main_info_container {
-    flex: 1;
-    min-width: 0;
-  }
+//   .main_info_container, .button_container {
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     row-gap: 8px;
+//     column-gap: 8px;
+//   }
 
-  img {
-    height: 24px;
-    width: 24px;
-  }
+//   .main_info_container {
+//     flex: 1;
+//     min-width: 0;
+//   }
 
-  .text_container {
-    /*  flex might not be needed here     */
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    line-height: normal !important;
-  }
+//   img {
+//     height: 24px;
+//     width: 24px;
+//   }
 
-  .main_text {
-    font-size: 16px;
-    font-weight: 590;
-    /* color: #fff; */
-  }
+//   .text_container {
+//     /*  flex might not be needed here     */
+//     flex: 1;
+//     min-width: 0;
+//     display: flex;
+//     flex-direction: column;
+//     line-height: normal !important;
+//   }
 
-  .secondary_text {
-    font-size: 10px;
-    /* if selected use special color if not fall back to the default one*/
-    /* color: ${(props) =>
-      props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"}; */
-    color: #cbd5e0;
-  }
+//   .main_text {
+//     font-size: 16px;
+//     font-weight: 590;
+//     /* color: #fff; */
+//   }
 
-  /* :hover .secondary_text {
-    color: #cbd5e0;
-  } */
+//   .secondary_text {
+//     font-size: 10px;
+//     /* if selected use special color if not fall back to the default one*/
+//     /* color: ${(props) =>
+//       props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"}; */
+//     color: #cbd5e0;
+//   }
 
-  .main_text,
-  .secondary_text {
-    flex: 1;
-    /* max-width: 100%; */
-    min-width: 0;
-    white-space: nowrap;
-    /* set width for text overflow - might use percentage */
-    /* 450px */
-    /* width: 475px;
-    max-width: 475px; */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    /* font-size: 16px; */
-    user-select: none;
-  }
+//   /* :hover .secondary_text {
+//     color: #cbd5e0;
+//   } */
 
-  .icon_button {
-    /* center the buttons */
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
+//   .main_text,
+//   .secondary_text {
+//     flex: 1;
+//     /* max-width: 100%; */
+//     min-width: 0;
+//     white-space: nowrap;
+//     /* set width for text overflow - might use percentage */
+//     /* 450px */
+//     /* width: 475px;
+//     max-width: 475px; */
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     /* font-size: 16px; */
+//     user-select: none;
+//   }
 
-  @media (prefers-color-scheme: light) {
-    .secondary_text {
-      color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
-    }
+//   .icon_button {
+//     /* center the buttons */
+//     cursor: pointer;
+//     display: flex;
+//     align-items: center;
+//   }
 
-    /* :hover .secondary_text {
-      color: #cbd5e0;
-    } */
-  }
-`;
+//   @media (prefers-color-scheme: light) {
+//     .secondary_text {
+//       color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
+//     }
+
+//     /* :hover .secondary_text {
+//       color: #cbd5e0;
+//     } */
+//   }
+// `;
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  children?: React.ReactNode;
+  selected: boolean;
+}
+export const ListItem = ({ selected, children, ...rest }: Props) => {
+  return (
+    <div
+      className={
+        selected ? "tab-butler-list-item-selected" : "tab-butler-list-item" 
+      }
+      {...rest}
+    >
+      {children}
+    </div>
+  );
+};

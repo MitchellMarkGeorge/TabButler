@@ -90,7 +90,6 @@ function mountSearchComponent(message: Message) {
   const requestedSearchMode = getSearchModeFromMessage(message);
   document.addEventListener("click", unmountOnClick);
   searchUiHandler.mount(shadow, {
-    shadowRoot: shadow,
     searchMode: requestedSearchMode,
     close: unmountSearchComponent,
   });

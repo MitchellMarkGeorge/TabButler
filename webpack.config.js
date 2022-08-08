@@ -45,7 +45,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: ["to-string-loader", "css-loader", "sass-loader"], // can also use style-loader
+        use: ["to-string-loader", "css-loader", "postcss-loader", "sass-loader"], // can also use style-loader
       },
 
       {

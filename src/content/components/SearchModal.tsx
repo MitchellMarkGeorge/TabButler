@@ -1,6 +1,6 @@
-import createCache from "@emotion/cache";
-import { CacheProvider, css, Global } from "@emotion/react";
-import React, { useEffect, useRef, useState } from "react";
+// import createCache from "@emotion/cache";
+// import { CacheProvider, css, Global } from "@emotion/react";
+import React, { useEffect, useState } from "react";
 import browser from "webextension-polyfill";
 import {
   ActionData,
@@ -16,10 +16,9 @@ import { getActions } from "../actions";
 import { ActionListItem } from "./ListItems/ActionListItem";
 import { getCurrentTabData } from "../utils";
 import { TabListItem } from "./ListItems/TabListItem";
-import styles from "../styles/styles.scss"
+import styles from "../styles/styles.scss";
 
 export interface Props {
-  shadowRoot: ShadowRoot;
   searchMode: SearchMode;
   close: () => void; // function to completely unmount the modal
 }
@@ -29,12 +28,12 @@ export const SearchModal = (props: Props) => {
     props.searchMode,
   ); // make the inital value the searchMode that was passed in
   // persist the cache between renders so new style tags are not created when state changes
-  const customCache = useRef(
-    createCache({
-      key: "tab-butler",
-      container: props.shadowRoot,
-    }),
-  );
+  // const customCache = useRef(
+  //   createCache({
+  //     key: "tab-butler",
+  //     container: props.shadowRoot,
+  //   }),
+  // );
 
   useEffect(() => {
     // console.log("props.searchMode updated");
@@ -69,7 +68,8 @@ export const SearchModal = (props: Props) => {
   const showSearchView = () => {
     switch (currentSearchMode) {
       case SearchMode.TAB_ACTIONS:
-        return ( // seperate into variables
+        return (
+          // seperate into variables
           <SearchView
             currentSearchMode={currentSearchMode}
             close={props.close}
@@ -84,6 +84,7 @@ export const SearchModal = (props: Props) => {
             // better this way then trying to reset each state value every time the current search mode changes
             // every single prop will be changing anyway so its better to just rerender it completely then trying to monkey patch everything
             // most of the ui would need to be redrawn as well
+            // without key, it will try to render the data with hte wrong components
             key={currentSearchMode}
           />
         );
@@ -107,12 +108,9 @@ export const SearchModal = (props: Props) => {
   };
 
   return (
-    <CacheProvider value={customCache.current}>
-      {/*  add all colors as variables       */}
-      <>
+    <>
       <style>{styles}</style>
       {showSearchView()}
-      </>
-    </CacheProvider>
+    </>
   );
 };

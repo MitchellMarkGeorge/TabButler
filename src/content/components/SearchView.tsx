@@ -7,17 +7,10 @@ import {
   Message,
   MessagePlayload,
   SearchMode,
-  UpdatedTabDataPayload
+  UpdatedTabDataPayload,
 } from "../../common/types";
 import { BottomBar } from "./BottomBar";
-import { Container } from "./Container";
-import { Empty } from "./Empty";
-import { Heading } from "./Heading";
-import { Input } from "./Input";
-import { ListContainer } from "./ListContainer";
 import { ListItemProps } from "./ListItems/ListItem";
-import { ModalBody } from "./ModalBody";
-
 
 interface Props<T> {
   currentSearchMode: SearchMode;
@@ -35,20 +28,28 @@ interface Props<T> {
   listItemComponent: React.FC<ListItemProps<T>>;
 }
 
-
-export const SearchView =  <T extends Data>(props: Props<T>) =>  {
+export const SearchView = <T extends Data>(props: Props<T>) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [showOnlyCurrentWindow, toggleShowOnlyCurrentWindow] = useReducer(
-    (showOnlyCurrentWindow) => !showOnlyCurrentWindow,
-    false,
-  );
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<T[]>([]);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+  const [showOnlyCurrentWindow, toggleShowOnlyCurrentWindow] = useReducer(
+    (showOnlyCurrentWindow) => {
+      virtuosoRef.current?.scrollIntoView({
+        index: 0,
+        done: () => {
+          setSelectedIndex(0);
+        },
+      });
+      // does is need ot return?
+      return !showOnlyCurrentWindow;
+    },
+    false,
+  );
+
   const fetchData = () => {
     props
       .getData()
@@ -70,8 +71,8 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
     }
   };
 
-  const isTabActionsMode = () =>
-    props.currentSearchMode === SearchMode.TAB_ACTIONS;
+  // const isTabActionsMode = () =>
+  //   props.currentSearchMode === SearchMode.TAB_ACTIONS;
   const isTabSearchMode = () =>
     props.currentSearchMode === SearchMode.TAB_SEARCH;
 
@@ -177,16 +178,16 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
   const showList = () => {
     if (isLoading) {
       return (
-        <Empty>
-          <Heading>Loading...</Heading>
-        </Empty>
+        <div className="tab-butler-empty">
+          <h1 className="tab-butler-heading">Loading...</h1>
+        </div>
       );
     }
     if (filteredData.length === 0) {
       return (
-        <Empty>
-          <Heading>{props.noDataText}</Heading>
-        </Empty>
+        <div className="tab-butler-empty">
+          <h1 className="tab-butler-heading">{props.noDataText}</h1>
+        </div>
       );
     }
     const ListItemComponent = props.listItemComponent;
@@ -212,47 +213,45 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
   };
 
   const showError = () => (
-    <Empty>
-      <div>
-        <Heading>{props.errorText}</Heading>
-        <Heading>
+    <div className="tab-butler-empty">
+      <div className="tab-butler-error-message">
+        <h1 className="tab-butler-heading">{props.errorText}</h1>
+        <h1 className="tab-butler-heading">
           Try reloading the current tab or restarting your browser.
-        </Heading>
+        </h1>
       </div>
-    </Empty>
+    </div>
   );
 
   return (
-    <ModalBody>
+    <div className="tab-butler-modal-body">
       {hasError ? (
         showError()
       ) : (
         // focus trap is needed so the input is still focused when the currentSearchMode changes
-        <FocusTrap focusTrapOptions={{ allowOutsideClick: true}}>
-        <Container>
-          <Input
-            placeholder={
-              isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
-            }
-            value={value}
-            ref={inputRef}
-            onChange={(e) => {
-              // reset selected to first element in search result
-              setSelectedIndex(0);
-              setValue(e.target.value);
-            }}
-          />
-          <ListContainer>{showList()}</ListContainer>
-          <BottomBar
-            currentSeachMode={props.currentSearchMode}
-            showOnlyCurrentWindow={showOnlyCurrentWindow}
-            toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
-            resultNum={filteredData.length}
-          />
-        </Container>
+        <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
+          <div className="tab-butler-main-container">
+            <input
+              className="tab-butler-input"
+              placeholder={props.inputPlaceHolderText}
+              value={value}
+              ref={inputRef}
+              onChange={(e) => {
+                // reset selected to first element in search result
+                setSelectedIndex(0);
+                setValue(e.target.value);
+              }}
+            />
+            <div className="tab-butler-list-container">{showList()}</div>
+            <BottomBar
+              currentSeachMode={props.currentSearchMode}
+              showOnlyCurrentWindow={showOnlyCurrentWindow}
+              toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
+              resultNum={filteredData.length}
+            />
+          </div>
         </FocusTrap>
       )}
-    </ModalBody>
+    </div>
   );
 };
-
