@@ -43,6 +43,10 @@ module.exports = {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader"], // can also use style-loader
       },
+      {
+        test: /\.scss$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"], // can also use style-loader
+      },
 
       {
         test: /\.(png|svg|jpg|gif)$/,
@@ -57,6 +61,10 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name]/[name].css",
     }),
+    // new MiniCssExtractPlugin({
+    //   chunkFilename: "styles.scss",
+    //   filename: "content/styles.css",
+    // }),
 
     new CopyPlugin({
       patterns: [manifestPattern, { from: "src/icons", to: "icons" }],
@@ -69,8 +77,8 @@ module.exports = {
     alias: {
       "react": "preact/compat",
       "react-dom/test-utils": "preact/test-utils",
-      "react-dom": "preact/compat",     // Must be below test-utils
-      "react/jsx-runtime": "preact/jsx-runtime"
-    }
+      "react-dom": "preact/compat", // Must be below test-utils
+      "react/jsx-runtime": "preact/jsx-runtime",
+    },
   },
 };
