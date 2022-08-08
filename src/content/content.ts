@@ -5,8 +5,9 @@ import {
   MessagePlayload,
   SearchMode,
 } from "../common/types";
-import "./content.css";
+// import "./content.css";
 import { SearchUIHandler } from "./SearchUIHandler";
+// import type * as CSS from 'csstype';
 
 // if there is already a modal element in the dom (meaning there was an update), remove the existing one and create a new one
 // this should unmount the react component and remove the shadow dom. for now this leaves some listeners attached but it should not affect any functionality
@@ -45,9 +46,45 @@ const messageListener = (messagePayload: MessagePlayload) => {
 };
 browser.runtime.onMessage.addListener(messageListener);
 
+const styleModalRoot = (modalRoot: HTMLElement) => {
+  // const style: Partial<CSSStyleDeclaration> = {
+  //   position: "fixed",
+  //   left: "0",
+  //   right: "0",
+  //   top: "0",
+  //   bottom: "0",
+  //   display: "flex",
+  //   justifyContent: "center",
+  //   boxSizing: "border-box",
+  //   paddingTop: "20vh",
+  //   width: "100%",
+  //   height: "100%",
+  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
+  //   zIndex: "999999"
+  // }
+
+  // for (const [property, value] of Object.entries(style)) {
+  //   modalRoot.style.setProperty(property, value as string);
+  // }
+  modalRoot.style.position = "fixed"
+  modalRoot.style.left = "0";
+  modalRoot.style.right = "0";
+  modalRoot.style.bottom = "0";
+  modalRoot.style.top = "0";
+  modalRoot.style.display = "flex"
+  modalRoot.style.justifyContent = "center"
+  modalRoot.style.boxSizing = "border-box"
+  modalRoot.style.paddingTop = "20vh"
+  modalRoot.style.width = "100%"
+  modalRoot.style.height = "100%"
+  modalRoot.style.backgroundColor = "rgba(0, 0, 0, 0.5)"
+  modalRoot.style.zIndex = "999999";
+}
+
 function mountSearchComponent(message: Message) {
   // create a new modal root on mount and append as the last child of the body
   tabButlerModalRoot = document.createElement("tab-butler-modal");
+  styleModalRoot(tabButlerModalRoot);
 // needs to be open so that the click event can bubble up
   shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
   const requestedSearchMode = getSearchModeFromMessage(message);

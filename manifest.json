@@ -21,8 +21,7 @@
     {
       "matches": ["<all_urls>"],
       "run_at": "document_idle",
-      "js": ["content/content.js"],
-      "css": ["content/content.css"]
+      "js": ["content/content.js"]
     }
   ],
   "commands": {

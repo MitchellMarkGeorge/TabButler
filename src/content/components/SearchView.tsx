@@ -18,6 +18,7 @@ import { ListContainer } from "./ListContainer";
 import { ListItemProps } from "./ListItems/ListItem";
 import { ModalBody } from "./ModalBody";
 
+
 interface Props<T> {
   currentSearchMode: SearchMode;
   inputPlaceHolderText: string;

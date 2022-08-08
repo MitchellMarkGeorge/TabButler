@@ -96,7 +96,7 @@ export async function injectExtension() {
   const manifest = browser.runtime.getManifest();
   // we know that these values will be present
   const extensionContentScripts = manifest.content_scripts![0].js!;
-  const extensionCss = manifest.content_scripts![0].css!;
+  // const extensionCss = manifest.content_scripts![0].css!;
   // inject the extension into all tabs
   const tabs = await browser.tabs.query({ status: "complete" }); // think about this
   const tabsLength = tabs.length;
@@ -114,10 +114,10 @@ export async function injectExtension() {
         target: { tabId: tab.id, allFrames: false },
         files: extensionContentScripts,
       });
-      await browser.scripting.insertCSS({
-        target: { tabId: tab.id, allFrames: false },
-        files: extensionCss,
-      });
+      // await browser.scripting.insertCSS({
+      //   target: { tabId: tab.id, allFrames: false },
+      //   files: extensionCss,
+      // });
     }
   }
   // popular way I have seen it done in othe extensions, this changes the time complexity to O(n^2)

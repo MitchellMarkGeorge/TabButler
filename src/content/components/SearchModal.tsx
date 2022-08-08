@@ -16,6 +16,7 @@ import { getActions } from "../actions";
 import { ActionListItem } from "./ListItems/ActionListItem";
 import { getCurrentTabData } from "../utils";
 import { TabListItem } from "./ListItems/TabListItem";
+import styles from "../styles/styles.scss"
 
 export interface Props {
   shadowRoot: ShadowRoot;
@@ -108,33 +109,10 @@ export const SearchModal = (props: Props) => {
   return (
     <CacheProvider value={customCache.current}>
       {/*  add all colors as variables       */}
-      <Global
-        styles={css`
-          * {
-            box-sizing: border-box !important;
-            /* use system font (San Fransisco or Segoe UI) */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-              Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
-            letter-spacing: normal !important;
-
-            /* think about these */
-            /* things look slightly better with these selectors set */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-          }
-
-          /* disable scrollbar for virtualized list */
-          .tab-butler-virtual-list::-webkit-scrollbar {
-            display: none;
-          }
-          /* disable scrollbar for firefox */
-          .tab-butler-virtual-list {
-            scrollbar-width: none;
-          }
-        `}
-      />
+      <>
+      <style>{styles}</style>
       {showSearchView()}
+      </>
     </CacheProvider>
   );
 };
