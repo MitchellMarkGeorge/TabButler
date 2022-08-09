@@ -107,7 +107,6 @@ export const SearchViewContainer = () => {
     return (
       <div className="tab-butler-empty">
         <div className="tab-butler-error-message">
-          {/* for now */}
           <h1 className="tab-butler-heading">Error</h1>
           <h1 className="tab-butler-heading">
             Try reloading the current tab or restarting your browser.
@@ -117,6 +116,5 @@ export const SearchViewContainer = () => {
     );
   }
 
-  console.log("rendering data");
   return showSearchView();
 };

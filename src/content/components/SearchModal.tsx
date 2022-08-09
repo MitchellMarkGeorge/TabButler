@@ -11,12 +11,14 @@ export interface Props {
   close: () => void; // function to completely unmount the modal
 }
 
+// alternative to the style tag is a link tag with the chrome url to transpiled style sheet
+
 export const SearchModal = (props: Props) => {
   const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>(
     props.searchMode,
   ); // make the inital value the searchMode that was passed in
-  // puting the loading state here so it can be put in the 
-  const [isLoading, setIsLoading] = useState(true)
+  // puting the loading state here so it can be put in the context
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // console.log("props.searchMode updated");
@@ -34,7 +36,13 @@ export const SearchModal = (props: Props) => {
 
   return (
     <SearchModalContext.Provider
-      value={{ close: props.close, currentSearchMode, setCurrentSearchMode, setIsLoading, isLoading }}
+      value={{
+        close: props.close,
+        currentSearchMode,
+        setCurrentSearchMode,
+        setIsLoading,
+        isLoading,
+      }}
     >
       <style>{styles}</style>
       <div className="tab-butler-modal-body">

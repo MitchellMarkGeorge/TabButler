@@ -1,0 +1,58 @@
+// utils styles for containers and everything in between
+
+.tab-butler-main-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  height: 100%;
+  width: 100%;
+  background-color: transparent;
+}
+
+.tab-butler-list-container {
+  height: 100%;
+  /* is this needed? */
+  max-height: 100%;
+  overflow: auto;
+  width: 100%;
+  flex: auto;
+  /* should I declare color here? */
+  color: #fff;
+
+  /* remove the scroll bar */
+  /* chromeium */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* firefox */
+  scrollbar-width: none;
+
+  @media (prefers-color-scheme: light) {
+    color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+
+.tab-butler-empty {
+  height: 100%;
+  width: 100%;
+  flex: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  .tab-bulter-error-message {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.tab-butler-heading {
+  color: rgba(255, 255, 255, 0.36);
+  margin: 0;
+
+  @media (prefers-color-scheme: light) {
+    color: rgba(0, 0, 0, 0.36);
+  }
+}

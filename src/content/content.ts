@@ -21,7 +21,6 @@ if (existingTabButlerModalRoot) {
 // this should also help in sites where the dom might change from time to time, invalidating
 let tabButlerModalRoot: HTMLElement | null = null;
 // needs to be open so that the click event can bubble up
-let shadow: ShadowRoot | null = null;
 let isOpen = false; // technically no longer needed
 let currentSearchMode: SearchMode;
 const searchUiHandler = new SearchUIHandler();
@@ -36,7 +35,6 @@ const messageListener = (messagePayload: MessagePlayload) => {
         // special function to switch modes if the message is different
         unmountSearchComponentFromMessage(message);
       } else {
-        console.log("here")
         mountSearchComponent(message);
       }
       break;
@@ -47,25 +45,6 @@ const messageListener = (messagePayload: MessagePlayload) => {
 browser.runtime.onMessage.addListener(messageListener);
 
 const styleModalRoot = (modalRoot: HTMLElement) => {
-  // const style: Partial<CSSStyleDeclaration> = {
-  //   position: "fixed",
-  //   left: "0",
-  //   right: "0",
-  //   top: "0",
-  //   bottom: "0",
-  //   display: "flex",
-  //   justifyContent: "center",
-  //   boxSizing: "border-box",
-  //   paddingTop: "20vh",
-  //   width: "100%",
-  //   height: "100%",
-  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  //   zIndex: "999999"
-  // }
-
-  // for (const [property, value] of Object.entries(style)) {
-  //   modalRoot.style.setProperty(property, value as string);
-  // }
   modalRoot.style.position = "fixed"
   modalRoot.style.left = "0";
   modalRoot.style.right = "0";
@@ -86,10 +65,10 @@ function mountSearchComponent(message: Message) {
   tabButlerModalRoot = document.createElement("tab-butler-modal");
   styleModalRoot(tabButlerModalRoot);
 // needs to be open so that the click event can bubble up
-  shadow = tabButlerModalRoot.attachShadow({ mode: "open" });
+  tabButlerModalRoot.attachShadow({ mode: "open"})
   const requestedSearchMode = getSearchModeFromMessage(message);
   document.addEventListener("click", unmountOnClick);
-  searchUiHandler.mount(shadow, {
+  searchUiHandler.mount(tabButlerModalRoot.shadowRoot as ShadowRoot, {
     searchMode: requestedSearchMode,
     close: unmountSearchComponent,
   });
@@ -122,7 +101,6 @@ function unmountSearchComponent() {
   searchUiHandler.unMount();
   tabButlerModalRoot?.remove();
   tabButlerModalRoot = null;
-  shadow = null;
   isOpen = false;
   // should i reset currentSearchMode?
 }

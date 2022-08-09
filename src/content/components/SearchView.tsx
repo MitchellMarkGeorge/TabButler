@@ -15,6 +15,7 @@ import {
   SearchModalContext,
   SearchModalContextType,
 } from "./SearchModalContext";
+import { AiOutlineSearch } from "@react-icons/all-files/ai/AiOutlineSearch";
 
 interface Props<T> {
   data: T[];
@@ -145,9 +146,9 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   });
 
   const onItemClick = (data: Data) => {
-    props.onItemClick(data as T)
+    props.onItemClick(data as T);
     close();
-  }
+  };
 
   const showList = () => {
     if (filteredData.length === 0) {
@@ -180,8 +181,11 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   };
 
   return (
-      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
-        <div className="tab-butler-main-container">
+    <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
+      <div className="tab-butler-main-container">
+        <div className="tab-butler-input-container">
+          {/* think about this*/}
+          <AiOutlineSearch className="search-icon" />
           <input
             className="tab-butler-input"
             placeholder={props.inputPlaceHolderText}
@@ -193,14 +197,15 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
               setValue(e.target.value);
             }}
           />
-          <div className="tab-butler-list-container">{showList()}</div>
-          <BottomBar
-            currentSeachMode={currentSearchMode}
-            showOnlyCurrentWindow={showOnlyCurrentWindow}
-            toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
-            resultNum={filteredData.length}
-          />
         </div>
-      </FocusTrap>
+        <div className="tab-butler-list-container">{showList()}</div>
+        <BottomBar
+          currentSeachMode={currentSearchMode}
+          showOnlyCurrentWindow={showOnlyCurrentWindow}
+          toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
+          resultNum={filteredData.length}
+        />
+      </div>
+    </FocusTrap>
   );
 };
