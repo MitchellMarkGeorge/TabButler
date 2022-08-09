@@ -1,22 +1,10 @@
 // import createCache from "@emotion/cache";
 // import { CacheProvider, css, Global } from "@emotion/react";
 import React, { useEffect, useState } from "react";
-import browser from "webextension-polyfill";
-import {
-  ActionData,
-  ChangeTabPayload,
-  Message,
-  MessagePlayload,
-  SearchMode,
-  TabData,
-} from "../../common/types";
-import { filterActions, filterTabs } from "../filters";
-import { SearchView } from "./SearchView";
-import { getActions } from "../actions";
-import { ActionListItem } from "./ListItems/ActionListItem";
-import { getCurrentTabData } from "../utils";
-import { TabListItem } from "./ListItems/TabListItem";
+import { SearchMode } from "../../common/types";
 import styles from "../styles/styles.scss";
+import { SearchModalContext } from "./SearchModalContext";
+import { SearchViewContainer } from "./SearchViewContainer";
 
 export interface Props {
   searchMode: SearchMode;
@@ -27,13 +15,8 @@ export const SearchModal = (props: Props) => {
   const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>(
     props.searchMode,
   ); // make the inital value the searchMode that was passed in
-  // persist the cache between renders so new style tags are not created when state changes
-  // const customCache = useRef(
-  //   createCache({
-  //     key: "tab-butler",
-  //     container: props.shadowRoot,
-  //   }),
-  // );
+  // puting the loading state here so it can be put in the 
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // console.log("props.searchMode updated");
@@ -41,76 +24,22 @@ export const SearchModal = (props: Props) => {
     // on mount, the value of currentSearch mode is set from the props so it should not be set again
     if (currentSearchMode !== props.searchMode) {
       // console.log("setting currentSearchMode with props.searchMode");
+      // it is important to set loading to true here so that when the component rerenders after the currentSearchMode has changed, it renders the loading state, not the old data with incorrect components
+      // updates are batched together
+      setIsLoading(true);
+      // loading is true as new data based on the new currentSearch mode is fetched
       setCurrentSearchMode(props.searchMode);
     }
   }, [props.searchMode]);
 
-  const onTabItemClick = (tabData: TabData) => {
-    const messagePayload: ChangeTabPayload = {
-      message: Message.CHANGE_TAB,
-      tabId: tabData.tabId,
-      windowId: tabData.windowId,
-    };
-    browser.runtime.sendMessage(messagePayload);
-    // shoud this be in the then clause?
-    props.close();
-  };
-
-  const onActionItemClick = (action: ActionData) => {
-    const messagePayload: MessagePlayload = {
-      message: action.message,
-    };
-    browser.runtime.sendMessage(messagePayload);
-    // shoud this be in the then clause?
-    props.close();
-  };
-
-  const showSearchView = () => {
-    switch (currentSearchMode) {
-      case SearchMode.TAB_ACTIONS:
-        return (
-          // seperate into variables
-          <SearchView
-            currentSearchMode={currentSearchMode}
-            close={props.close}
-            inputPlaceHolderText="Search Actions..."
-            errorText="Unable to show your actions"
-            noDataText="No actions to show"
-            filterData={filterActions}
-            getData={getActions}
-            onItemClick={onActionItemClick}
-            listItemComponent={ActionListItem}
-            // using key so a new component instance is created
-            // better this way then trying to reset each state value every time the current search mode changes
-            // every single prop will be changing anyway so its better to just rerender it completely then trying to monkey patch everything
-            // most of the ui would need to be redrawn as well
-            // without key, it will try to render the data with hte wrong components
-            key={currentSearchMode}
-          />
-        );
-
-      case SearchMode.TAB_SEARCH:
-        return (
-          <SearchView
-            currentSearchMode={currentSearchMode}
-            close={props.close}
-            inputPlaceHolderText="Search Tabs..."
-            errorText="Unable to show your tabs"
-            noDataText="No tabs to show"
-            filterData={filterTabs}
-            getData={getCurrentTabData}
-            onItemClick={onTabItemClick}
-            listItemComponent={TabListItem}
-            key={currentSearchMode}
-          />
-        );
-    }
-  };
-
   return (
-    <>
+    <SearchModalContext.Provider
+      value={{ close: props.close, currentSearchMode, setCurrentSearchMode, setIsLoading, isLoading }}
+    >
       <style>{styles}</style>
-      {showSearchView()}
-    </>
+      <div className="tab-butler-modal-body">
+        <SearchViewContainer />
+      </div>
+    </SearchModalContext.Provider>
   );
 };

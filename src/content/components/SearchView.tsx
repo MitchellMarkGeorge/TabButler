@@ -1,39 +1,40 @@
 import FocusTrap from "focus-trap-react";
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import browser from "webextension-polyfill";
-import {
-  Data,
-  Message,
-  MessagePlayload,
-  SearchMode,
-  UpdatedTabDataPayload,
-} from "../../common/types";
+import { Data } from "../../common/types";
 import { BottomBar } from "./BottomBar";
 import { ListItemProps } from "./ListItems/ListItem";
+import {
+  SearchModalContext,
+  SearchModalContextType,
+} from "./SearchModalContext";
 
 interface Props<T> {
-  currentSearchMode: SearchMode;
+  data: T[];
   inputPlaceHolderText: string;
   noDataText: string;
-  errorText: string;
-  getData: () => Promise<T[]>;
   filterData: (
     searchValue: string,
     data: T[],
     onlyCurrentWindow: boolean,
   ) => T[];
   onItemClick: (item: T) => void;
-  close: () => void;
   listItemComponent: React.FC<ListItemProps<T>>;
 }
 
 export const SearchView = <T extends Data>(props: Props<T>) => {
+  const { currentSearchMode, close } = useContext(
+    SearchModalContext,
+  ) as SearchModalContextType;
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [hasError, setHasError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<T[]>([]);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [showOnlyCurrentWindow, toggleShowOnlyCurrentWindow] = useReducer(
@@ -50,40 +51,39 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
     false,
   );
 
-  const fetchData = () => {
-    props
-      .getData()
-      .then((data) => {
-        setData(data);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setIsLoading(false);
-        setHasError(true);
-      });
-  };
-
   const onSubmit = () => {
     // rename this method
     const selectedData = filteredData[selectedIndex];
     if (selectedData) {
-      props.onItemClick(selectedData);
+      onItemClick(selectedData);
     }
   };
 
   // const isTabActionsMode = () =>
   //   props.currentSearchMode === SearchMode.TAB_ACTIONS;
-  const isTabSearchMode = () =>
-    props.currentSearchMode === SearchMode.TAB_SEARCH;
+  // const isTabSearchMode = () => currentSearchMode === SearchMode.TAB_SEARCH;
 
   useEffect(() => {
-    fetchData();
+    if (value) {
+      setValue("");
+    }
+
+    if (selectedIndex !== 0) {
+      setSelectedIndex(0);
+    }
+
+    if (showOnlyCurrentWindow) {
+      toggleShowOnlyCurrentWindow();
+    }
     inputRef.current?.focus();
-  }, []);
+  }, [currentSearchMode]);
+  // useEffect(() => {
+  //   inputRef.current?.focus();
+  // }, [])
 
   const filteredData = useMemo(
-    () => props.filterData(value, data, showOnlyCurrentWindow),
-    [value, data, showOnlyCurrentWindow],
+    () => props.filterData(value, props.data, showOnlyCurrentWindow),
+    [value, props.data, showOnlyCurrentWindow],
   );
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -123,51 +123,20 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
     // this is neccessary to stop some sites from preventing some key strokes from being registered
     event.stopPropagation();
     if (event.key === "Escape") {
-      props.close();
-    }
-  };
-
-  const onVisibilityChange = () => {
-    // this is called only when the page was once not visible (like the user whent to another tab) and it has become visible again.
-    if (document.visibilityState === "visible" && isTabSearchMode()) {
-      // if the document is now visible and was previously inactive and a tab search modal was open
-      // get the updated tab data
-      fetchData();
-    }
-  };
-
-  const updateTabDataListener = (messagePayLoad: MessagePlayload) => {
-    const { message } = messagePayLoad;
-    if (message === Message.TAB_DATA_UPDATE) {
-      // console.log(messagePayLoad);
-      const { updatedTabData } = messagePayLoad as UpdatedTabDataPayload;
-      // just update the data
-      setData(updatedTabData as T[]);
+      close();
     }
   };
 
   const addListeners = () => {
     document.addEventListener("keydown", unmountOnEscape, true);
     // this listerner only needs to be added in TAB_SEARCH mode
-    document.addEventListener("visibilitychange", onVisibilityChange, false);
     document.addEventListener("keydown", onKeyDown, true);
     // conditionally add message listener for tab data updates (only in tab search mode)
-    if (isTabSearchMode()) {
-      browser.runtime.onMessage.addListener(updateTabDataListener);
-    }
   };
 
   const removeListeners = () => {
     document.removeEventListener("keydown", unmountOnEscape, true);
-    document.removeEventListener("visibilitychange", onVisibilityChange, false);
     document.removeEventListener("keydown", onKeyDown, true);
-
-    if (
-      isTabSearchMode() &&
-      browser.runtime.onMessage.hasListener(updateTabDataListener)
-    ) {
-      browser.runtime.onMessage.removeListener(updateTabDataListener);
-    }
   };
 
   useEffect(() => {
@@ -175,14 +144,12 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
     return removeListeners;
   });
 
+  const onItemClick = (data: Data) => {
+    props.onItemClick(data as T)
+    close();
+  }
+
   const showList = () => {
-    if (isLoading) {
-      return (
-        <div className="tab-butler-empty">
-          <h1 className="tab-butler-heading">Loading...</h1>
-        </div>
-      );
-    }
     if (filteredData.length === 0) {
       return (
         <div className="tab-butler-empty">
@@ -201,7 +168,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
         className="tab-butler-virtual-list"
         itemContent={(index, item) => (
           <ListItemComponent
-            onClick={props.onItemClick}
+            onClick={onItemClick}
             data={item}
             onHover={() => setSelectedIndex(index)}
             selected={selectedIndex === index}
@@ -212,46 +179,28 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
     );
   };
 
-  const showError = () => (
-    <div className="tab-butler-empty">
-      <div className="tab-butler-error-message">
-        <h1 className="tab-butler-heading">{props.errorText}</h1>
-        <h1 className="tab-butler-heading">
-          Try reloading the current tab or restarting your browser.
-        </h1>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="tab-butler-modal-body">
-      {hasError ? (
-        showError()
-      ) : (
-        // focus trap is needed so the input is still focused when the currentSearchMode changes
-        <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
-          <div className="tab-butler-main-container">
-            <input
-              className="tab-butler-input"
-              placeholder={props.inputPlaceHolderText}
-              value={value}
-              ref={inputRef}
-              onChange={(e) => {
-                // reset selected to first element in search result
-                setSelectedIndex(0);
-                setValue(e.target.value);
-              }}
-            />
-            <div className="tab-butler-list-container">{showList()}</div>
-            <BottomBar
-              currentSeachMode={props.currentSearchMode}
-              showOnlyCurrentWindow={showOnlyCurrentWindow}
-              toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
-              resultNum={filteredData.length}
-            />
-          </div>
-        </FocusTrap>
-      )}
-    </div>
+      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
+        <div className="tab-butler-main-container">
+          <input
+            className="tab-butler-input"
+            placeholder={props.inputPlaceHolderText}
+            value={value}
+            ref={inputRef}
+            onChange={(e) => {
+              // reset selected to first element in search result
+              setSelectedIndex(0);
+              setValue(e.target.value);
+            }}
+          />
+          <div className="tab-butler-list-container">{showList()}</div>
+          <BottomBar
+            currentSeachMode={currentSearchMode}
+            showOnlyCurrentWindow={showOnlyCurrentWindow}
+            toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
+            resultNum={filteredData.length}
+          />
+        </div>
+      </FocusTrap>
   );
 };

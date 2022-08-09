@@ -10,17 +10,14 @@ export const ActionListItem = ({
   selected,
 }: 
 ListItemProps<ActionData>) => {
-  console.log("action")
   // const ref = useScroll(selected);
   // is it fine to be used like this???
   const isDarkMode = useIsDarkMode();
   const Icon = data.icon;
   return (
     <ListItem
-      // style={style}
       onClick={() => onClick(data)}
       selected={selected}
-      // ref={ref}
       onMouseOver={onHover}
     >
       <div className="main_info_container">
