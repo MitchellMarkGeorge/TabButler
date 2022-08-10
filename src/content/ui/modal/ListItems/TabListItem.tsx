@@ -12,7 +12,7 @@ import {
   TabData,
   ToggleMuteTabPayload,
   TogglePinTabPayload
-} from "../../../common/types";
+} from "../../../../common/types";
 import { useIsDarkMode } from "../hooks";
 import { ListItem, ListItemProps } from "./ListItem";
 

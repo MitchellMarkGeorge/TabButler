@@ -1,4 +1,4 @@
-import { TabData, ActionData } from "../common/types";
+import { TabData, ActionData } from "../../../common/types";
 
 export const filterByCurrentWindow = (currentTabs: TabData[]) => {
   return currentTabs.filter((tabData) => tabData.inCurrentWindow);
