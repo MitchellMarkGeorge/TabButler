@@ -139,6 +139,11 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
     if (message === Message.TAB_DATA_UPDATE) {
       // console.log(messagePayLoad);
       const { updatedTabData } = messagePayLoad as UpdatedTabDataPayload;
+      // for some reason of firefox, when a user closes a tab using the actual close functionality, it does not update the ui properly
+      // the tab data sent from the background script is not up to date.
+      // the onRemoved listener is called before the tab is removed, leading to it still being present in the array.
+      // this is a bug in firefox that we have no control over
+      console.log("received message", updatedTabData);
       // just update the data
       setData(updatedTabData as T[]);
     }

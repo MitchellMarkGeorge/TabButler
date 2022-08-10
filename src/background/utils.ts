@@ -1,4 +1,4 @@
-import { isChromeURL } from "../common/common";
+import { isBrowserURL } from "../common/common";
 import {
   CheackSearchOpenResponse,
   Message,
@@ -25,7 +25,7 @@ export async function getTabsWithSearchOpen(): Promise<number[]> {
   const result: number[] = [];
   for (let i = 0; i < activeTabsLength; i++) {
     const activeTab = activeTabs[i];
-    if (activeTab?.id && activeTab.url && !isChromeURL(activeTab.url)) {
+    if (activeTab?.id && activeTab.url && !isBrowserURL(activeTab.url)) {
       // if the page has an old content script, then it will throw an error
       const respose: CheackSearchOpenResponse = await browser.tabs.sendMessage(
         activeTab.id,
@@ -108,7 +108,7 @@ export async function injectExtension() {
       tab.id &&
       tab.id !== browser.tabs.TAB_ID_NONE &&
       tab.url && // tab.url is only present if the permission is present, which it is
-      !isChromeURL(tab?.url)
+      !isBrowserURL(tab?.url)
     ) {
       await browser.scripting.executeScript({
         target: { tabId: tab.id, allFrames: false },
@@ -153,7 +153,7 @@ export async function injectExtension() {
   // }
 }
 
-export const reactOnTabUpdate = () => {
+export const reactOnTabUpdate = (removedTabId?:number) => {
   // send updated tab data to all open search modals in the browser
   getTabsWithSearchOpen().then((tabIds) => {
     console.log(tabIds);
@@ -161,6 +161,13 @@ export const reactOnTabUpdate = () => {
     tabIds.forEach((id) => {
       // passing in the id for each active tab makes sure the currentWindow is correct
       getTabsInBrowser(id).then((updatedTabData) => {
+        // there is a bug in firefox where the removed tab is still given in the tabData array
+        if (removedTabId !== undefined) {
+          const removedTabDataIndex = updatedTabData.findIndex((tabData) => tabData.tabId === removedTabId);
+          if (removedTabDataIndex != -1) {
+            updatedTabData.splice(removedTabDataIndex, 1);
+          } 
+        }
         const messagePayload: UpdatedTabDataPayload = {
           message: Message.TAB_DATA_UPDATE,
           updatedTabData,
