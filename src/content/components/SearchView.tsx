@@ -84,10 +84,11 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
     [value, data, showOnlyCurrentWindow],
   );
 
-  const onKeyDown = (event: KeyboardEvent) => {
+  const onKeyUp = (event: KeyboardEvent) => {
     // circular navigation might confuse users
+    // tab navigation causes navigation in onKeyUp
     let nextIndex = 0;
-    if (event.key === "ArrowUp" || (event.shiftKey && event.key === "Tab")) {
+    if (event.key === "ArrowUp") {
       event.preventDefault();
       if (selectedIndex !== 0) {
         nextIndex = selectedIndex - 1;
@@ -99,7 +100,7 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
           },
         });
       }
-    } else if (event.key === "ArrowDown" || event.key === "Tab") {
+    } else if (event.key === "ArrowDown") {
       event.preventDefault();
       if (selectedIndex !== filteredData.length - 1) {
         nextIndex = selectedIndex + 1;
@@ -153,7 +154,7 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
     document.addEventListener("keydown", unmountOnEscape, true);
     // this listerner only needs to be added in TAB_SEARCH mode
     document.addEventListener("visibilitychange", onVisibilityChange, false);
-    document.addEventListener("keydown", onKeyDown, true);
+    document.addEventListener("keyup", onKeyUp, true);
     // conditionally add message listener for tab data updates (only in tab search mode)
     if (isTabSearchMode()) {
       browser.runtime.onMessage.addListener(updateTabDataListener);
@@ -163,7 +164,7 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
   const removeListeners = () => {
     document.removeEventListener("keydown", unmountOnEscape, true);
     document.removeEventListener("visibilitychange", onVisibilityChange, false);
-    document.removeEventListener("keydown", onKeyDown, true);
+    document.removeEventListener("keyup", onKeyUp, true);
 
     if (
       isTabSearchMode() &&
