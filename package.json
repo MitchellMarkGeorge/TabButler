@@ -1,6 +1,6 @@
 {
   "name": "tab-butler",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "A tab manager at your service",
   "main": "index.js",
   "scripts": {
