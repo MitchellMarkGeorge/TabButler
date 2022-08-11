@@ -19,7 +19,10 @@ export async function getTabsWithSearchOpen(): Promise<number[]> {
   // get the tab in the window with search modal open and in tab search mode
   // in development, if the there are multiple windows and one of the active tabs in those windows has an isolated content script,
   // it will cause an error
-  const activeTabs = await browser.tabs.query({ active: true, status: "complete" }); // can only communicate with tabs that are completely loaded
+  const activeTabs = await browser.tabs.query({
+    active: true,
+    status: "complete",
+  }); // can only communicate with tabs that are completely loaded
   console.log(activeTabs);
   const activeTabsLength = activeTabs.length;
   const result: number[] = [];
@@ -55,7 +58,7 @@ export async function getTabsInBrowser(activeTabId?: number) {
   if (activeTabId !== undefined) {
     currentWindowId = (await browser.tabs.get(activeTabId)).windowId;
   } else {
-  // for windows, the current window is the window that the code is being run from (not what we need)
+    // for windows, the current window is the window that the code is being run from (not what we need)
     currentWindowId = (await browser.windows.getLastFocused()).id;
   }
   const results: TabData[] = [];
@@ -82,7 +85,7 @@ export async function getTabsInBrowser(activeTabId?: number) {
         // audible: tab.audible === undefined ? false : tab.audible
         isAudible: Boolean(tab.audible), // if undefined, it will return false
         isMuted: Boolean(tab?.mutedInfo?.muted), // think about this
-        isPinned: tab.pinned
+        isPinned: tab.pinned,
         // muted info
       };
       results.push(tabData);
@@ -179,5 +182,5 @@ export const checkCommands = async () => {
   for (const { shortcut } of commands) {
     if (!shortcut) return true;
   }
-  return false
-}
+  return false;
+};

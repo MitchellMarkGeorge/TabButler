@@ -116,14 +116,16 @@ browser.runtime.onMessage.addListener(
         break;
       case Message.TOGGLE_PIN_GIVEN_TAB: {
         // toggle pinned for given tab
-          const { tabId: giventabId, isPinned } = messagePayload as TogglePinTabPayload 
-          browser.tabs.update(giventabId, { pinned: !isPinned })
+        const { tabId: giventabId, isPinned } =
+          messagePayload as TogglePinTabPayload;
+        browser.tabs.update(giventabId, { pinned: !isPinned });
         break;
       }
       case Message.TOGGLE_MUTE_GIVEN_TAB: {
         // toggle mute for given tab
-          const { tabId: giventabId, isMuted } = messagePayload as ToggleMuteTabPayload 
-          browser.tabs.update(giventabId, { muted: !isMuted })
+        const { tabId: giventabId, isMuted } =
+          messagePayload as ToggleMuteTabPayload;
+        browser.tabs.update(giventabId, { muted: !isMuted });
         break;
       }
       case Message.TOGGLE_PIN_TAB:
@@ -131,8 +133,7 @@ browser.runtime.onMessage.addListener(
         if (sender.tab?.id) {
           const tabId = sender.tab.id;
           const currentPinnedSatus = sender.tab.pinned;
-          browser.tabs
-            .update(tabId, { pinned: !currentPinnedSatus })
+          browser.tabs.update(tabId, { pinned: !currentPinnedSatus });
         }
         break;
       case Message.TOGGLE_MUTE_TAB:
@@ -140,8 +141,7 @@ browser.runtime.onMessage.addListener(
         if (sender.tab?.id && sender.tab.mutedInfo) {
           const tabId = sender.tab.id;
           const currentMutedStatus = sender.tab.mutedInfo.muted;
-          browser.tabs
-            .update(tabId, { muted: !currentMutedStatus })
+          browser.tabs.update(tabId, { muted: !currentMutedStatus });
         }
         break;
       case Message.DUPLICATE_TAB:

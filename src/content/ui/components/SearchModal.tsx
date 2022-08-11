@@ -1,10 +1,11 @@
 // import createCache from "@emotion/cache";
 // import { CacheProvider, css, Global } from "@emotion/react";
 import React, { useEffect, useState } from "react";
-import { SearchMode } from "../../../common/types";
+import { SearchMode } from "@common/types";
 import styles from "../styles/styles.scss";
 import { SearchModalContext } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
+import { ModalBody } from "./utils";
 
 export interface Props {
   searchMode: SearchMode;
@@ -45,9 +46,9 @@ export const SearchModal = (props: Props) => {
       }}
     >
       <style>{styles}</style>
-      <div className="tab-butler-modal-body">
+      <ModalBody>
         <SearchViewContainer />
-      </div>
+      </ModalBody>
     </SearchModalContext.Provider>
   );
 };

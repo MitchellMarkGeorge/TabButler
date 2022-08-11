@@ -45,7 +45,12 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: ["to-string-loader", "css-loader", "postcss-loader", "sass-loader"], // can also use style-loader
+        use: [
+          "to-string-loader",
+          "css-loader",
+          "postcss-loader",
+          "sass-loader",
+        ], // can also use style-loader
       },
 
       {
@@ -79,7 +84,7 @@ module.exports = {
       "react-dom/test-utils": "preact/test-utils",
       "react-dom": "preact/compat", // Must be below test-utils
       "react/jsx-runtime": "preact/jsx-runtime",
-      "@common": path.resolve(__dirname, "src/common/")
+      "@common": path.resolve(__dirname, "src/common/"),
     },
   },
 };

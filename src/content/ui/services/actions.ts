@@ -32,7 +32,6 @@ export const filterActions = (searchValue: string, data: ActionData[]) => {
   }
 };
 
-
 export function getActions(): Promise<ActionData[]> {
   const actions = [
     {
@@ -141,8 +140,8 @@ export function getActions(): Promise<ActionData[]> {
 }
 
 export const onActionItemClick = (action: ActionData) => {
-    const messagePayload: MessagePlayload = {
-      message: action.message,
-    };
-    browser.runtime.sendMessage(messagePayload);
+  const messagePayload: MessagePlayload = {
+    message: action.message,
   };
+  browser.runtime.sendMessage(messagePayload);
+};

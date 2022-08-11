@@ -45,27 +45,27 @@ const messageListener = (messagePayload: MessagePlayload) => {
 browser.runtime.onMessage.addListener(messageListener);
 
 const styleModalRoot = (modalRoot: HTMLElement) => {
-  modalRoot.style.position = "fixed"
+  modalRoot.style.position = "fixed";
   modalRoot.style.left = "0";
   modalRoot.style.right = "0";
   modalRoot.style.bottom = "0";
   modalRoot.style.top = "0";
-  modalRoot.style.display = "flex"
-  modalRoot.style.justifyContent = "center"
-  modalRoot.style.boxSizing = "border-box"
-  modalRoot.style.paddingTop = "20vh"
-  modalRoot.style.width = "100%"
-  modalRoot.style.height = "100%"
-  modalRoot.style.backgroundColor = "rgba(0, 0, 0, 0.5)"
+  modalRoot.style.display = "flex";
+  modalRoot.style.justifyContent = "center";
+  modalRoot.style.boxSizing = "border-box";
+  modalRoot.style.paddingTop = "20vh";
+  modalRoot.style.width = "100%";
+  modalRoot.style.height = "100%";
+  modalRoot.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
   modalRoot.style.zIndex = "999999";
-}
+};
 
 function mountSearchComponent(message: Message) {
   // create a new modal root on mount and append as the last child of the body
   tabButlerModalRoot = document.createElement("tab-butler-modal");
   styleModalRoot(tabButlerModalRoot);
-// needs to be open so that the click event can bubble up
-  tabButlerModalRoot.attachShadow({ mode: "open"})
+  // needs to be open so that the click event can bubble up
+  tabButlerModalRoot.attachShadow({ mode: "open" });
   const requestedSearchMode = getSearchModeFromMessage(message);
   document.addEventListener("click", unmountOnClick);
   searchUiHandler.mount(tabButlerModalRoot.shadowRoot as ShadowRoot, {

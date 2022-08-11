@@ -27,13 +27,13 @@ module.exports = merge(common, {
       new TerserPlugin({
         terserOptions: {
           format: {
-            comments: false
+            comments: false,
           },
           compress: {
             drop_console: true,
           },
         },
-        extractComments: false
+        extractComments: false,
       }),
       new CssMinimizerPlugin(),
     ],

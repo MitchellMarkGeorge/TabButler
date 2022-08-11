@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { Data } from "../../../common/types";
+import { Data } from "@common/types";
 import { BottomBar } from "./BottomBar";
 import { ListItemProps } from "./ListItems/ListItem";
 import {
@@ -90,7 +90,8 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   const onKeyDown = (event: KeyboardEvent) => {
     // circular navigation might confuse users
     let nextIndex = 0;
-    if (event.key === "ArrowUp" || (event.shiftKey && event.key === "Tab")) {
+    // using tab caused some issues
+    if (event.key === "ArrowUp") {
       event.preventDefault();
       if (selectedIndex !== 0) {
         nextIndex = selectedIndex - 1;
@@ -102,7 +103,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
           },
         });
       }
-    } else if (event.key === "ArrowDown" || event.key === "Tab") {
+    } else if (event.key === "ArrowDown") {
       event.preventDefault();
       if (selectedIndex !== filteredData.length - 1) {
         nextIndex = selectedIndex + 1;
@@ -131,13 +132,13 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   const addListeners = () => {
     document.addEventListener("keydown", unmountOnEscape, true);
     // this listerner only needs to be added in TAB_SEARCH mode
-    document.addEventListener("keydown", onKeyDown, true);
+    document.addEventListener("keyup", onKeyDown, true);
     // conditionally add message listener for tab data updates (only in tab search mode)
   };
 
   const removeListeners = () => {
     document.removeEventListener("keydown", unmountOnEscape, true);
-    document.removeEventListener("keydown", onKeyDown, true);
+    document.removeEventListener("keyup", onKeyDown, true);
   };
 
   useEffect(() => {

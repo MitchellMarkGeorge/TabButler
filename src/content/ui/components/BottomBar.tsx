@@ -1,5 +1,5 @@
 import React from "react";
-import { SearchMode } from "../../../common/types";
+import { SearchMode } from "@common/types";
 
 interface Props {
   currentSeachMode: SearchMode;

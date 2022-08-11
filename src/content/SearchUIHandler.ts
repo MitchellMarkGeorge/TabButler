@@ -1,4 +1,4 @@
-import { Props, SearchModal } from "./ui/modal/SearchModal";
+import { Props, SearchModal } from "./ui/components/SearchModal";
 import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
 

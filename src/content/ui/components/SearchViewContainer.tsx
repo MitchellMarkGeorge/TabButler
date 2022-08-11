@@ -6,18 +6,18 @@ import {
   SearchMode,
   TabData,
   UpdatedTabDataPayload,
-} from "../../../common/types";
-import { useData } from "./hooks";
+} from "@common/types";
+import { useData } from "../hooks";
 import {
   SearchModalContext,
   SearchModalContextType,
 } from "./SearchModalContext";
 import browser from "webextension-polyfill";
-import { filterActions, filterTabs } from "../utils/filters";
 import { ActionListItem } from "./ListItems/ActionListItem";
 import { TabListItem } from "./ListItems/TabListItem";
 import { SearchView } from "./SearchView";
-import { onActionItemClick, onTabItemClick } from "../utils";
+import { filterActions, onActionItemClick } from "../services/actions";
+import { filterTabs, onTabItemClick } from "../services/tabs";
 
 export const SearchViewContainer = () => {
   const { currentSearchMode, isLoading } = useContext(

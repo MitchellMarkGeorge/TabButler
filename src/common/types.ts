@@ -70,25 +70,26 @@ export interface MessagePlayload {
   // data: TabData[]
 }
 
-export interface ChangeTabPayload extends MessagePlayload { // use GivenTabMessagePayload
+export interface ChangeTabPayload extends MessagePlayload {
+  // use GivenTabMessagePayload
   message: Message.CHANGE_TAB;
   // just send the TabData?
   tabId: number;
   windowId: number;
 }
 
-export interface GivenTabPayload extends MessagePlayload { // generic interface to handle tabs actions for a given tab
+export interface GivenTabPayload extends MessagePlayload {
+  // generic interface to handle tabs actions for a given tab
   tabId: number;
 }
 
-export interface TogglePinTabPayload extends GivenTabPayload { 
-  isPinned: boolean
+export interface TogglePinTabPayload extends GivenTabPayload {
+  isPinned: boolean;
 }
 
-
-export interface ToggleMuteTabPayload extends GivenTabPayload { 
+export interface ToggleMuteTabPayload extends GivenTabPayload {
   tabId: number;
-  isMuted: boolean
+  isMuted: boolean;
 }
 
 export interface UpdatedTabDataPayload extends MessagePlayload {
@@ -108,7 +109,6 @@ export interface TabData {
   isAudible: boolean;
   isMuted: boolean;
   isPinned: boolean;
-
 }
 
 export interface ActionData {

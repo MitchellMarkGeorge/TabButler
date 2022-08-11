@@ -1,17 +1,12 @@
-import React, {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  forwardRef,
-} from "react";
-import { Data, SearchMode } from "../../../common/types";
-import { getActions } from "../../actions";
-import { getCurrentTabData } from "../utils";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Data, SearchMode } from "../../common/types";
+import { getActions } from "./services/actions";
+import { getTabData } from "./services/tabs";
+
 import {
   SearchModalContext,
   SearchModalContextType,
-} from "./SearchModalContext";
+} from "./components/SearchModalContext";
 
 // hook to scroll to element is selected
 export const useScroll = (selected: boolean) => {
@@ -60,9 +55,10 @@ export const useData = (searchMode: SearchMode) => {
     if (searchMode === SearchMode.TAB_ACTIONS) {
       getDataFunc = getActions;
     } else {
-      getDataFunc = getCurrentTabData;
+      getDataFunc = getTabData;
     }
 
+    // might no linger be needed
     if (!isLoading) {
       console.log("setting loading to true");
       setIsLoading(true);
@@ -83,18 +79,4 @@ export const useData = (searchMode: SearchMode) => {
   }, [searchMode]);
 
   return { hasError, data, updateData: setData, fetchData };
-};
-
-
-// a small util function to create compoenents with a classname and a tagname
-// element specific props?
-// move this to the scss-styling branch
-type ComponentProps = React.HTMLAttributes<HTMLOrSVGElement>;
-export const createComponent = (
-  className: string,
-  tagName: React.ElementType = "div",
-) => {
-  return forwardRef((props: ComponentProps, ref) => {
-    return React.createElement(tagName, { ...props, className, ref });
-  });
 };

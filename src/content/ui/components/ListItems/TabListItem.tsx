@@ -11,9 +11,9 @@ import {
   Message,
   TabData,
   ToggleMuteTabPayload,
-  TogglePinTabPayload
+  TogglePinTabPayload,
 } from "../../../../common/types";
-import { useIsDarkMode } from "../hooks";
+import { useIsDarkMode } from "../../hooks";
 import { ListItem, ListItemProps } from "./ListItem";
 
 import browser from "webextension-polyfill";
@@ -68,22 +68,26 @@ export const TabListItem: React.FC<ListItemProps<TabData>> = ({
     browser.runtime.sendMessage(messagePayload);
   };
 
-  const togglePinTab = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const togglePinTab = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
     event.stopPropagation();
     const messagePayload: TogglePinTabPayload = {
       message: Message.TOGGLE_PIN_GIVEN_TAB,
       tabId: data.tabId,
-      isPinned: data.isPinned
+      isPinned: data.isPinned,
     };
     browser.runtime.sendMessage(messagePayload);
   };
 
-  const toggleMuteTab = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const toggleMuteTab = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
     event.stopPropagation();
     const messagePayload: ToggleMuteTabPayload = {
       message: Message.TOGGLE_MUTE_GIVEN_TAB,
       tabId: data.tabId,
-      isMuted: data.isMuted
+      isMuted: data.isMuted,
     };
     browser.runtime.sendMessage(messagePayload);
   };
@@ -122,23 +126,14 @@ export const TabListItem: React.FC<ListItemProps<TabData>> = ({
             {/* if the tab is muted, show the HiVolumeOff so the user knows and can can can unmute it*/}
             {/* otherwise, nothing is shown */}
             {(data.isAudible || data.isMuted) && (
-              <div
-                className="icon_button"
-                onClick={toggleMuteTab}
-              >
+              <div className="icon_button" onClick={toggleMuteTab}>
                 {showVolumeIcon()}
               </div>
             )}
-            <div
-              className="icon_button"
-              onClick={togglePinTab}
-            >
+            <div className="icon_button" onClick={togglePinTab}>
               {data.isPinned ? <AiFillPushpin /> : <AiOutlinePushpin />}
             </div>
-            <div
-              className="icon_button"
-              onClick={closeTab}
-            >
+            <div className="icon_button" onClick={closeTab}>
               <RiCloseLine />
             </div>
           </IconContext.Provider>
