@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { Data, SearchMode } from "../../../common/types";
 import { getActions } from "../../actions";
-import { getCurrentTabData } from "../utils/utils";
+import { getCurrentTabData } from "../utils";
 import {
   SearchModalContext,
   SearchModalContextType,

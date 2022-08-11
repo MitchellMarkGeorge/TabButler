@@ -1,4 +1,4 @@
-import { ActionData, Message } from "../common/types";
+import { ActionData, Message, MessagePlayload } from "@common/types";
 
 import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
 import { AiFillEyeInvisible } from "@react-icons/all-files/ai/AiFillEyeInvisible";
@@ -20,8 +20,21 @@ import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
 import { BiStar } from "@react-icons/all-files/bi/BiStar";
 import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
 
+import browser from "webextension-polyfill";
+
+export const filterActions = (searchValue: string, data: ActionData[]) => {
+  if (searchValue) {
+    return data.filter((action) =>
+      action.name.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+  } else {
+    return data;
+  }
+};
+
+
 export function getActions(): Promise<ActionData[]> {
-  const actions =  [
+  const actions = [
     {
       name: "New Tab",
       message: Message.OPEN_NEW_TAB,
@@ -126,3 +139,10 @@ export function getActions(): Promise<ActionData[]> {
 
   return Promise.resolve(actions);
 }
+
+export const onActionItemClick = (action: ActionData) => {
+    const messagePayload: MessagePlayload = {
+      message: action.message,
+    };
+    browser.runtime.sendMessage(messagePayload);
+  };

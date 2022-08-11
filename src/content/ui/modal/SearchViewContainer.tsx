@@ -17,7 +17,7 @@ import { filterActions, filterTabs } from "../utils/filters";
 import { ActionListItem } from "./ListItems/ActionListItem";
 import { TabListItem } from "./ListItems/TabListItem";
 import { SearchView } from "./SearchView";
-import { onActionItemClick, onTabItemClick } from "../utils/utils";
+import { onActionItemClick, onTabItemClick } from "../utils";
 
 export const SearchViewContainer = () => {
   const { currentSearchMode, isLoading } = useContext(
