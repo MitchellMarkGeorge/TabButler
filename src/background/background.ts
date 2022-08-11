@@ -1,4 +1,4 @@
-import { isBrowserURL } from "../common/common";
+import { isBrowserURL, isFirefox } from "../common/common";
 import {
   Commands,
   Message,
@@ -134,7 +134,7 @@ browser.runtime.onMessage.addListener(
         browser.tabs.update(giventabId, { muted: !isMuted });
         break;
       }
-      case Message.TOGGLE_PIN_TAB:
+      case Message.TOGGLE_PIN_CURRENT_TAB:
         // toggle pinned for current tab
         if (sender.tab?.id) {
           const tabId = sender.tab.id;
@@ -142,7 +142,7 @@ browser.runtime.onMessage.addListener(
           browser.tabs.update(tabId, { pinned: !currentPinnedSatus });
         }
         break;
-      case Message.TOGGLE_MUTE_TAB:
+      case Message.TOGGLE_MUTE_CURRENT_TAB:
         // toggle muted for current tab
         if (sender.tab?.id && sender.tab.mutedInfo) {
           const tabId = sender.tab.id;
@@ -155,16 +155,11 @@ browser.runtime.onMessage.addListener(
           browser.tabs.duplicate(sender.tab.id);
         }
         break;
-      case Message.OPEN_DOWNLOADS:
-      case Message.OPEN_EXTENSION:
-      case Message.OPEN_SETTINGS:
-      case Message.OPEN_HISTORY:
       case Message.OPEN_GITHUB:
       case Message.OPEN_GOOGLE:
       case Message.OPEN_TWITTER:
       case Message.OPEN_YOUTUBE:
-      case Message.OPEN_FACEBOOK:
-      case Message.OPEN_BOOKMARKS: {
+      case Message.OPEN_FACEBOOK: {
         const url = getUrl(messagePayload.message);
         browser.tabs.create({ active: true, url });
         break;
@@ -175,15 +170,6 @@ browser.runtime.onMessage.addListener(
 
 const getUrl = (message: Message) => {
   switch (message) {
-    // these actions will need to be updated for firefox compatability
-    case Message.OPEN_DOWNLOADS:
-      return "chrome://downloads";
-    case Message.OPEN_EXTENSION:
-      return "chrome://extensions";
-    case Message.OPEN_SETTINGS:
-      return "chrome://settings";
-    case Message.OPEN_HISTORY:
-      return "chrome://history";
     case Message.OPEN_GITHUB:
       return "https://www.github.com/";
     case Message.OPEN_GOOGLE:
@@ -194,7 +180,5 @@ const getUrl = (message: Message) => {
       return "https://www.youtube.com/";
     case Message.OPEN_FACEBOOK:
       return "https://www.facebook.com/";
-    case Message.OPEN_BOOKMARKS:
-      return "chrome://bookmarks";
   }
 };

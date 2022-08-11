@@ -1,9 +1,7 @@
 export const isFirefox = () => navigator.userAgent.includes("Firefox");
 export const isChrome = () => navigator.userAgent.includes("Chrome");
 
-export function isBrowserURL(url: string) { // handle firefox urls as well
-  // not all urls might actually start with this
-  // the chrome webstore might have a http like protocon infront
+export function isBrowserURL(url: string) {
   if (isChrome()) return isChromeURL(url);
   if (isFirefox()) return isFirefoxURL(url);
 }

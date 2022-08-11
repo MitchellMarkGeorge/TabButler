@@ -2,7 +2,6 @@ import { ActionData, Message } from "../common/types";
 
 import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
 import { AiFillEyeInvisible } from "@react-icons/all-files/ai/AiFillEyeInvisible";
-import { AiFillSetting } from "@react-icons/all-files/ai/AiFillSetting";
 import { AiFillGithub } from "@react-icons/all-files/ai/AiFillGithub";
 import { AiFillGoogleCircle } from "@react-icons/all-files/ai/AiFillGoogleCircle";
 import { AiFillTwitterCircle } from "@react-icons/all-files/ai/AiFillTwitterCircle";
@@ -13,11 +12,7 @@ import { AiFillPushpin } from "@react-icons/all-files/ai/AiFillPushpin";
 import { BiWindowClose } from "@react-icons/all-files/bi/BiWindowClose";
 import { BiWindowOpen } from "@react-icons/all-files/bi/BiWindowOpen";
 import { BiPlusCircle } from "@react-icons/all-files/bi/BiPlusCircle";
-import { BiDownload } from "@react-icons/all-files/bi/BiDownload";
-import { BiExtension } from "@react-icons/all-files/bi/BiExtension";
-import { BiHistory } from "@react-icons/all-files/bi/BiHistory";
 import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
-import { BiStar } from "@react-icons/all-files/bi/BiStar";
 import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
 
 export function getActions(): Promise<ActionData[]> {
@@ -47,42 +42,17 @@ export function getActions(): Promise<ActionData[]> {
       message: Message.CLOSE_CURRENT_WINDOW,
       icon: BiWindowClose,
     },
-    {
-      name: "Open Downloads",
-      message: Message.OPEN_DOWNLOADS,
-      icon: BiDownload,
-    },
-    {
-      name: "Open Extension",
-      message: Message.OPEN_EXTENSION,
-      icon: BiExtension,
-    },
-    {
-      name: "Open Settings",
-      message: Message.OPEN_SETTINGS,
-      icon: AiFillSetting,
-    },
-    {
-      name: "Open History", // might no longer be needed
-      message: Message.OPEN_HISTORY,
-      icon: BiHistory,
-    },
-    {
-      name: "Open Bookmarks", // might no longer ne needed
-      message: Message.OPEN_BOOKMARKS,
-      icon: BiStar,
-    },
     // this action is used only for the current tab
     {
-      name: "Mute Current Tab",
-      message: Message.TOGGLE_MUTE_TAB,
+      name: "Mute/Unmute Current Tab",
+      message: Message.TOGGLE_MUTE_CURRENT_TAB,
       icon: BiVolumeMute,
     },
 
     // this action is used only for the current tab
     {
-      name: "Pin Current Tab",
-      message: Message.TOGGLE_PIN_TAB,
+      name: "Pin/Unpin Current Tab",
+      message: Message.TOGGLE_PIN_CURRENT_TAB,
       icon: AiFillPushpin,
     },
     {
@@ -90,7 +60,6 @@ export function getActions(): Promise<ActionData[]> {
       message: Message.DUPLICATE_TAB,
       icon: BiDuplicate,
     },
-
     {
       name: "Open GitHub", // might remove this one
       message: Message.OPEN_GITHUB,
