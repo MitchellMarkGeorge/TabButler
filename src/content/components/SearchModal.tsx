@@ -116,6 +116,7 @@ export const SearchModal = (props: Props) => {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
               Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
             letter-spacing: normal !important;
+            text-align: left;
 
             /* think about these */
             /* things look slightly better with these selectors set */

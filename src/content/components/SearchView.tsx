@@ -7,7 +7,7 @@ import {
   Message,
   MessagePlayload,
   SearchMode,
-  UpdatedTabDataPayload
+  UpdatedTabDataPayload,
 } from "../../common/types";
 import { BottomBar } from "./BottomBar";
 import { Container } from "./Container";
@@ -34,8 +34,7 @@ interface Props<T> {
   listItemComponent: React.FC<ListItemProps<T>>;
 }
 
-
-export const SearchView =  <T extends Data>(props: Props<T>) =>  {
+export const SearchView = <T extends Data>(props: Props<T>) => {
   const [value, setValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showOnlyCurrentWindow, toggleShowOnlyCurrentWindow] = useReducer(
@@ -47,7 +46,7 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
   const [data, setData] = useState<T[]>([]);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   const fetchData = () => {
     props
       .getData()
@@ -233,31 +232,30 @@ export const SearchView =  <T extends Data>(props: Props<T>) =>  {
         showError()
       ) : (
         // focus trap is needed so the input is still focused when the currentSearchMode changes
-        <FocusTrap focusTrapOptions={{ allowOutsideClick: true}}>
-        <Container>
-          <Input
-            placeholder={
-              isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
-            }
-            value={value}
-            ref={inputRef}
-            onChange={(e) => {
-              // reset selected to first element in search result
-              setSelectedIndex(0);
-              setValue(e.target.value);
-            }}
-          />
-          <ListContainer>{showList()}</ListContainer>
-          <BottomBar
-            currentSeachMode={props.currentSearchMode}
-            showOnlyCurrentWindow={showOnlyCurrentWindow}
-            toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
-            resultNum={filteredData.length}
-          />
-        </Container>
+        <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
+          <Container>
+            <Input
+              placeholder={
+                isTabActionsMode() ? "Search Actions..." : "Search Tabs..."
+              }
+              value={value}
+              ref={inputRef}
+              onChange={(e) => {
+                // reset selected to first element in search result
+                setSelectedIndex(0);
+                setValue(e.target.value);
+              }}
+            />
+            <ListContainer>{showList()}</ListContainer>
+            <BottomBar
+              currentSeachMode={props.currentSearchMode}
+              showOnlyCurrentWindow={showOnlyCurrentWindow}
+              toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
+              resultNum={filteredData.length}
+            />
+          </Container>
         </FocusTrap>
       )}
     </ModalBody>
   );
 };
-
