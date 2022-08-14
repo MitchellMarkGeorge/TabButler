@@ -13,6 +13,7 @@ export const ListItem = styled.div<{ selected: boolean }>`
   width: 100%;
   
   height: 50px;
+  /* using a set height might not be needed */
   display: flex;
   flex-direction: row;
   /* which one? */
@@ -20,6 +21,7 @@ export const ListItem = styled.div<{ selected: boolean }>`
   column-gap: 16px;
   align-items: center;
   padding: 8px;
+  /* if no height is set, use 10px */
   border-radius: 10px;
   /* justify-content: space-between; */
   cursor: pointer;

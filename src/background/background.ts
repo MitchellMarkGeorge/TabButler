@@ -1,4 +1,4 @@
-import { isBrowserURL, isFirefox } from "../common/common";
+import { isBrowserURL } from "../common/common";
 import {
   Commands,
   Message,
@@ -19,21 +19,15 @@ import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(async ({ reason }) => {
   // should this be async?
-  // should I do this on update?
-  if (reason === "install" || reason === "update") {
-    // uninstall survey
-    // injectig on update might clash with already installed content script.
-    // inject extension
-    // open the welcome page
+  if (reason === "install") {
     // opening the welcome page first buys the extension time to inject into the avalible pages
-    if (reason === "install") {
-      browser.runtime.setUninstallURL("https://forms.gle/Eqi9Hgs86hSVrvT57");
-      const isMissingCommands = await checkCommands();
-      const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
-      if (isMissingCommands) {
-        // if there are missing/unbound commands, set a query param to show on the welcome page
-        welcomeUrl.searchParams.set("missing_commands", "true");
-      }
+    // uninstall survey
+    browser.runtime.setUninstallURL("https://forms.gle/Eqi9Hgs86hSVrvT57");
+    const isMissingCommands = await checkCommands();
+    const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
+    if (isMissingCommands) {
+      // if there are missing/unbound commands, set a query param to show on the welcome page
+      welcomeUrl.searchParams.set("missing_commands", "true");
       await browser.tabs.create({ url: welcomeUrl.toString() }); // not really nessecary to await
     }
     await injectExtension(); // not nessecary to await
