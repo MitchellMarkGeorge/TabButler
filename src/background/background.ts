@@ -19,16 +19,18 @@ import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(async ({ reason }) => {
   // should this be async?
-  if (reason === "install") {
+  if (reason === "install" || reason === "update") {
     // opening the welcome page first buys the extension time to inject into the avalible pages
     // uninstall survey
-    browser.runtime.setUninstallURL("https://forms.gle/Eqi9Hgs86hSVrvT57");
-    const isMissingCommands = await checkCommands();
-    const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
-    if (isMissingCommands) {
-      // if there are missing/unbound commands, set a query param to show on the welcome page
-      welcomeUrl.searchParams.set("missing_commands", "true");
-      await browser.tabs.create({ url: welcomeUrl.toString() }); // not really nessecary to await
+    if (reason === "install") {
+      browser.runtime.setUninstallURL("https://forms.gle/Eqi9Hgs86hSVrvT57");
+      const isMissingCommands = await checkCommands();
+      const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
+      if (isMissingCommands) {
+        // if there are missing/unbound commands, set a query param to show on the welcome page
+        welcomeUrl.searchParams.set("missing_commands", "true");
+        await browser.tabs.create({ url: welcomeUrl.toString() }); // not really nessecary to await
+      }
     }
     await injectExtension(); // not nessecary to await
   }
