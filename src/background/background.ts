@@ -17,22 +17,24 @@ import {
 } from "./utils";
 import browser from "webextension-polyfill";
 
-browser.runtime.onInstalled.addListener(async ({ reason }) => {
-  // should this be async?
+browser.runtime.onInstalled.addListener(({ reason }) => {
+  console.log(reason);
   if (reason === "install" || reason === "update") {
     // opening the welcome page first buys the extension time to inject into the avalible pages
-    // uninstall survey
     if (reason === "install") {
+    // uninstall survey
       browser.runtime.setUninstallURL("https://forms.gle/Eqi9Hgs86hSVrvT57");
-      const isMissingCommands = await checkCommands();
-      const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
-      if (isMissingCommands) {
-        // if there are missing/unbound commands, set a query param to show on the welcome page
-        welcomeUrl.searchParams.set("missing_commands", "true");
-        await browser.tabs.create({ url: welcomeUrl.toString() }); // not really nessecary to await
-      }
+      // const isMissingCommands = await checkCommands();
+      checkCommands().then((isMissingCommands) => {
+        const welcomeUrl = new URL("https://tabbutler.netlify.app/welcome");
+        if (isMissingCommands) {
+          // if there are missing/unbound commands, set a query param to show on the welcome page
+          welcomeUrl.searchParams.set("missing_commands", "true");
+        }
+        browser.tabs.create({ url: welcomeUrl.toString() });
+      });
     }
-    await injectExtension(); // not nessecary to await
+    injectExtension(); 
   }
 });
 
