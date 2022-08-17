@@ -4,33 +4,36 @@ export const filterByCurrentWindow = (currentTabs: TabData[]) => {
   return currentTabs.filter((tabData) => tabData.inCurrentWindow);
 };
 
+const filterByCommand = (command: string, currentTabs: TabData[]) => {
+  if (command === "muted") return currentTabs.filter((tab) => tab.isMuted);
+  else if (command === "audible")
+    return currentTabs.filter((tab) => tab.isAudible);
+  else if (command === "pinned")
+    return currentTabs.filter((tab) => tab.isPinned);
+  return [];
+  // return data; // think about this
+};
 
 export const tabMatchesValue = (searchValue: string, tabData: TabData) =>
   tabData.tabTitle.toLowerCase().includes(searchValue.toLowerCase()) ||
   tabData.tabUrl.toLowerCase().includes(searchValue.toLowerCase());
-  // ignore query params in url
+// ignore query params in url
 
-const TAB_COMMAND_KEY = "/"
+const TAB_COMMAND_KEY = "/";
 export const filterTabs = (
   searchValue: string,
   data: TabData[],
   onlyCurrentWindow: boolean,
 ) => {
-  if (searchValue.startsWith(TAB_COMMAND_KEY)) {
-    const command = searchValue.slice(1); // remove the command key
-    if (command === "muted") return data.filter(tab => tab.isMuted) 
-    else if (command === "audible") return data.filter(tab => tab.isAudible) 
-    else if (command === "pinned") return data.filter(tab => tab.isPinned) 
-    // return [];
-    return data; // think about this
-
-  }
   // should be able to filter by current window even if there is no value
   const initalData: TabData[] = onlyCurrentWindow
     ? filterByCurrentWindow(data)
     : data;
   if (searchValue) {
-    // move command code there so it can work with the currentWindow filter
+    if (searchValue.startsWith(TAB_COMMAND_KEY)) {
+      const command = searchValue.slice(1); // remove the command key
+      return filterByCommand(command, initalData);
+    }
     return initalData.filter(
       (tabData) => tabMatchesValue(searchValue, tabData),
       // try to filter based on the tab title and the tab url
