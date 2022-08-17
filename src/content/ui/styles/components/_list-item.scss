@@ -1,7 +1,7 @@
 .tab-butler-list-item,
 .tab-butler-list-item-selected {
   width: 100%;
-
+  /* using a set height might not be needed */
   height: 50px;
   display: flex;
   flex-direction: row;
@@ -9,6 +9,7 @@
   row-gap: 16px;
   column-gap: 16px;
   align-items: center;
+  /* if no height is set, use 10px */
   padding: 8px;
   border-radius: 10px;
   /* justify-content: space-between; */

@@ -1,6 +1,8 @@
 import browser from "webextension-polyfill";
 import { ChangeTabPayload, Message, TabData } from "@common/types";
 
+export const TAB_COMMAND_KEY = "/";
+
 export function getTabData() {
   const messagePayload = {
     message: Message.GET_TAB_DATA,
@@ -10,6 +12,16 @@ export function getTabData() {
 
 const filterByCurrentWindow = (currentTabs: TabData[]) => {
   return currentTabs.filter((tabData) => tabData.inCurrentWindow);
+};
+
+const filterByCommand = (command: string, currentTabs: TabData[]) => {
+  if (command === "muted") return currentTabs.filter((tab) => tab.isMuted);
+  else if (command === "audible")
+    return currentTabs.filter((tab) => tab.isAudible);
+  else if (command === "pinned")
+    return currentTabs.filter((tab) => tab.isPinned);
+  return [];
+  // return data; // think about this
 };
 
 const tabMatchesValue = (searchValue: string, tabData: TabData) =>
@@ -26,6 +38,10 @@ export const filterTabs = (
     ? filterByCurrentWindow(data)
     : data;
   if (searchValue) {
+    if (searchValue.startsWith(TAB_COMMAND_KEY)) {
+      const command = searchValue.slice(1); // remove the command key
+      return filterByCommand(command, initalData);
+    }
     return initalData.filter(
       (tabData) => tabMatchesValue(searchValue, tabData),
       // try to filter based on the tab title and the tab url

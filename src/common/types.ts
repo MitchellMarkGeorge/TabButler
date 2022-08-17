@@ -6,7 +6,7 @@ export const enum Commands {
   TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
 }
 
-// name space Messagees according to their use using a union(?) of enums
+// name space Messages according to their use using a union(?) of enums
 // type Message =  CommandMessage | TabSearchMessage | TabActionMessage
 export const enum Message {
   // command specific
@@ -28,14 +28,9 @@ export const enum Message {
   OPEN_NEW_TAB = "open-new-tab",
   OPEN_NEW_WINDOW = "open-new-window",
   OPEN_INCOGNITO_WINDOW = "open-incognito-window",
-  OPEN_DOWNLOADS = "open-downloads",
-  OPEN_EXTENSION = "open-extensions",
-  OPEN_SETTINGS = "open-settings",
-  OPEN_HISTORY = "open-history",
-  OPEN_BOOKMARKS = "open-bookmarks",
 
-  TOGGLE_PIN_TAB = "toggle-pin-tab",
-  TOGGLE_MUTE_TAB = "toggle-mute-tab",
+  TOGGLE_PIN_CURRENT_TAB = "toggle-pin-tab",
+  TOGGLE_MUTE_CURRENT_TAB = "toggle-mute-tab",
   DUPLICATE_TAB = "duplicate-tab",
 
   CHECK_SEARCH_OPEN = "check-search-open",

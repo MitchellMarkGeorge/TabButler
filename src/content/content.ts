@@ -16,6 +16,11 @@ if (existingTabButlerModalRoot) {
   existingTabButlerModalRoot.remove();
 }
 
+const shutDownEvent = "tab-butler-shutdown";
+// send a shutdown message to any other content script in this tab, disabling them permernently
+document.dispatchEvent(new CustomEvent(shutDownEvent));
+// add a listener for the same shutdown event
+document.addEventListener(shutDownEvent, shutdownScript);
 // by only creating and appending the element dynamically when it is requested, it should save on memory and reduce some parts of the code
 // like the visibility toggeling and the style tag removal in the root
 // this should also help in sites where the dom might change from time to time, invalidating
@@ -114,6 +119,14 @@ const unmountOnClick = (event: MouseEvent) => {
     unmountSearchComponent();
   }
 };
+
+function shutdownScript() {
+  console.log("shutting down");
+  unmountSearchComponent();
+  // remove the listener to so it can't be triggered again
+  // this prevents any old content scripts in the tab from being triggered in the tab
+  browser.runtime.onMessage.removeListener(messageListener);
+}
 
 window.addEventListener("beforeunload", () => {
   if (isOpen) {

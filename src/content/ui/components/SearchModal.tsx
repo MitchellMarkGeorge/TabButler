@@ -32,6 +32,7 @@ export const SearchModal = (props: Props) => {
       // it is important to set loading to true here so that when the component rerenders after the currentSearchMode has changed, it renders the loading state, not the old data with incorrect components
       // updates are batched together
       setIsLoading(true);
+      console.log("setting loading to true...")
       // loading is true as new data based on the new currentSearch mode is fetched
       setCurrentSearchMode(props.searchMode);
     }

@@ -31,6 +31,7 @@ interface Props<T> {
 }
 
 export const SearchView = <T extends Data>(props: Props<T>) => {
+  console.log("here");
   const { currentSearchMode, close } = useContext(
     SearchModalContext,
   ) as SearchModalContextType;
@@ -87,7 +88,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
     [value, props.data, showOnlyCurrentWindow],
   );
 
-  const onKeyDown = (event: KeyboardEvent) => {
+  const onKeyUp = (event: KeyboardEvent) => {
     // circular navigation might confuse users
     let nextIndex = 0;
     // using tab caused some issues
@@ -131,14 +132,13 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
 
   const addListeners = () => {
     document.addEventListener("keydown", unmountOnEscape, true);
-    // this listerner only needs to be added in TAB_SEARCH mode
-    document.addEventListener("keyup", onKeyDown, true);
-    // conditionally add message listener for tab data updates (only in tab search mode)
+    // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view
+    document.addEventListener("keyup", onKeyUp, true);
   };
 
   const removeListeners = () => {
     document.removeEventListener("keydown", unmountOnEscape, true);
-    document.removeEventListener("keyup", onKeyDown, true);
+    document.removeEventListener("keyup", onKeyUp, true);
   };
 
   useEffect(() => {

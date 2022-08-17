@@ -45,7 +45,9 @@ export const useIsDarkMode = () => {
 
 export const useData = (searchMode: SearchMode) => {
   // use searchmode from context
-  const { isLoading, setIsLoading, data, setData, hasError, setHasError } =
+  // the only way for the local state and the context to be updated was for everything to be in context
+  // might just transfer over to something like zustand
+  const { setIsLoading, data, setData, hasError, setHasError } =
     useContext(SearchModalContext) as SearchModalContextType;
   const fetchData = () => {
     let getDataFunc: () => Promise<Data[]>;
@@ -56,14 +58,15 @@ export const useData = (searchMode: SearchMode) => {
     }
 
     // might no linger be needed
-    if (!isLoading) {
-      console.log("setting loading to true");
-      setIsLoading(true);
-    }
+    // if (!isLoading) {
+    //   console.log("setting loading to true");
+    //   setIsLoading(true);
+    // }
     getDataFunc()
       .then((data) => {
-        setIsLoading(false);
         setData(data);
+        setIsLoading(false); // for some reason this value is not updating
+        // these updates need to be batched together
       })
       .catch(() => {
         setIsLoading(false);
@@ -75,5 +78,5 @@ export const useData = (searchMode: SearchMode) => {
     fetchData();
   }, [searchMode]);
 
-  return { hasError, data, updateData: setData, fetchData };
+  return { hasError, data, updateData: setData, fetchData, };
 };

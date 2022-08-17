@@ -96,6 +96,7 @@ export const SearchViewContainer = () => {
   };
 
   if (isLoading) {
+    console.log("loading...", data, currentSearchMode);
     return (
       <div className="tab-butler-empty">
         <h1 className="tab-butler-heading">Loading...</h1>
@@ -104,6 +105,7 @@ export const SearchViewContainer = () => {
   }
 
   if (hasError) {
+    console.log("error...")
     return (
       <div className="tab-butler-empty">
         <div className="tab-butler-error-message">
@@ -116,5 +118,6 @@ export const SearchViewContainer = () => {
     );
   }
 
+  console.log("rendering stuff", currentSearchMode, data);
   return showSearchView();
 };
