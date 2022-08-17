@@ -1,7 +1,7 @@
 // import createCache from "@emotion/cache";
 // import { CacheProvider, css, Global } from "@emotion/react";
 import React, { useEffect, useState } from "react";
-import { SearchMode } from "@common/types";
+import { Data, SearchMode } from "@common/types";
 import styles from "../styles/styles.scss";
 import { SearchModalContext } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
@@ -20,6 +20,8 @@ export const SearchModal = (props: Props) => {
   ); // make the inital value the searchMode that was passed in
   // puting the loading state here so it can be put in the context
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [data, setData] = useState<Data[]>([]);
 
   useEffect(() => {
     // console.log("props.searchMode updated");
@@ -43,6 +45,10 @@ export const SearchModal = (props: Props) => {
         setCurrentSearchMode,
         setIsLoading,
         isLoading,
+        setHasError,
+        hasError,
+        data,
+        setData
       }}
     >
       <style>{styles}</style>

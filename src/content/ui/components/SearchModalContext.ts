@@ -1,11 +1,15 @@
 import { createContext } from "react";
-import { SearchMode } from "@common/types";
+import { Data, SearchMode } from "@common/types";
 
 export interface SearchModalContextType {
   close: () => void;
   currentSearchMode: SearchMode;
   isLoading: boolean;
   setIsLoading: (isLoaading: boolean) => void;
+  data: Data[];
+  setData: (data: Data[]) => void;
+  hasError: boolean;
+  setHasError: (hasError: boolean) => void;
   setCurrentSearchMode: (searchMode: SearchMode) => void;
 }
 

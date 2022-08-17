@@ -45,11 +45,8 @@ export const useIsDarkMode = () => {
 
 export const useData = (searchMode: SearchMode) => {
   // use searchmode from context
-  const [hasError, setHasError] = useState(false);
-  const [data, setData] = useState<Data[]>([]);
-  const { isLoading, setIsLoading } = useContext(
-    SearchModalContext,
-  ) as SearchModalContextType;
+  const { isLoading, setIsLoading, data, setData, hasError, setHasError } =
+    useContext(SearchModalContext) as SearchModalContextType;
   const fetchData = () => {
     let getDataFunc: () => Promise<Data[]>;
     if (searchMode === SearchMode.TAB_ACTIONS) {
