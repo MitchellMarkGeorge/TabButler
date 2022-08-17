@@ -153,6 +153,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
     document.addEventListener("keydown", unmountOnEscape, true);
     // this listerner only needs to be added in TAB_SEARCH mode
     document.addEventListener("visibilitychange", onVisibilityChange, false);
+    // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view
     document.addEventListener("keyup", onKeyUp, true);
     // conditionally add message listener for tab data updates (only in tab search mode)
     if (isTabSearchMode()) {

@@ -42,7 +42,6 @@ const messageListener = (messagePayload: MessagePlayload) => {
         // special function to switch modes if the message is different
         unmountSearchComponentFromMessage(message);
       } else {
-        console.log("here")
         mountSearchComponent(message);
       }
       break;
@@ -53,7 +52,6 @@ const messageListener = (messagePayload: MessagePlayload) => {
 browser.runtime.onMessage.addListener(messageListener);
 
 function mountSearchComponent(message: Message) {
-  console.log("mounting...");
   // create a new modal root on mount and append as the last child of the body
   tabButlerModalRoot = document.createElement("tab-butler-modal");
 // needs to be open so that the click event can bubble up
