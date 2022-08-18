@@ -113,6 +113,12 @@ export interface ActionData {
   iconColor?: string;
 }
 
+
+export interface SideBarItem {
+  searchMode: SearchMode;
+  icon: IconType;
+}
+
 export interface CheackSearchOpenResponse {
   isOpen: boolean;
   currentSearchMode: SearchMode;

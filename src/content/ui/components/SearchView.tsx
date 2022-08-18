@@ -42,12 +42,13 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [showOnlyCurrentWindow, toggleShowOnlyCurrentWindow] = useReducer(
     (showOnlyCurrentWindow) => {
-      virtuosoRef.current?.scrollIntoView({
-        index: 0,
-        done: () => {
-          setSelectedIndex(0);
-        },
-      });
+      // can mess up with toggle
+      // virtuosoRef.current?.scrollIntoView({
+      //   index: 0,
+      //   done: () => {
+      //     setSelectedIndex(0);
+      //   },
+      // });
       // does is need ot return?
       return !showOnlyCurrentWindow;
     },
@@ -187,7 +188,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
       <div className="tab-butler-main-container">
         <div className="tab-butler-input-container">
           {/* think about this*/}
-          <AiOutlineSearch className="search-icon" />
+          {/* <AiOutlineSearch className="search-icon" /> */}
           <input
             className="tab-butler-input"
             placeholder={props.inputPlaceHolderText}

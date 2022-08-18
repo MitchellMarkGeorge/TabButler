@@ -6,6 +6,7 @@ import styles from "../styles/styles.scss";
 import { SearchModalContext } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
 import { ModalBody } from "./utils";
+import { SideBar } from "./SideBar";
 
 export interface Props {
   searchMode: SearchMode;
@@ -31,12 +32,20 @@ export const SearchModal = (props: Props) => {
       // console.log("setting currentSearchMode with props.searchMode");
       // it is important to set loading to true here so that when the component rerenders after the currentSearchMode has changed, it renders the loading state, not the old data with incorrect components
       // updates are batched together
+      // make a function that ties these 2 functions together
+      // the modal only works if these updates can be batched together so when the current search mode changes, it is already in a loading state so the incorrect data is not rendered
       setIsLoading(true);
       console.log("setting loading to true...");
       // loading is true as new data based on the new currentSearch mode is fetched
       setCurrentSearchMode(props.searchMode);
     }
   }, [props.searchMode]);
+
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     setIsLoading(true);
+  //   }
+  // }, [currentSearchMode])
 
   // is this nessecary?
   const contextValue = useMemo(
@@ -58,6 +67,9 @@ export const SearchModal = (props: Props) => {
     <SearchModalContext.Provider value={contextValue}>
       <style>{styles}</style>
       <ModalBody>
+        <SideBar
+        
+        />
         <SearchViewContainer />
       </ModalBody>
     </SearchModalContext.Provider>

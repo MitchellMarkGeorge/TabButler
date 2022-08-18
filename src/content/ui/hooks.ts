@@ -57,7 +57,6 @@ export const useData = (searchMode: SearchMode) => {
       getDataFunc = getTabData;
     }
 
-    // might no linger be needed
     // if (!isLoading) {
     //   console.log("setting loading to true");
     //   setIsLoading(true);
