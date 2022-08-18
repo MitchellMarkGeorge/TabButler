@@ -47,7 +47,7 @@ export const useData = (searchMode: SearchMode) => {
   // use searchmode from context
   // the only way for the local state and the context to be updated was for everything to be in context
   // might just transfer over to something like zustand
-  const { setIsLoading, data, setData, hasError, setHasError } =
+  const { isLoading, setIsLoading, data, setData, hasError, setHasError } =
     useContext(SearchModalContext) as SearchModalContextType;
   const fetchData = () => {
     let getDataFunc: () => Promise<Data[]>;
@@ -78,5 +78,5 @@ export const useData = (searchMode: SearchMode) => {
     fetchData();
   }, [searchMode]);
 
-  return { hasError, data, updateData: setData, fetchData, };
+  return { hasError, data, updateData: setData, fetchData, isLoading };
 };

@@ -20,10 +20,12 @@ import { filterActions, onActionItemClick } from "../services/actions";
 import { filterTabs, onTabItemClick } from "../services/tabs";
 
 export const SearchViewContainer = () => {
-  const { currentSearchMode, isLoading } = useContext(
+  const { currentSearchMode } = useContext(
     SearchModalContext,
   ) as SearchModalContextType;
-  const { hasError, data, updateData, fetchData } = useData(currentSearchMode);
+    // could move all of the code from this function here
+  const { hasError, data, updateData, fetchData, isLoading } =
+    useData(currentSearchMode);
 
   const updateTabDataListener = (messagePayLoad: MessagePlayload) => {
     const { message } = messagePayLoad;
@@ -72,6 +74,7 @@ export const SearchViewContainer = () => {
       case SearchMode.TAB_ACTIONS:
         return (
           <SearchView
+          // currentSearchMode={currentSearchMode}
             data={data as ActionData[]}
             inputPlaceHolderText="Search Actions..."
             noDataText="No actions to show"
@@ -84,6 +87,7 @@ export const SearchViewContainer = () => {
       case SearchMode.TAB_SEARCH:
         return (
           <SearchView
+          // currentSearchMode={currentSearchMode}
             data={data as TabData[]}
             inputPlaceHolderText="Search Tabs..."
             noDataText="No tabs to show"
@@ -105,7 +109,7 @@ export const SearchViewContainer = () => {
   }
 
   if (hasError) {
-    console.log("error...")
+    console.log("error...");
     return (
       <div className="tab-butler-empty">
         <div className="tab-butler-error-message">

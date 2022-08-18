@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { Data } from "@common/types";
+import { Data, SearchMode } from "@common/types";
 import { BottomBar } from "./BottomBar";
 import { ListItemProps } from "./ListItems/ListItem";
 import {
@@ -18,6 +18,7 @@ import {
 import { AiOutlineSearch } from "@react-icons/all-files/ai/AiOutlineSearch";
 
 interface Props<T> {
+  // currentSearchMode: SearchMode;
   data: T[];
   inputPlaceHolderText: string;
   noDataText: string;
@@ -31,7 +32,7 @@ interface Props<T> {
 }
 
 export const SearchView = <T extends Data>(props: Props<T>) => {
-  console.log("here");
+  // would be better to just pass in in a prop to reduce unneccesary rerenders
   const { currentSearchMode, close } = useContext(
     SearchModalContext,
   ) as SearchModalContextType;
