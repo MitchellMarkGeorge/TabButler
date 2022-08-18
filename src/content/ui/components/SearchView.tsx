@@ -15,7 +15,6 @@ import {
   SearchModalContext,
   SearchModalContextType,
 } from "./SearchModalContext";
-import { AiOutlineSearch } from "@react-icons/all-files/ai/AiOutlineSearch";
 
 interface Props<T> {
   // currentSearchMode: SearchMode;

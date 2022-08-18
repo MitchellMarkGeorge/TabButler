@@ -1,22 +1,5 @@
-.tab-butler-input-container {
-  height: 50px;
-  width: 100%;
-  background-color: transparent;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-
-  .search-icon {
-    width: 28px;
-    height: 28px;
-    color: rgba(255, 255, 255, 0.36);
-    @media (prefers-color-scheme: light) {
-      color: rgba(0, 0, 0, 0.36);
-    }
-  }
-
   .tab-butler-input {
-    flex: 1;
+    height: 50px;
     width: 100%;
     background-color: transparent;
     // height: 50px;
@@ -46,4 +29,3 @@
       }
     }
   }
-}
