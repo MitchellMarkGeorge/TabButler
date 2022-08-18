@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { Data, SearchMode } from "@common/types";
+import { Data } from "@common/types";
 import { BottomBar } from "./BottomBar";
 import { ListItemProps } from "./ListItems/ListItem";
 import {
