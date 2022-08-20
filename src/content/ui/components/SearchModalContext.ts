@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { Data, SearchMode } from "@common/types";
 
 // is context enough for all of this?
@@ -24,3 +24,7 @@ export interface SearchModalContextType {
 export const SearchModalContext = createContext<SearchModalContextType | null>(
   null,
 );
+
+export function useSearchModalContext() {
+  return useContext(SearchModalContext) as SearchModalContextType;
+}

@@ -14,6 +14,7 @@ export interface Props {
 }
 
 // alternative to the style tag is a link tag with the chrome url to transpiled style sheet
+// i could also use jss https://cssinjs.org/setup?v=v10.9.2
 
 export const SearchModal = (props: Props) => {
   const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>(

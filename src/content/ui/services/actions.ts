@@ -17,7 +17,7 @@ import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
 
 import browser from "webextension-polyfill";
 
-export const filterActions = (searchValue: string, data: ActionData[]) => {
+export const searchActions = (searchValue: string, data: ActionData[]) => {
   if (searchValue) {
     return data.filter((action) =>
       action.name.toLowerCase().includes(searchValue.toLowerCase()),

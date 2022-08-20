@@ -1,8 +1,12 @@
 import browser from "webextension-polyfill";
 import { ChangeTabPayload, Message, TabData } from "@common/types";
 
-export const TAB_COMMAND_KEY = "/";
+// "/" key does not work on google.com for some reason
+// using "\" instead
+export const TAB_FILTER_KEY = "\\";
+export const TAB_FILTERS = ["muted", "audible", "pinned"]
 
+// rename all filter methods to search
 export function getTabData() {
   const messagePayload = {
     message: Message.GET_TAB_DATA,
@@ -14,21 +18,27 @@ const filterByCurrentWindow = (currentTabs: TabData[]) => {
   return currentTabs.filter((tabData) => tabData.inCurrentWindow);
 };
 
-const filterByCommand = (command: string, currentTabs: TabData[]) => {
-  if (command === "muted") return currentTabs.filter((tab) => tab.isMuted);
-  else if (command === "audible")
+// these are not commands, they are special filters
+// needs a ui indixator of these special filters
+const searchByFilter = (filter: string, currentTabs: TabData[]) => {
+  if (filter === "muted") return currentTabs.filter((tab) => tab.isMuted);
+  else if (filter === "audible")
     return currentTabs.filter((tab) => tab.isAudible);
-  else if (command === "pinned")
+  else if (filter === "pinned")
     return currentTabs.filter((tab) => tab.isPinned);
   return [];
-  // return data; // think about this
+  // return currentTabs; // think about this
 };
 
-const tabMatchesValue = (searchValue: string, tabData: TabData) =>
-  tabData.tabTitle.toLowerCase().includes(searchValue.toLowerCase()) ||
-  tabData.tabUrl.toLowerCase().includes(searchValue.toLowerCase());
+const tabMatchesValue = (searchValue: string, tabData: TabData) => {
+  // the query string has already been removed from the url
+  return (
+    tabData.tabTitle.toLowerCase().includes(searchValue.toLowerCase()) ||
+    tabData.tabUrl.toLowerCase().includes(searchValue.toLowerCase())
+  );
+};
 
-export const filterTabs = (
+export const searchTabs = (
   searchValue: string,
   data: TabData[],
   onlyCurrentWindow: boolean,
@@ -38,9 +48,9 @@ export const filterTabs = (
     ? filterByCurrentWindow(data)
     : data;
   if (searchValue) {
-    if (searchValue.startsWith(TAB_COMMAND_KEY)) {
-      const command = searchValue.slice(1); // remove the command key
-      return filterByCommand(command, initalData);
+    if (searchValue.startsWith(TAB_FILTER_KEY)) {
+      const filter = searchValue.slice(1); // remove the command key
+      return searchByFilter(filter, initalData);
     }
     return initalData.filter(
       (tabData) => tabMatchesValue(searchValue, tabData),

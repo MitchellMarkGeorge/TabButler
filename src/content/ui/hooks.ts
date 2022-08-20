@@ -1,11 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Data, SearchMode } from "../../common/types";
 import { getActions } from "./services/actions";
 import { getTabData } from "./services/tabs";
 
 import {
-  SearchModalContext,
-  SearchModalContextType,
+  useSearchModalContext,
 } from "./components/SearchModalContext";
 
 // hook to scroll to element is selected
@@ -48,7 +47,7 @@ export const useData = (searchMode: SearchMode) => {
   // the only way for the local state and the context to be updated was for everything to be in context
   // might just transfer over to something like zustand
   const { isLoading, setIsLoading, data, setData, hasError, setHasError } =
-    useContext(SearchModalContext) as SearchModalContextType;
+    useSearchModalContext();
   const fetchData = () => {
     let getDataFunc: () => Promise<Data[]>;
     if (searchMode === SearchMode.TAB_ACTIONS) {

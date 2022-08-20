@@ -1,27 +1,19 @@
 import FocusTrap from "focus-trap-react";
-import React, {
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
-import { Data } from "@common/types";
+import { Data, SearchMode } from "@common/types";
 import { BottomBar } from "./BottomBar";
 import { ListItemProps } from "./ListItems/ListItem";
-import {
-  SearchModalContext,
-  SearchModalContextType,
-} from "./SearchModalContext";
+import { useSearchModalContext } from "./SearchModalContext";
+import { TAB_FILTERS, TAB_FILTER_KEY } from "../services/tabs";
+import { Heading } from "./utils";
 
 interface Props<T> {
   // currentSearchMode: SearchMode;
   data: T[];
   inputPlaceHolderText: string;
   noDataText: string;
-  filterData: (
+  searchData: (
     searchValue: string,
     data: T[],
     onlyCurrentWindow: boolean,
@@ -32,10 +24,8 @@ interface Props<T> {
 
 export const SearchView = <T extends Data>(props: Props<T>) => {
   // would be better to just pass in in a prop to reduce unneccesary rerenders
-  const { currentSearchMode, close } = useContext(
-    SearchModalContext,
-  ) as SearchModalContextType;
-  const [value, setValue] = useState("");
+  const { currentSearchMode, close } = useSearchModalContext();
+  const [searchValue, setSearchValue] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,7 +46,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
 
   const onSubmit = () => {
     // rename this method
-    const selectedData = filteredData[selectedIndex];
+    const selectedData = resultData[selectedIndex];
     if (selectedData) {
       onItemClick(selectedData);
     }
@@ -64,11 +54,11 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
 
   // const isTabActionsMode = () =>
   //   props.currentSearchMode === SearchMode.TAB_ACTIONS;
-  // const isTabSearchMode = () => currentSearchMode === SearchMode.TAB_SEARCH;
+  const isTabSearchMode = () => currentSearchMode === SearchMode.TAB_SEARCH;
 
   useEffect(() => {
-    if (value) {
-      setValue("");
+    if (searchValue) {
+      setSearchValue("");
     }
 
     if (selectedIndex !== 0) {
@@ -84,9 +74,9 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   //   inputRef.current?.focus();
   // }, [])
 
-  const filteredData = useMemo(
-    () => props.filterData(value, props.data, showOnlyCurrentWindow),
-    [value, props.data, showOnlyCurrentWindow],
+  const resultData = useMemo(
+    () => props.searchData(searchValue, props.data, showOnlyCurrentWindow),
+    [searchValue, props.data, showOnlyCurrentWindow],
   );
 
   const onKeyUp = (event: KeyboardEvent) => {
@@ -107,7 +97,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
       }
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
-      if (selectedIndex !== filteredData.length - 1) {
+      if (selectedIndex !== resultData.length - 1) {
         nextIndex = selectedIndex + 1;
         virtuosoRef.current?.scrollIntoView({
           index: nextIndex,
@@ -153,7 +143,36 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   };
 
   const showList = () => {
-    if (filteredData.length === 0) {
+    // only show this prompt is in Tab Search mode and if a supported filter has not been inputed yet
+    if (
+      isTabSearchMode() &&
+      searchValue.startsWith(TAB_FILTER_KEY) &&
+      // removes the filter key
+      !TAB_FILTERS.includes(searchValue.slice(1))
+    ) {
+      return (
+        <div className="tab-butler-empty">
+          <div className="tab-filter-prompt">
+            <Heading>Filter tabs using:</Heading>
+            <ul>
+              <li>
+                <b>\pinned</b>: Get all pinned
+                tabs
+              </li>
+              <li>
+                <b>\muted</b>: Get all muted
+                tabs
+              </li>
+              <li>
+                <b>\audible</b>: Get all tabs
+                playing audio
+              </li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+    if (resultData.length === 0) {
       return (
         <div className="tab-butler-empty">
           <h1 className="tab-butler-heading">{props.noDataText}</h1>
@@ -165,8 +184,8 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
       <Virtuoso
         ref={virtuosoRef}
         style={{ height: "100%", width: "100%" }} // move this to the virtial list class
-        fixedItemHeight={50}
-        data={filteredData}
+        fixedItemHeight={50} // only used to improve performance slightly... might not be needed
+        data={resultData}
         // totalCount={filteredData.length}
         className="tab-butler-virtual-list"
         itemContent={(index, item) => (
@@ -185,27 +204,26 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   return (
     <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
       <div className="tab-butler-main-container">
-        <div className="tab-butler-input-container">
-          {/* think about this*/}
-          {/* <AiOutlineSearch className="search-icon" /> */}
-          <input
-            className="tab-butler-input"
-            placeholder={props.inputPlaceHolderText}
-            value={value}
-            ref={inputRef}
-            onChange={(e) => {
-              // reset selected to first element in search result
-              setSelectedIndex(0);
-              setValue(e.target.value);
-            }}
-          />
-        </div>
+        <input
+          className="tab-butler-input"
+          placeholder={props.inputPlaceHolderText}
+          value={searchValue}
+          ref={inputRef}
+          onChange={(e) => {
+            // reset selected to first element in search result
+            setSelectedIndex(0);
+            setSearchValue(e.target.value);
+            // if (selectedIndex !== 0) {
+            //   goToTop();
+            // }
+          }}
+        />
         <div className="tab-butler-list-container">{showList()}</div>
         <BottomBar
           currentSeachMode={currentSearchMode}
           showOnlyCurrentWindow={showOnlyCurrentWindow}
           toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
-          resultNum={filteredData.length}
+          resultNum={resultData.length}
         />
       </div>
     </FocusTrap>

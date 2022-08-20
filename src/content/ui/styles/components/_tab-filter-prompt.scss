@@ -1,0 +1,35 @@
+.tab-filter-prompt {
+  text-align: center;
+  ul {
+    padding: 0;
+    margin-top: 10px;
+    font-size: 16px;
+
+    li {
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.36);
+      list-style: none;
+      text-align: center;
+      @media (prefers-color-scheme: light) {
+        color: rgba(0, 0, 0, 0.36);
+        // color: rgba(0, 0, 0, 0.8);
+      }
+
+      code {
+        background-color: transparent;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.36);
+        display: inline-block;
+        line-height: 1;
+        padding: 2px 4px;
+        white-space: nowrap;
+
+        @media (prefers-color-scheme: light) {
+          color: #333;
+          background-color: #eee;
+          border: none;
+        }
+      }
+    }
+  }
+}
