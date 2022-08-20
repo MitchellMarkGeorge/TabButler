@@ -42,12 +42,6 @@ export const SearchModal = (props: Props) => {
     }
   }, [props.searchMode]);
 
-  // useEffect(() => {
-  //   if (!isLoading) {
-  //     setIsLoading(true);
-  //   }
-  // }, [currentSearchMode])
-
   // is this nessecary?
   const contextValue = useMemo(
     () => ({
@@ -68,9 +62,7 @@ export const SearchModal = (props: Props) => {
     <SearchModalContext.Provider value={contextValue}>
       <style>{styles}</style>
       <ModalBody>
-        <SideBar
-        
-        />
+        <SideBar />
         <SearchViewContainer />
       </ModalBody>
     </SearchModalContext.Provider>

@@ -6,6 +6,10 @@ import { ChangeTabPayload, Message, TabData } from "@common/types";
 export const TAB_FILTER_KEY = "\\";
 export const TAB_FILTERS = ["muted", "audible", "pinned"]
 
+export function isTabFilter(filter: string) {
+  return TAB_FILTERS.includes(filter);
+}
+
 // rename all filter methods to search
 export function getTabData() {
   const messagePayload = {

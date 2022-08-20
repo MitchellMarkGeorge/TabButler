@@ -5,7 +5,7 @@ import { Data, SearchMode } from "@common/types";
 import { BottomBar } from "./BottomBar";
 import { ListItemProps } from "./ListItems/ListItem";
 import { useSearchModalContext } from "./SearchModalContext";
-import { TAB_FILTERS, TAB_FILTER_KEY } from "../services/tabs";
+import { isTabFilter, TAB_FILTER_KEY } from "../services/tabs";
 import { Heading } from "./utils";
 
 interface Props<T> {
@@ -74,12 +74,19 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   //   inputRef.current?.focus();
   // }, [])
 
+  useEffect(() => {
+    virtuosoRef.current?.scrollIntoView({
+      index: selectedIndex,
+      behavior: "smooth", // smoot auto
+    });
+  }, [selectedIndex]);
+
   const resultData = useMemo(
     () => props.searchData(searchValue, props.data, showOnlyCurrentWindow),
     [searchValue, props.data, showOnlyCurrentWindow],
   );
 
-  const onKeyUp = (event: KeyboardEvent) => {
+  const onKeyDown = (event: KeyboardEvent) => {
     // circular navigation might confuse users
     let nextIndex = 0;
     // using tab caused some issues
@@ -87,25 +94,13 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
       event.preventDefault();
       if (selectedIndex !== 0) {
         nextIndex = selectedIndex - 1;
-        virtuosoRef.current?.scrollIntoView({
-          index: nextIndex,
-          behavior: "smooth",
-          done: () => {
-            setSelectedIndex(nextIndex);
-          },
-        });
+        setSelectedIndex(nextIndex);
       }
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       if (selectedIndex !== resultData.length - 1) {
         nextIndex = selectedIndex + 1;
-        virtuosoRef.current?.scrollIntoView({
-          index: nextIndex,
-          behavior: "smooth",
-          done: () => {
-            setSelectedIndex(nextIndex);
-          },
-        });
+        setSelectedIndex(nextIndex);
       }
     } else if (event.key === "Enter") {
       event.preventDefault();
@@ -124,12 +119,12 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   const addListeners = () => {
     document.addEventListener("keydown", unmountOnEscape, true);
     // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view
-    document.addEventListener("keyup", onKeyUp, true);
+    document.addEventListener("keydown", onKeyDown, true);
   };
 
   const removeListeners = () => {
     document.removeEventListener("keydown", unmountOnEscape, true);
-    document.removeEventListener("keyup", onKeyUp, true);
+    document.removeEventListener("keydown", onKeyDown, true);
   };
 
   useEffect(() => {
@@ -147,25 +142,23 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
     if (
       isTabSearchMode() &&
       searchValue.startsWith(TAB_FILTER_KEY) &&
+      // !TAB_FILTERS.includes(searchValue.slice(1))
       // removes the filter key
-      !TAB_FILTERS.includes(searchValue.slice(1))
+      !isTabFilter(searchValue.slice(1))
     ) {
       return (
         <div className="tab-butler-empty">
           <div className="tab-filter-prompt">
-            <Heading>Filter tabs using:</Heading>
+            <Heading>Tab Filters</Heading>
             <ul>
               <li>
-                <b>\pinned</b>: Get all pinned
-                tabs
+                <b>\pinned</b>: Get all pinned tabs
               </li>
               <li>
-                <b>\muted</b>: Get all muted
-                tabs
+                <b>\muted</b>: Get all muted tabs
               </li>
               <li>
-                <b>\audible</b>: Get all tabs
-                playing audio
+                <b>\audible</b>: Get all tabs playing audio
               </li>
             </ul>
           </div>
@@ -211,11 +204,9 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
           ref={inputRef}
           onChange={(e) => {
             // reset selected to first element in search result
+            // should automatically scroll due to useEffect
             setSelectedIndex(0);
             setSearchValue(e.target.value);
-            // if (selectedIndex !== 0) {
-            //   goToTop();
-            // }
           }}
         />
         <div className="tab-butler-list-container">{showList()}</div>
