@@ -32,6 +32,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   const [showOnlyCurrentWindow, toggleShowOnlyCurrentWindow] = useReducer(
     (showOnlyCurrentWindow) => {
       // can mess up with toggle
+      // setSelectedIndex(0);
       // virtuosoRef.current?.scrollIntoView({
       //   index: 0,
       //   done: () => {
@@ -77,7 +78,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   useEffect(() => {
     virtuosoRef.current?.scrollIntoView({
       index: selectedIndex,
-      behavior: "smooth", // smoot auto
+      behavior: "smooth", // smooth auto
     });
   }, [selectedIndex]);
 
