@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   ActionData,
   Message,
@@ -9,20 +9,17 @@ import {
 } from "@common/types";
 import { useData } from "../hooks";
 import {
-  SearchModalContext,
-  SearchModalContextType,
+  useSearchModalContext,
 } from "./SearchModalContext";
 import browser from "webextension-polyfill";
 import { ActionListItem } from "./ListItems/ActionListItem";
 import { TabListItem } from "./ListItems/TabListItem";
 import { SearchView } from "./SearchView";
-import { filterActions, onActionItemClick } from "../services/actions";
-import { filterTabs, onTabItemClick } from "../services/tabs";
+import { searchActions, onActionItemClick } from "../services/actions";
+import { searchTabs, onTabItemClick } from "../services/tabs";
 
 export const SearchViewContainer = () => {
-  const { currentSearchMode } = useContext(
-    SearchModalContext,
-  ) as SearchModalContextType;
+  const { currentSearchMode } = useSearchModalContext()
     // could move all of the code from this function here
   const { hasError, data, updateData, fetchData, isLoading } =
     useData(currentSearchMode);
@@ -78,7 +75,7 @@ export const SearchViewContainer = () => {
             data={data as ActionData[]}
             inputPlaceHolderText="Search Actions..."
             noDataText="No actions to show"
-            filterData={filterActions}
+            searchData={searchActions}
             onItemClick={onActionItemClick}
             listItemComponent={ActionListItem}
           />
@@ -91,7 +88,7 @@ export const SearchViewContainer = () => {
             data={data as TabData[]}
             inputPlaceHolderText="Search Tabs..."
             noDataText="No tabs to show"
-            filterData={filterTabs}
+            searchData={searchTabs}
             onItemClick={onTabItemClick}
             listItemComponent={TabListItem}
           />

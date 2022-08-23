@@ -1,12 +1,18 @@
 // utils styles for containers and everything in between
 
 .tab-butler-main-container {
+  flex: 1; // auto?
   display: flex;
   flex-direction: column;
   row-gap: 10px;
   height: 100%;
   width: 100%;
+  padding: 16px;
   background-color: transparent;
+  // background-color: rgb(46, 49, 56);
+  // @media (prefers-color-scheme: light) {
+  //   background-color: #fff;
+  // }
 }
 
 .tab-butler-list-container {
@@ -41,17 +47,21 @@
   justify-content: center;
   text-align: center;
 
-  .tab-bulter-error-message {
-    padding-left: 8px;
-    padding-right: 8px;
+  .tab-butler-error-message {
+    // padding-left: 8px;
+    // padding-right: 8px;
+    max-width: 75%;
   }
 }
 
 .tab-butler-heading {
   color: rgba(255, 255, 255, 0.36);
+  font-size: 32px;
   margin: 0;
+  text-align: center;
 
   @media (prefers-color-scheme: light) {
     color: rgba(0, 0, 0, 0.36);
+    // color: rgba(0, 0, 0, 0.8);
   }
 }

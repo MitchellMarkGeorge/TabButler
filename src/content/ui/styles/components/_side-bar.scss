@@ -1,0 +1,45 @@
+.side-bar {
+  height: 100%;
+  padding: 20px 12px;
+  // padding: {
+  //     // make this into a mixin
+  //     top: 20px;
+  //     bottom: 20px;
+  //     left: 12px;
+  //     right: 12px;
+  // };
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  // think about this color
+  // for some reason on light theme it soes not look the same
+  // might habve to use the actual hex code
+  background-color: rgba(0, 0, 0, 0.24); // 0.36
+  // to match the border radius of the main container
+  border-bottom-left-radius: 8px;
+  border-top-left-radius: 8px;
+
+  @media (prefers-color-scheme: light) {
+    // // think about this color
+    background-color: rgba(0, 0, 0, 0.92);
+    // background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  .side-bar-item,
+  .side-bar-item-selected {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    border-radius: 8px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .side-bar-item-selected {
+    background-color: #3182ce;
+  }
+}

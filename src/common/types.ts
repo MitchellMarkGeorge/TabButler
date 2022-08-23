@@ -32,6 +32,10 @@ export const enum Message {
   TOGGLE_PIN_CURRENT_TAB = "toggle-pin-tab",
   TOGGLE_MUTE_CURRENT_TAB = "toggle-mute-tab",
   DUPLICATE_TAB = "duplicate-tab",
+  CLOSE_DUPLICATE_TABS = "close-duplicate-tabs",
+  CLOSE_OTHER_TABS = "close-other-tabs",
+
+
 
   CHECK_SEARCH_OPEN = "check-search-open",
 
@@ -111,6 +115,12 @@ export interface ActionData {
   message: Message; // the message that the action sends to the backgrpond sctipt
   icon: IconType; // for now
   iconColor?: string;
+}
+
+
+export interface SideBarItem {
+  searchMode: SearchMode;
+  icon: IconType;
 }
 
 export interface CheackSearchOpenResponse {

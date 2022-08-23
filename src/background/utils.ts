@@ -53,7 +53,7 @@ export async function getTabsInBrowser(activeTabId?: number) {
   // should it return the current tab??
   // should we be using the lastFocused?
   const tabs = await browser.tabs.query({});
-  let currentWindowId: number | undefined; // what if it is undefined
+  let currentWindowId: number | undefined; 
   // if the active tab is provided, use the currentWindow of that tab
   if (activeTabId !== undefined) {
     currentWindowId = (await browser.tabs.get(activeTabId)).windowId;
@@ -66,23 +66,21 @@ export async function getTabsInBrowser(activeTabId?: number) {
 
   for (let i = 0; i < tabNum; i++) {
     const tab = tabs[i];
-    // will all pages have a title?
     if (
       tab.id &&
-      tab.id !== browser.tabs.TAB_ID_NONE && // does this need to be checked
+      tab.id !== browser.tabs.TAB_ID_NONE && 
       tab.url &&
       tab.windowId &&
-      tab.windowId !== browser.windows.WINDOW_ID_NONE // does this need to be checked
+      tab.windowId !== browser.windows.WINDOW_ID_NONE 
     ) {
       // we know that these properties will be present
       const tabData: TabData = {
         tabId: tab.id,
         windowId: tab.windowId,
         favIcon: tab.favIconUrl || null,
-        tabTitle: tab.title!,
-        tabUrl: tab.url!,
+        tabTitle: tab.title as string, // we know this will be present
+        tabUrl: tab.url.split("?")[0], // removes the query string (should I do this her eor in the SearchMdoal on search?)
         inCurrentWindow: currentWindowId === tab.windowId,
-        // audible: tab.audible === undefined ? false : tab.audible
         isAudible: Boolean(tab.audible), // if undefined, it will return false
         isMuted: Boolean(tab?.mutedInfo?.muted), // think about this
         isPinned: tab.pinned,

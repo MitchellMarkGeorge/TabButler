@@ -153,6 +153,45 @@ browser.runtime.onMessage.addListener(
           browser.tabs.duplicate(sender.tab.id);
         }
         break;
+
+      case Message.CLOSE_DUPLICATE_TABS: {
+        browser.tabs.query({}).then((tabs) => {
+          const uniqueURLs = new Set<string>();
+          const duplicateTabIds: number[] = []; // should i use a set?
+          for (let i = 0; i < tabs.length; i++) {
+            const tab = tabs[i];
+            if (tab.url && tab.id) {
+              const isDuplicateTab = uniqueURLs.has(tab.url);
+              uniqueURLs.add(tab.url); // record that a tab with this specific url already exists
+              if (isDuplicateTab) {
+                duplicateTabIds.push(tab.id) // is a duplicate tab
+              }
+            }
+          }
+          // remove all duplicate tabs
+          browser.tabs.remove(duplicateTabIds);
+        });
+        break;
+      }
+
+      case Message.CLOSE_OTHER_TABS: {
+        if (sender.tab?.id && sender.tab?.windowId) {
+          browser.tabs.query({ windowId: sender.tab.windowId}).then((tabs => {
+            const tabsToClose: number[] = [];
+            for (let i = 0; i < tabs.length; i++) {
+              const tab = tabs[i];
+              if (tab.id && tab.id !== sender.tab?.id) {
+                // get all other tabs
+                tabsToClose.push(tab.id);
+              }
+            }
+            // remove all other tabs
+            browser.tabs.remove(tabsToClose);
+          }))
+        }
+
+        break;
+      }
       case Message.OPEN_GITHUB:
       case Message.OPEN_GOOGLE:
       case Message.OPEN_TWITTER:
