@@ -6,7 +6,8 @@ import styles from "../styles/styles.scss";
 import { SearchModalContext } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
 import { ModalBody } from "./utils";
-import { SideBar } from "./SideBar";
+// import { SideBar } from "./SideBar";
+// will release tab filters first
 
 export interface Props {
   searchMode: SearchMode;
@@ -62,7 +63,7 @@ export const SearchModal = (props: Props) => {
     <SearchModalContext.Provider value={contextValue}>
       <style>{styles}</style>
       <ModalBody>
-        <SideBar />
+        {/* <SideBar /> */} 
         <SearchViewContainer />
       </ModalBody>
     </SearchModalContext.Provider>

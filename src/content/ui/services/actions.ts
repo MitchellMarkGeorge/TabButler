@@ -1,6 +1,7 @@
 import { ActionData, Message, MessagePlayload } from "@common/types";
 
 import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
+import { AiFillCloseSquare } from "@react-icons/all-files/ai/AiFillCloseSquare";
 import { AiFillEyeInvisible } from "@react-icons/all-files/ai/AiFillEyeInvisible";
 import { AiFillGithub } from "@react-icons/all-files/ai/AiFillGithub";
 import { AiFillGoogleCircle } from "@react-icons/all-files/ai/AiFillGoogleCircle";
@@ -15,6 +16,8 @@ import { BiPlusCircle } from "@react-icons/all-files/bi/BiPlusCircle";
 import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
 import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
 
+import { GoDiffRemoved } from "@react-icons/all-files/go/GoDiffRemoved";
+
 import browser from "webextension-polyfill";
 
 export const searchActions = (searchValue: string, data: ActionData[]) => {
@@ -27,8 +30,8 @@ export const searchActions = (searchValue: string, data: ActionData[]) => {
   }
 };
 
-export function getActions(): Promise<ActionData[]> {
-  const actions = [
+export function getActions() {
+  const actions: ActionData[] = [
     {
       name: "New Tab",
       message: Message.OPEN_NEW_TAB,
@@ -71,6 +74,16 @@ export function getActions(): Promise<ActionData[]> {
       name: "Duplicate Tab",
       message: Message.DUPLICATE_TAB,
       icon: BiDuplicate,
+    },
+    {
+      name: "Close Duplicate Tabs",
+      message: Message.CLOSE_DUPLICATE_TABS,
+      icon: GoDiffRemoved,
+    },
+    {
+      name: "Close Other Tabs in Window",
+      message: Message.CLOSE_OTHER_TABS,
+      icon: AiFillCloseSquare,
     },
     {
       name: "Open GitHub", // might remove this one
