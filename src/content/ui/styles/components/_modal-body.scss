@@ -1,11 +1,11 @@
 // styles for the modal body
 @use "../variables" as variables;
-.tab-butler-modal-body {
-  box-sizing: border-box ;
-  position: relative ;
+.modal-body {
+  box-sizing: border-box;
+  position: relative;
   width: 700px;
   /* was can use viewport units to make is scale to different screeens */
-  height: 520px ;
+  height: 520px;
   max-height: 520px;
   background-color: variables.$dark_modal_bg;
   border-radius: 8px;

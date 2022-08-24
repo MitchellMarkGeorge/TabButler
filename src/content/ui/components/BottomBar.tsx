@@ -1,5 +1,11 @@
 import React from "react";
 import { SearchMode } from "@common/types";
+import { createComponent } from "./utils";
+
+const BottomBarContainer = createComponent("bottom-bar");
+const ResultNumberContainer = createComponent("result-number");
+const WindowToggleContainer = createComponent("window-toggle");
+const HelpItemContainer = createComponent("help-items");
 
 interface Props {
   currentSeachMode: SearchMode;
@@ -14,46 +20,46 @@ export function BottomBar({
   toggleShowOnlyCurrentWindow,
 }: Props) {
   return (
-    <div className="tab-butler-bottom-bar">
+    <BottomBarContainer>
       {/* <span>{resultNum} Results</span> */}
       {/* what is the best way to do this? should I just cave in and show all the tabs by default? */}
-      <div className="bottom_info">
+      <ResultNumberContainer>
         <span>{resultNum} Results</span>
-      </div>
+      </ResultNumberContainer>
       {currentSeachMode === SearchMode.TAB_SEARCH && (
-        <div className="window_toggle">
+        <WindowToggleContainer>
           <input
             type="checkbox"
-            id="current_window_toggle"
+            id="current-window-toggle"
             checked={showOnlyCurrentWindow}
             onChange={toggleShowOnlyCurrentWindow}
           />
-          <label htmlFor="current_window_toggle">Only Current Window</label>
-        </div>
+          <label htmlFor="current-window-toggle">Only Current Window</label>
+        </WindowToggleContainer>
       )}
-      <div className="help_items">
+      <HelpItemContainer>
         <div>
-          <kbd className="tab-butler-kbd">&uarr;</kbd>
+          <kbd >&uarr;</kbd>
           Up
         </div>
 
         <div>
-          <kbd className="tab-butler-kbd">&darr;</kbd>
+          <kbd>&darr;</kbd>
           Down
         </div>
 
         <div>
-          <kbd className="tab-butler-kbd">Enter</kbd>
+          <kbd>Enter</kbd>
           {currentSeachMode === SearchMode.TAB_ACTIONS
             ? "Execute action"
             : "Go to tab"}
         </div>
 
         <div>
-          <kbd className="tab-butler-kbd">Esc</kbd>
+          <kbd>Esc</kbd>
           Close
         </div>
-      </div>
-    </div>
+      </HelpItemContainer>
+    </BottomBarContainer>
   );
 }

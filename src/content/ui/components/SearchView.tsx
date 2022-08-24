@@ -6,7 +6,12 @@ import { BottomBar } from "./BottomBar";
 import { ListItemProps } from "./ListItems/ListItem";
 import { useSearchModalContext } from "./SearchModalContext";
 import { isTabFilter, TAB_FILTER_KEY } from "../services/tabs";
-import { Heading } from "./utils";
+import { createComponent, Empty, Heading } from "./utils";
+
+const SearchInput = createComponent("search-input", "input");
+const MainContainer = createComponent("main-container");
+const TabFilterPrompt = createComponent("tab-filter-propmpt");
+const ListContainer = createComponent("list-container");
 
 interface Props<T> {
   // currentSearchMode: SearchMode;
@@ -147,9 +152,10 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
       // removes the filter key
       !isTabFilter(searchValue.slice(1))
     ) {
+      // make into seperate component
       return (
-        <div className="tab-butler-empty">
-          <div className="tab-filter-prompt">
+        <Empty>
+          <TabFilterPrompt>
             <Heading>Tab Filters</Heading>
             <ul>
               <li>
@@ -162,15 +168,15 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
                 <b>\audible</b>: Get all tabs playing audio
               </li>
             </ul>
-          </div>
-        </div>
+          </TabFilterPrompt>
+        </Empty>
       );
     }
     if (resultData.length === 0) {
       return (
-        <div className="tab-butler-empty">
-          <h1 className="tab-butler-heading">{props.noDataText}</h1>
-        </div>
+        <Empty>
+          <Heading>{props.noDataText}</Heading>
+        </Empty>
       );
     }
     const ListItemComponent = props.listItemComponent;
@@ -197,9 +203,8 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
 
   return (
     <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
-      <div className="tab-butler-main-container">
-        <input
-          className="tab-butler-input"
+      <MainContainer>
+        <SearchInput
           placeholder={props.inputPlaceHolderText}
           value={searchValue}
           ref={inputRef}
@@ -210,14 +215,14 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
             setSearchValue(e.target.value);
           }}
         />
-        <div className="tab-butler-list-container">{showList()}</div>
+        <ListContainer>{showList()}</ListContainer>
         <BottomBar
           currentSeachMode={currentSearchMode}
           showOnlyCurrentWindow={showOnlyCurrentWindow}
           toggleShowOnlyCurrentWindow={toggleShowOnlyCurrentWindow}
           resultNum={resultData.length}
         />
-      </div>
+      </MainContainer>
     </FocusTrap>
   );
 };

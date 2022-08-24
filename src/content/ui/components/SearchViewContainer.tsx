@@ -17,6 +17,7 @@ import { TabListItem } from "./ListItems/TabListItem";
 import { SearchView } from "./SearchView";
 import { searchActions, onActionItemClick } from "../services/actions";
 import { searchTabs, onTabItemClick } from "../services/tabs";
+import { Empty, ErrorMessage, Heading } from "./utils";
 
 export const SearchViewContainer = () => {
   const { currentSearchMode } = useSearchModalContext()
@@ -99,23 +100,23 @@ export const SearchViewContainer = () => {
   if (isLoading) {
     console.log("loading...", data, currentSearchMode);
     return (
-      <div className="tab-butler-empty">
-        <h1 className="tab-butler-heading">Loading...</h1>
-      </div>
+      <Empty>
+        <Heading>Loading...</Heading>
+      </Empty>
     );
   }
 
   if (hasError) {
     console.log("error...");
     return (
-      <div className="tab-butler-empty">
-        <div className="tab-butler-error-message">
-          <h1 className="tab-butler-heading">Error</h1>
-          <h1 className="tab-butler-heading">
+      <Empty>
+        <ErrorMessage>
+          <Heading>Error</Heading>
+          <Heading>
             Try reloading the current tab or restarting your browser.
-          </h1>
-        </div>
-      </div>
+          </Heading>
+        </ErrorMessage>
+      </Empty>
     );
   }
 

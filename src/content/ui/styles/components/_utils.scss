@@ -1,6 +1,6 @@
 // utils styles for containers and everything in between
 @use "../variables" as variables;
-.tab-butler-main-container {
+.main-container {
   flex: 1; // auto?
   display: flex;
   flex-direction: column;
@@ -15,7 +15,7 @@
   // }
 }
 
-.tab-butler-list-container {
+.list-container {
   height: 100%;
   /* is this needed? */
   max-height: 100%;
@@ -40,7 +40,7 @@
   }
 }
 
-.tab-butler-empty {
+.empty-container {
   height: 100%;
   width: 100%;
   flex: auto;
@@ -49,14 +49,14 @@
   justify-content: center;
   text-align: center;
 
-  .tab-butler-error-message {
+  .error-message {
     // padding-left: 8px;
     // padding-right: 8px;
     max-width: 75%;
   }
 }
 
-.tab-butler-heading {
+.heading {
   // color: rgba(255, 255, 255, 0.36);
   color: variables.$primary_gray;
   font-size: 32px;
