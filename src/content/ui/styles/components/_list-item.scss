@@ -1,7 +1,7 @@
 @use "../variables" as variables;
 
-.tab-butler-list-item,
-.tab-butler-list-item-selected {
+.list-item,
+.list-item-selected {
   width: 100%;
   /* using a set height might not be needed */
   height: 50px;
@@ -28,8 +28,8 @@
     background-color: #3182ce;
   } */
 
-  .main_info_container,
-  .button_container {
+  .main-info-container,
+  .button-container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -37,7 +37,7 @@
     column-gap: 8px;
   }
 
-  .main_info_container {
+  .main-info-container {
     flex: 1;
     min-width: 0;
   }
@@ -47,7 +47,7 @@
     width: 24px;
   }
 
-  .text_container {
+  .text-container {
     /*  flex might not be needed here     */
     flex: 1;
     min-width: 0;
@@ -56,13 +56,13 @@
     line-height: normal !important;
   }
 
-  .main_text {
+  .main-text {
     font-size: 16px;
     font-weight: 590;
     /* color: #fff; */
   }
 
-  .secondary_text {
+  .secondary-text {
     font-size: 10px;
     /* if selected use special color if not fall back to the default one*/
     /* color: ${(props) =>
@@ -74,8 +74,8 @@
     color: #cbd5e0;
   } */
 
-  .main_text,
-  .secondary_text {
+  .main-text,
+  .secondary-text {
     flex: 1;
     /* max-width: 100%; */
     min-width: 0;
@@ -90,7 +90,7 @@
     user-select: none;
   }
 
-  .icon_button {
+  .icon-button {
     /* center the buttons */
     cursor: pointer;
     display: flex;
@@ -98,7 +98,7 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .secondary_text {
+    .secondary-text {
       //   color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
       // color: rgba(0, 0, 0, 0.48);
       color: variables.$secondary_black;
@@ -110,7 +110,7 @@
   }
 }
 
-.tab-butler-list-item-selected {
+.list-item-selected {
   // color: #fff;
   color: variables.$primary_white;
   background-color: variables.$primary_blue;

@@ -8,7 +8,7 @@ import { forwardRef, createElement, ReactNode } from "react";
 // https://www.anycodings.com/1questions/1770567/typing-a-dynamic-tag-in-react-with-typescript
 
 type Props<Tag extends keyof JSX.IntrinsicElements> = {
-  tag?: keyof JSX.IntrinsicElements;
+  // tag?: keyof JSX.IntrinsicElements;
   children?: ReactNode;
 } & JSX.IntrinsicElements[Tag];
 
@@ -20,6 +20,16 @@ export const createComponent = <Tag extends keyof JSX.IntrinsicElements = 'div'>
   return forwardRef((props: Props<Tag>, ref) => {
     // ?? operator
     return createElement(tagName || "div", { ...props, className, ref });
+  });
+};
+
+export const createPropsComponent = <Tag extends keyof JSX.IntrinsicElements = 'div'>(
+  initalProps?: JSX.IntrinsicElements[Tag],
+  tagName?: Tag,
+) => {
+  return forwardRef((props: Props<Tag>, ref) => {
+    // ?? operator
+    return createElement(tagName || "div", { ...initalProps, ...props, ref });
   });
 };
 

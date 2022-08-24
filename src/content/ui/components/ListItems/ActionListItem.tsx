@@ -1,7 +1,7 @@
 import React from "react";
 import { ActionData } from "../../../../common/types";
 import { useIsDarkMode } from "../../hooks";
-import { ListItem, ListItemProps } from "./ListItem";
+import { ListItem, ListItemProps, MainText, MainInfoContainer } from "./ListItem";
 
 export const ActionListItem = ({
   data,
@@ -19,7 +19,7 @@ export const ActionListItem = ({
       selected={selected}
       onMouseOver={onHover}
     >
-      <div className="main_info_container">
+      <MainInfoContainer>
         <Icon
           size="24px"
           color={
@@ -30,8 +30,8 @@ export const ActionListItem = ({
               : "rgba(0, 0, 0, 0.36)"
           }
         />
-        <div className="main_text">{data.name}</div>
-      </div>
+        <MainText>{data.name}</MainText>
+      </MainInfoContainer>
     </ListItem>
   );
 };
