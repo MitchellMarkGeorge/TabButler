@@ -1,4 +1,5 @@
 // styles for the modal body
+@use "../variables" as variables;
 .tab-butler-modal-body {
   box-sizing: border-box ;
   position: relative ;
@@ -6,7 +7,7 @@
   /* was can use viewport units to make is scale to different screeens */
   height: 520px ;
   max-height: 520px;
-  background-color: rgb(46, 49, 56);
+  background-color: variables.$dark_modal_bg;
   border-radius: 8px;
   z-index: 9999999;
   display: flex;
@@ -16,6 +17,6 @@
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
   @media (prefers-color-scheme: light) {
-    background-color: #fff;
+    background-color: variables.$light_modal_bg;
   }
 }

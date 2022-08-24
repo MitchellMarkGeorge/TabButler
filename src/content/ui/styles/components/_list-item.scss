@@ -1,3 +1,5 @@
+@use "../variables" as variables;
+
 .tab-butler-list-item,
 .tab-butler-list-item-selected {
   width: 100%;
@@ -65,7 +67,7 @@
     /* if selected use special color if not fall back to the default one*/
     /* color: ${(props) =>
       props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"}; */
-    color: #cbd5e0;
+    color: variables.$secondary_white;
   }
 
   /* :hover .secondary_text {
@@ -98,7 +100,8 @@
   @media (prefers-color-scheme: light) {
     .secondary_text {
       //   color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
-      color: rgba(0, 0, 0, 0.48);
+      // color: rgba(0, 0, 0, 0.48);
+      color: variables.$secondary_black;
     }
 
     /* :hover .secondary_text {
@@ -108,12 +111,14 @@
 }
 
 .tab-butler-list-item-selected {
-  color: #fff;
-  background-color: #3182ce;
+  // color: #fff;
+  color: variables.$primary_white;
+  background-color: variables.$primary_blue;
   @media (prefers-color-scheme: light) {
     .secondary_text {
       //   color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
-      color: #cbd5e0;
+      // color: #cbd5e0;
+      color: variables.$secondary_white;
     }
 
     /* :hover .secondary_text {
