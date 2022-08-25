@@ -8,10 +8,10 @@ import { useSearchModalContext } from "./SearchModalContext";
 import { isTabFilter, TAB_FILTER_KEY } from "../services/tabs";
 import { createComponent, Empty, Heading } from "./utils";
 
-const SearchInput = createComponent("search-input", "input");
-const MainContainer = createComponent("main-container");
-const TabFilterPrompt = createComponent("tab-filter-propmpt");
-const ListContainer = createComponent("list-container");
+const SearchInput = createComponent({ className: "search-input" }, "input");
+const MainContainer = createComponent({ className: "main-container" });
+const TabFilterPrompt = createComponent({ className: "tab-filter-prompt" });
+const ListContainer = createComponent({ className: "list-container" });
 
 interface Props<T> {
   // currentSearchMode: SearchMode;
@@ -187,7 +187,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
         fixedItemHeight={50} // only used to improve performance slightly... might not be needed
         data={resultData}
         // totalCount={filteredData.length}
-        className="tab-butler-virtual-list"
+        className="virtual-list"
         itemContent={(index, item) => (
           <ListItemComponent
             onClick={onItemClick}

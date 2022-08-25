@@ -12,29 +12,20 @@ type Props<Tag extends keyof JSX.IntrinsicElements> = {
   children?: ReactNode;
 } & JSX.IntrinsicElements[Tag];
 
-
+// a simple function to create simple components with default props
+// this is useful for elements that will have static classes and will only be used with one tag type
+// this also makes updating classNames easier especially if that classname is used across multiple files
 export const createComponent = <Tag extends keyof JSX.IntrinsicElements = 'div'>(
-  className?: string,
+  defaultProps: JSX.IntrinsicElements[Tag] = {},
   tagName?: Tag,
 ) => {
   return forwardRef((props: Props<Tag>, ref) => {
     // ?? operator
-    return createElement(tagName || "div", { ...props, className, ref });
+    return createElement(tagName || "div", { ...props, ...defaultProps, ref });
   });
 };
 
-export const createPropsComponent = <Tag extends keyof JSX.IntrinsicElements = 'div'>(
-  initalProps?: JSX.IntrinsicElements[Tag],
-  tagName?: Tag,
-) => {
-  return forwardRef((props: Props<Tag>, ref) => {
-    // ?? operator
-    return createElement(tagName || "div", { ...initalProps, ...props, ref });
-  });
-};
-
-// what file should these components go to
-export const Empty = createComponent("empty-container"); // might rename this to CenterContainer
-export const ErrorMessage = createComponent("error-message");
-export const Heading = createComponent("heading", "h1");
-export const ModalBody = createComponent("modal-body");
+export const Empty = createComponent({ className: "empty-container" }); // might rename this to CenterContainer
+export const ErrorMessage = createComponent({ className: "error-message"});
+export const Heading = createComponent({ className: "heading"}, "h1");
+export const ModalBody = createComponent({ className: "modal-body" });

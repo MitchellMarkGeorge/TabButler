@@ -5,8 +5,10 @@ import {
 } from "./SearchModalContext";
 import { createComponent } from "./utils";
 
-const SideBarContainer = createComponent("side-bar");
+const SideBarContainer = createComponent({ className: "side-bar" });
 const SideBarItem = createComponent();
+
+
 
 export const SideBar = () => {
   const { currentSearchMode, setCurrentSearchMode, setIsLoading } = useSearchModalContext()

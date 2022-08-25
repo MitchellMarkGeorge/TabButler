@@ -2,10 +2,10 @@ import React from "react";
 import { SearchMode } from "@common/types";
 import { createComponent } from "./utils";
 
-const BottomBarContainer = createComponent("bottom-bar");
-const ResultNumberContainer = createComponent("result-number");
-const WindowToggleContainer = createComponent("window-toggle");
-const HelpItemContainer = createComponent("help-items");
+const BottomBarContainer = createComponent({ className: "bottom-bar"});
+const ResultNumberContainer = createComponent( { className: "result-number"});
+const WindowToggleContainer = createComponent( { className: "window-toggle"});
+const HelpItemContainer = createComponent( {className: "help-items"});
 
 interface Props {
   currentSeachMode: SearchMode;

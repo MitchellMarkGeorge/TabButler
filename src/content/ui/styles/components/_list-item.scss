@@ -115,7 +115,7 @@
   color: variables.$primary_white;
   background-color: variables.$primary_blue;
   @media (prefers-color-scheme: light) {
-    .secondary_text {
+    .secondary-text {
       //   color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
       // color: #cbd5e0;
       color: variables.$secondary_white;
