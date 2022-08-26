@@ -53,7 +53,7 @@ export async function getTabsInBrowser(activeTabId?: number) {
   // should it return the current tab??
   // should we be using the lastFocused?
   const tabs = await browser.tabs.query({});
-  let currentWindowId: number | undefined; 
+  let currentWindowId: number | undefined;
   // if the active tab is provided, use the currentWindow of that tab
   if (activeTabId !== undefined) {
     currentWindowId = (await browser.tabs.get(activeTabId)).windowId;
@@ -68,10 +68,10 @@ export async function getTabsInBrowser(activeTabId?: number) {
     const tab = tabs[i];
     if (
       tab.id &&
-      tab.id !== browser.tabs.TAB_ID_NONE && 
+      tab.id !== browser.tabs.TAB_ID_NONE &&
       tab.url &&
       tab.windowId &&
-      tab.windowId !== browser.windows.WINDOW_ID_NONE 
+      tab.windowId !== browser.windows.WINDOW_ID_NONE
     ) {
       // we know that these properties will be present
       const tabData: TabData = {

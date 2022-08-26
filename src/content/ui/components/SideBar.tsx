@@ -1,11 +1,10 @@
 import React from "react";
 import { sideBarItems } from "../services/sidebar";
-import {
-  useSearchModalContext,
-} from "./SearchModalContext";
+import { useSearchModalContext } from "./SearchModalContext";
 
 export const SideBar = () => {
-  const { currentSearchMode, setCurrentSearchMode, setIsLoading } = useSearchModalContext()
+  const { currentSearchMode, setCurrentSearchMode, setIsLoading } =
+    useSearchModalContext();
   return (
     <div className="side-bar">
       {sideBarItems.map(({ searchMode, icon: Icon }) => {

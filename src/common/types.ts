@@ -35,8 +35,6 @@ export const enum Message {
   CLOSE_DUPLICATE_TABS = "close-duplicate-tabs",
   CLOSE_OTHER_TABS = "close-other-tabs",
 
-
-
   CHECK_SEARCH_OPEN = "check-search-open",
 
   OPEN_GITHUB = "open-github",
@@ -116,7 +114,6 @@ export interface ActionData {
   icon: IconType; // for now
   iconColor?: string;
 }
-
 
 export interface SideBarItem {
   searchMode: SearchMode;

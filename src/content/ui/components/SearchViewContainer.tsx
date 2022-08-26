@@ -8,9 +8,7 @@ import {
   UpdatedTabDataPayload,
 } from "@common/types";
 import { useData } from "../hooks";
-import {
-  useSearchModalContext,
-} from "./SearchModalContext";
+import { useSearchModalContext } from "./SearchModalContext";
 import browser from "webextension-polyfill";
 import { ActionListItem } from "./ListItems/ActionListItem";
 import { TabListItem } from "./ListItems/TabListItem";
@@ -19,8 +17,8 @@ import { searchActions, onActionItemClick } from "../services/actions";
 import { searchTabs, onTabItemClick } from "../services/tabs";
 
 export const SearchViewContainer = () => {
-  const { currentSearchMode } = useSearchModalContext()
-    // could move all of the code from this function here
+  const { currentSearchMode } = useSearchModalContext();
+  // could move all of the code from this function here
   const { hasError, data, updateData, fetchData, isLoading } =
     useData(currentSearchMode);
 
@@ -71,7 +69,7 @@ export const SearchViewContainer = () => {
       case SearchMode.TAB_ACTIONS:
         return (
           <SearchView
-          // currentSearchMode={currentSearchMode}
+            // currentSearchMode={currentSearchMode}
             data={data as ActionData[]}
             inputPlaceHolderText="Search Actions..."
             noDataText="No actions to show"
@@ -84,7 +82,7 @@ export const SearchViewContainer = () => {
       case SearchMode.TAB_SEARCH:
         return (
           <SearchView
-          // currentSearchMode={currentSearchMode}
+            // currentSearchMode={currentSearchMode}
             data={data as TabData[]}
             inputPlaceHolderText="Search Tabs..."
             noDataText="No tabs to show"
