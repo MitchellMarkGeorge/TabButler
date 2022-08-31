@@ -22,18 +22,19 @@ export const useScroll = (selected: boolean) => {
 
 export const useIsDarkMode = () => {
   const darkModeQuery = "(prefers-color-scheme: dark)";
+  const mediaQuery = window.matchMedia(darkModeQuery);
   const [isDarkMode, setIsDarkMode] = useState(
-    window.matchMedia(darkModeQuery).matches,
+    mediaQuery.matches,
   );
 
   const onChange = (event: MediaQueryListEvent) => {
     setIsDarkMode(event.matches);
   };
   useEffect(() => {
-    window.matchMedia(darkModeQuery).addEventListener("change", onChange);
+    mediaQuery.addEventListener("change", onChange);
 
     return () => {
-      window.matchMedia(darkModeQuery).removeEventListener("change", onChange);
+     mediaQuery.removeEventListener("change", onChange);
     };
   }, []);
 

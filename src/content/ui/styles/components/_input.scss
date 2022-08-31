@@ -1,4 +1,6 @@
-.tab-butler-input {
+@use "../variables" as variables;
+
+.search-input {
   height: 50px;
   width: 100%;
   background-color: transparent;
@@ -6,7 +8,8 @@
   border: none;
   /* border: 1px solid rgba(255, 255, 255, 0.36); */
   /* border-radius: 10px; */
-  color: #f7fafc; // use #fff instead?
+  // color: #f7fafc; // use #fff instead?
+  color: variables.$primary_white;
   /* padding-inline: 16px; */
   /* font-size: 16px; */
   font-size: 24px;
@@ -15,7 +18,8 @@
   /* flex: none; */
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.36);
+    // color: rgba(255, 255, 255, 0.36);
+    color: variables.$primary_gray;
   }
 
   &:focus {
@@ -23,9 +27,11 @@
   }
 
   @media (prefers-color-scheme: light) {
-    color: rgba(0, 0, 0, 0.8);
+    // color: rgba(0, 0, 0, 0.8);
+    color: variables.$primary_black;
     &::placeholder {
-      color: rgba(0, 0, 0, 0.36);
+      // color: rgba(0, 0, 0, 0.36);
+      color: variables.$primary_dark_gray;
     }
   }
 }

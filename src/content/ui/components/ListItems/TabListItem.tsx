@@ -14,7 +14,16 @@ import {
   TogglePinTabPayload,
 } from "@common/types";
 import { useIsDarkMode } from "../../hooks";
-import { ListItem, ListItemProps } from "./ListItem";
+import {
+  ListItem,
+  ListItemProps,
+  MainInfoContainer,
+  SecondaryText,
+  TextContainer,
+  MainText,
+  ButtonContainer,
+  IconButton,
+} from "./ListItem";
 
 import browser from "webextension-polyfill";
 
@@ -100,11 +109,11 @@ export const TabListItem: React.FC<ListItemProps<TabData>> = ({
       // ref={ref}
       onMouseOver={onHover}
     >
-      <div className="main_info_container">
+      <MainInfoContainer>
         {/* handle potential image error when trying to load favicon  */}
         {showFaviconImage()}
-        <div className="text_container">
-          <div className="main_text">{data.tabTitle}</div>
+        <TextContainer>
+          <MainText>{data.tabTitle}</MainText>
           {/* getHostname() could return an empty host name - should the secondary text be conditionally rendered? */}
           {/* show if in current window */}
           {/* <div className="secondary_text">
@@ -112,32 +121,32 @@ export const TabListItem: React.FC<ListItemProps<TabData>> = ({
             ? `${getHostname(data.tabUrl)} \u00b7 Current Window`
             : getHostname(data.tabUrl)}
         </div> */}
-          <div className="secondary_text">
+          <SecondaryText>
             {/* in case getHostname() returns an empty string */}
             {getHostname(data.tabUrl) || data.tabUrl}
-          </div>
-        </div>
-      </div>
+          </SecondaryText>
+        </TextContainer>
+      </MainInfoContainer>
       {selected && (
-        <div className="button_container">
+        <ButtonContainer>
           {/* using the IconContext to reduce repitition */}
           <IconContext.Provider value={{ color: "#fff", size: "24px" }}>
             {/* if the tab is playing sound, show the HiVolumeUp so the user knows can can mute it*/}
             {/* if the tab is muted, show the HiVolumeOff so the user knows and can can can unmute it*/}
             {/* otherwise, nothing is shown */}
             {(data.isAudible || data.isMuted) && (
-              <div className="icon_button" onClick={toggleMuteTab}>
+              <IconButton onClick={toggleMuteTab}>
                 {showVolumeIcon()}
-              </div>
+              </IconButton>
             )}
-            <div className="icon_button" onClick={togglePinTab}>
+            <IconButton onClick={togglePinTab}>
               {data.isPinned ? <AiFillPushpin /> : <AiOutlinePushpin />}
-            </div>
-            <div className="icon_button" onClick={closeTab}>
+            </IconButton>
+            <IconButton onClick={closeTab}>
               <RiCloseLine />
-            </div>
+            </IconButton>
           </IconContext.Provider>
-        </div>
+        </ButtonContainer>
       )}
     </ListItem>
   );

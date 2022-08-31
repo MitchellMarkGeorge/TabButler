@@ -1,6 +1,6 @@
 // utils styles for containers and everything in between
-
-.tab-butler-main-container {
+@use "../variables" as variables;
+.main-container {
   flex: 1; // auto?
   display: flex;
   flex-direction: column;
@@ -15,7 +15,7 @@
   // }
 }
 
-.tab-butler-list-container {
+.list-container {
   height: 100%;
   /* is this needed? */
   max-height: 100%;
@@ -23,7 +23,8 @@
   width: 100%;
   flex: auto;
   /* should I declare color here? */
-  color: #fff;
+  // color: #fff;
+  color: variables.$primary_white;
 
   /* remove the scroll bar */
   /* chromeium */
@@ -34,11 +35,12 @@
   scrollbar-width: none;
 
   @media (prefers-color-scheme: light) {
-    color: rgba(0, 0, 0, 0.8);
+    // color: rgba(0, 0, 0, 0.8);
+    color: variables.$primary_black;
   }
 }
 
-.tab-butler-empty {
+.empty-container {
   height: 100%;
   width: 100%;
   flex: auto;
@@ -47,21 +49,23 @@
   justify-content: center;
   text-align: center;
 
-  .tab-butler-error-message {
+  .error-message {
     // padding-left: 8px;
     // padding-right: 8px;
     max-width: 75%;
   }
 }
 
-.tab-butler-heading {
-  color: rgba(255, 255, 255, 0.36);
+.heading {
+  // color: rgba(255, 255, 255, 0.36);
+  color: variables.$primary_gray;
   font-size: 32px;
   margin: 0;
   text-align: center;
 
   @media (prefers-color-scheme: light) {
-    color: rgba(0, 0, 0, 0.36);
+    // color: rgba(0, 0, 0, 0.36);
+    color: variables.$primary_dark_gray;
     // color: rgba(0, 0, 0, 0.8);
   }
 }

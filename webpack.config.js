@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { ProgressPlugin } = require("webpack")
 
 let isFirefox = process.env.BROWSER === "firefox";
 
@@ -65,6 +66,10 @@ module.exports = {
 
     new MiniCssExtractPlugin({
       filename: "[name]/[name].css",
+    }),
+
+    new ProgressPlugin({
+      activeModules: true
     }),
     // new MiniCssExtractPlugin({
     //   chunkFilename: "styles.scss",

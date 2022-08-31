@@ -2,10 +2,10 @@
 // import { CacheProvider, css, Global } from "@emotion/react";
 import React, { useEffect, useMemo, useState } from "react";
 import { Data, SearchMode } from "@common/types";
-import styles from "../styles/styles.scss";
 import { SearchModalContext } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
 import { ModalBody } from "./utils";
+import styles from "../styles/styles.scss";
 // import { SideBar } from "./SideBar";
 // will release tab filters first
 

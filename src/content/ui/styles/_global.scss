@@ -1,4 +1,4 @@
-// glbal styled
+// global styled
 * {
   box-sizing: border-box !important;
   /* use system font (San Fransisco or Segoe UI) */
@@ -15,10 +15,10 @@
 }
 
 /* disable scrollbar for virtualized list */
-.tab-butler-virtual-list::-webkit-scrollbar {
+.virtual-list::-webkit-scrollbar {
   display: none;
 }
 /* disable scrollbar for firefox */
-.tab-butler-virtual-list {
+.virtual-list {
   scrollbar-width: none;
 }

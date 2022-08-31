@@ -1,4 +1,6 @@
-.tab-butler-bottom-bar {
+@use "../variables" as variables;
+
+.bottom-bar {
   height: 20px;
   /* min-height: 20px; */
   /* max-height: 20px; */
@@ -13,14 +15,16 @@
   flex-direction: row;
   justify-content: space-between;
   /* column-gap: 8px; */
-  color: rgba(255, 255, 255, 0.36);
+  // color: rgba(255, 255, 255, 0.36);
+  color: variables.$primary_gray;
   /* "medium" font weight */
   font-weight: 510;
 
-  .tab-butler-kbd {
+  kbd {
     background-color: transparent;
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.36);
+    // border: 1px solid rgba(255, 255, 255, 0.36);
+    border: 1px solid variables.$primary_gray;
     display: inline-block;
     line-height: 1;
     padding: 2px 4px;
@@ -34,29 +38,29 @@
     }
   }
 
-  .help_items,
-  .bottom_info,
-  .window_toggle {
+  .help-items,
+  .result-number,
+  .window-toggle {
     display: flex;
     align-items: center;
     flex-direction: row;
     column-gap: 8px;
   }
 
-  .bottom_info,
-  .window_toggle {
+  .result-number,
+  .window-toggle {
     font-size: 12px;
   }
 
-  .window_toggle {
+  .window-toggle {
     column-gap: 4px;
   }
 
-  .window_toggle label {
+  .window-toggle label {
     cursor: pointer;
   }
 
-  .window_toggle input {
+  .window-toggle input {
     /* opacity: 0;
     position: absolute; */
     /* not sure about this */
@@ -72,33 +76,37 @@
     line-height: 1;
     padding: 2px 4px;
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.36);
+    // border: 1px solid rgba(255, 255, 255, 0.36);
+    border: 1px solid variables.$primary_gray;
     margin: 0;
   }
 
-  .window_toggle input:focus {
+  .window-toggle input:focus {
     outline: none;
   }
 
-  .window_toggle input:checked {
-    background-color: #3182ce;
+  .window-toggle input:checked {
+    // background-color: #3182ce;
+    background-color: variables.$primary_blue;
     border: none;
   }
-  .window_toggle input:checked::after {
+  .window-toggle input:checked::after {
     /* style for the check mark */
     content: "\2713";
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #f7fafc;
+    // color: #f7fafc;
+    color: variables.$primary_white;
     height: 100%;
     width: 100%;
   }
 
   @media (prefers-color-scheme: light) {
-    color: rgba(0, 0, 0, 0.48);
+    // color: rgba(0, 0, 0, 0.48);
+    color: variables.$secondary_black;
 
-    .window_toggle input {
+    .window-toggle input {
       background-color: #eee;
     }
   }
