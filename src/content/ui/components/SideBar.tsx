@@ -8,10 +8,9 @@ import { createComponent } from "./utils";
 const SideBarContainer = createComponent({ className: "side-bar" });
 const SideBarItem = createComponent();
 
-
-
 export const SideBar = () => {
-  const { currentSearchMode, setCurrentSearchMode, setIsLoading } = useSearchModalContext()
+  const { currentSearchMode, setCurrentSearchMode, setIsLoading } =
+    useSearchModalContext();
   return (
     <SideBarContainer>
       {sideBarItems.map(({ searchMode, icon: Icon }) => {

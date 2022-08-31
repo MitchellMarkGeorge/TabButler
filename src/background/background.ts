@@ -164,7 +164,7 @@ browser.runtime.onMessage.addListener(
               const isDuplicateTab = uniqueURLs.has(tab.url);
               uniqueURLs.add(tab.url); // record that a tab with this specific url already exists
               if (isDuplicateTab) {
-                duplicateTabIds.push(tab.id) // is a duplicate tab
+                duplicateTabIds.push(tab.id); // is a duplicate tab
               }
             }
           }
@@ -176,7 +176,7 @@ browser.runtime.onMessage.addListener(
 
       case Message.CLOSE_OTHER_TABS: {
         if (sender.tab?.id && sender.tab?.windowId) {
-          browser.tabs.query({ windowId: sender.tab.windowId}).then((tabs => {
+          browser.tabs.query({ windowId: sender.tab.windowId }).then((tabs) => {
             const tabsToClose: number[] = [];
             for (let i = 0; i < tabs.length; i++) {
               const tab = tabs[i];
@@ -187,7 +187,7 @@ browser.runtime.onMessage.addListener(
             }
             // remove all other tabs
             browser.tabs.remove(tabsToClose);
-          }))
+          });
         }
 
         break;

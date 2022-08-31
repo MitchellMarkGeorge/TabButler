@@ -63,7 +63,7 @@ export const SearchModal = (props: Props) => {
     <SearchModalContext.Provider value={contextValue}>
       <style>{styles}</style>
       <ModalBody>
-        {/* <SideBar /> */} 
+        {/* <SideBar /> */}
         <SearchViewContainer />
       </ModalBody>
     </SearchModalContext.Provider>

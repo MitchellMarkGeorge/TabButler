@@ -3,9 +3,7 @@ import { Data, SearchMode } from "../../common/types";
 import { getActions } from "./services/actions";
 import { getTabData } from "./services/tabs";
 
-import {
-  useSearchModalContext,
-} from "./components/SearchModalContext";
+import { useSearchModalContext } from "./components/SearchModalContext";
 
 // hook to scroll to element is selected
 export const useScroll = (selected: boolean) => {

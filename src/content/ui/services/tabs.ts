@@ -4,7 +4,7 @@ import { ChangeTabPayload, Message, TabData } from "@common/types";
 // "/" key does not work on google.com for some reason
 // using "\" instead
 export const TAB_FILTER_KEY = "\\";
-export const TAB_FILTERS = ["muted", "audible", "pinned"]
+export const TAB_FILTERS = ["muted", "audible", "pinned"];
 
 export function isTabFilter(filter: string) {
   return TAB_FILTERS.includes(filter);
