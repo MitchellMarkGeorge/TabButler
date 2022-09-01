@@ -42,7 +42,7 @@ export const HistoryListItem = ({
     >
       <MainInfoContainer>
       {/* think of icon to use here */}
-        <IoDocument
+        <HiOutlineGlobe
           size="24px"
           // what color should I use for history items
             color={isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"}
