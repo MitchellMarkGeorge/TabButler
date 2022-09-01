@@ -1,17 +1,19 @@
 // import createCache from "@emotion/cache";
 // import { CacheProvider, css, Global } from "@emotion/react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Data, SearchMode } from "@common/types";
 import { SearchModalContext } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
 import { ModalBody } from "./utils";
 import styles from "../styles/styles.scss";
-// import { SideBar } from "./SideBar";
+import { SideBar } from "./SideBar";
 // will release tab filters first
 
 export interface Props {
   searchMode: SearchMode;
   close: () => void; // function to completely unmount the modal
+  // this function is needed so that when the searchmode is changed inside the ui, the content.js file can know about it and update accordingly
+  updateOutsideSearchMode: (searchMode: SearchMode) => void
 }
 
 // alternative to the style tag is a link tag with the chrome url to transpiled style sheet
@@ -36,6 +38,8 @@ export const SearchModal = (props: Props) => {
       // updates are batched together
       // make a function that ties these 2 functions together
       // the modal only works if these updates can be batched together so when the current search mode changes, it is already in a loading state so the incorrect data is not rendered
+
+      // no need to update the outer currentSearchMode as that is where the prop updates are comming from
       setIsLoading(true);
       console.log("setting loading to true...");
       // loading is true as new data based on the new currentSearch mode is fetched
@@ -43,12 +47,20 @@ export const SearchModal = (props: Props) => {
     }
   }, [props.searchMode]);
 
+  const changeCurrentSearchMode = useCallback((newSearchMode: SearchMode) => {
+    // function that groups functionality together, including updating the outside searchMode
+    props.updateOutsideSearchMode(newSearchMode);
+    setIsLoading(true);
+    setCurrentSearchMode(newSearchMode);
+  }, []);
+
   // is this nessecary?
   const contextValue = useMemo(
     () => ({
       close: props.close,
       currentSearchMode,
-      setCurrentSearchMode,
+      // setCurrentSearchMode,
+      changeCurrentSearchMode,
       setIsLoading,
       isLoading,
       setHasError,
@@ -63,7 +75,7 @@ export const SearchModal = (props: Props) => {
     <SearchModalContext.Provider value={contextValue}>
       <style>{styles}</style>
       <ModalBody>
-        {/* <SideBar /> */}
+        <SideBar />
         <SearchViewContainer />
       </ModalBody>
     </SearchModalContext.Provider>

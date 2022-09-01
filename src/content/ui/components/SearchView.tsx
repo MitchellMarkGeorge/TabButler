@@ -215,6 +215,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
             setSearchValue(e.target.value);
           }}
         />
+        {/* should i attach the keyboard listener here? */}
         <ListContainer>{showList()}</ListContainer>
         <BottomBar
           currentSeachMode={currentSearchMode}

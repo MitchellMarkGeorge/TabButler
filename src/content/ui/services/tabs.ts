@@ -1,5 +1,5 @@
-import browser from "webextension-polyfill";
 import { ChangeTabPayload, Message, TabData } from "@common/types";
+import { sendMessageToBackground } from "../utils";
 
 // "/" key does not work on google.com for some reason
 // using "\" instead
@@ -15,7 +15,8 @@ export function getTabData() {
   const messagePayload = {
     message: Message.GET_TAB_DATA,
   };
-  return browser.runtime.sendMessage(messagePayload) as Promise<TabData[]>;
+  // return browser.runtime.sendMessage(messagePayload) as Promise<TabData[]>;
+  return sendMessageToBackground<TabData[]>(messagePayload)
 }
 
 const filterByCurrentWindow = (currentTabs: TabData[]) => {
@@ -71,5 +72,6 @@ export const onTabItemClick = (tabData: TabData) => {
     tabId: tabData.tabId,
     windowId: tabData.windowId,
   };
-  browser.runtime.sendMessage(messagePayload);
+  // browser.runtime.sendMessage(messagePayload);
+  sendMessageToBackground(messagePayload);
 };

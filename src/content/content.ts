@@ -65,6 +65,11 @@ const styleModalRoot = (modalRoot: HTMLElement) => {
   modalRoot.style.zIndex = "999999";
 };
 
+const changeSearchModeFromUI = (searchMode: SearchMode) => {
+  currentSearchMode = searchMode;
+  console.log(currentSearchMode);
+}
+
 function mountSearchComponent(message: Message) {
   // create a new modal root on mount and append as the last child of the body
   tabButlerModalRoot = document.createElement("tab-butler-modal");
@@ -76,6 +81,7 @@ function mountSearchComponent(message: Message) {
   searchUiHandler.mount(tabButlerModalRoot.shadowRoot as ShadowRoot, {
     searchMode: requestedSearchMode,
     close: unmountSearchComponent,
+    updateOutsideSearchMode: changeSearchModeFromUI
   });
   currentSearchMode = requestedSearchMode;
   isOpen = true;

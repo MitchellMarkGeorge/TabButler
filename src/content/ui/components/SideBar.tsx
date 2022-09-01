@@ -9,7 +9,7 @@ const SideBarContainer = createComponent({ className: "side-bar" });
 const SideBarItem = createComponent();
 
 export const SideBar = () => {
-  const { currentSearchMode, setCurrentSearchMode, setIsLoading } =
+  const { currentSearchMode, changeCurrentSearchMode, } =
     useSearchModalContext();
   return (
     <SideBarContainer>
@@ -21,8 +21,9 @@ export const SideBar = () => {
             onClick={() => {
               // MUST be batched together
               if (!isSelected) {
-                setIsLoading(true);
-                setCurrentSearchMode(searchMode);
+                // setIsLoading(true);
+                // setCurrentSearchMode(searchMode);
+                changeCurrentSearchMode(searchMode);
               }
             }}
           >

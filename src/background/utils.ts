@@ -1,6 +1,7 @@
 import { isBrowserURL } from "../common/common";
 import {
   CheackSearchOpenResponse,
+  HistoryData,
   Message,
   SearchMode,
   TabData,
@@ -87,6 +88,28 @@ export async function getTabsInBrowser(activeTabId?: number) {
         // muted info
       };
       results.push(tabData);
+    }
+  }
+
+  return results;
+}
+
+export async function getHistoryData() {
+  // how many history items should i be showing???
+  // in what timeframe
+  const history = await browser.history.search({ text: ""});
+  const results: HistoryData[] = [];
+
+  const historyNum = history.length;
+  for (let i = 0; i < historyNum; i++) {
+    const { title, url, lastVisitTime} = history[i];
+    if (title && url && lastVisitTime !== undefined) {
+      results.push({
+        title,
+        url,
+        timeVisited: lastVisitTime
+
+      })
     }
   }
 

@@ -7,10 +7,12 @@ import {
   ToggleMuteTabPayload,
   ChangeTabPayload,
   GivenTabPayload,
+  OpenHistoryItemPayload,
 } from "../common/types";
 import {
   checkCommands,
   getCurrentTab,
+  getHistoryData,
   getTabsInBrowser,
   injectExtension,
   reactOnTabUpdate,
@@ -79,6 +81,9 @@ browser.runtime.onMessage.addListener(
     switch (messagePayload.message) {
       case Message.GET_TAB_DATA:
         return Promise.resolve(getTabsInBrowser());
+
+      case Message.GET_HISTORY_DATA:
+        return Promise.resolve(getHistoryData());
 
       case Message.CHANGE_TAB: {
         const { tabId, windowId } = messagePayload as ChangeTabPayload;
@@ -196,8 +201,12 @@ browser.runtime.onMessage.addListener(
       case Message.OPEN_GOOGLE:
       case Message.OPEN_TWITTER:
       case Message.OPEN_YOUTUBE:
-      case Message.OPEN_FACEBOOK: {
-        const url = getUrl(messagePayload.message);
+      case Message.OPEN_FACEBOOK:
+      case Message.OPEN_HISTORY_ITEM: {
+        const url =
+          messagePayload.message === Message.OPEN_HISTORY_ITEM
+            ? (messagePayload as OpenHistoryItemPayload).url
+            : getUrl(messagePayload.message);
         browser.tabs.create({ active: true, url });
         break;
       }

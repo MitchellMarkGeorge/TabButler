@@ -15,6 +15,8 @@ export const enum Message {
 
   // tab search specific
   GET_TAB_DATA = "get-tab-data",
+  GET_HISTORY_DATA = "get-history-data",
+
   CHANGE_TAB = "change-tab",
   TAB_DATA_UPDATE = "tab-data-update",
 
@@ -42,6 +44,7 @@ export const enum Message {
   OPEN_GOOGLE = "open-google",
   OPEN_TWITTER = "open-twitter",
   OPEN_FACEBOOK = "open-facebook",
+  OPEN_HISTORY_ITEM = "open-history-item",
 
   // when workspaces are implemented, related actions will be here
 
@@ -51,6 +54,7 @@ export const enum Message {
 export const enum SearchMode {
   TAB_ACTIONS = "tab-actions",
   TAB_SEARCH = "tab-search",
+  TAB_HISTORY = "tab-history",
 }
 
 export function getSearchModeFromMessage(message: Message) {
@@ -94,7 +98,12 @@ export interface UpdatedTabDataPayload extends MessagePlayload {
   updatedTabData: TabData[];
 }
 
-export type Data = TabData | ActionData;
+export interface OpenHistoryItemPayload extends MessagePlayload {
+  message: Message.OPEN_HISTORY_ITEM;
+  url: string;
+}
+
+export type Data = TabData | ActionData | HistoryData;
 
 export interface TabData {
   tabId: number;
@@ -113,6 +122,12 @@ export interface ActionData {
   message: Message; // the message that the action sends to the backgrpond sctipt
   icon: IconType; // for now
   iconColor?: string;
+}
+
+export interface HistoryData {
+  title: string,
+  url: string,
+  timeVisited: number
 }
 
 export interface SideBarItem {

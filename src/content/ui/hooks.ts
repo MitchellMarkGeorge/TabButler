@@ -4,6 +4,7 @@ import { getActions } from "./services/actions";
 import { getTabData } from "./services/tabs";
 
 import { useSearchModalContext } from "./components/SearchModalContext";
+import { getHistoryData } from "./services/history";
 
 // hook to scroll to element is selected
 export const useScroll = (selected: boolean) => {
@@ -49,8 +50,11 @@ export const useData = (searchMode: SearchMode) => {
     useSearchModalContext();
   const fetchData = () => {
     let getDataFunc: () => Promise<Data[]>;
+    // i should renamne these functions to "fetch"
     if (searchMode === SearchMode.TAB_ACTIONS) {
       getDataFunc = getActions;
+    } else if (searchMode === SearchMode.TAB_HISTORY) {
+      getDataFunc = getHistoryData;
     } else {
       getDataFunc = getTabData;
     }

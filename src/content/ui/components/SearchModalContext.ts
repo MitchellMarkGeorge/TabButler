@@ -11,7 +11,7 @@ import { Data, SearchMode } from "@common/types";
 export interface SearchModalContextType {
   close: () => void;
   currentSearchMode: SearchMode;
-  setCurrentSearchMode: (searchMode: SearchMode) => void;
+  changeCurrentSearchMode: (searchMode: SearchMode) => void;
 
   isLoading: boolean;
   setIsLoading: (isLoaading: boolean) => void;
