@@ -10,6 +10,11 @@ import {
   TextContainer,
 } from "./ListItem";
 import { FcGlobe } from "@react-icons/all-files/fc/FcGlobe";
+import { FaGlobeAmericas } from "@react-icons/all-files/fa/FaGlobeAmericas";
+import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
+import { HiOutlineLibrary } from "@react-icons/all-files/hi/HiOutlineLibrary";
+import { HiGlobeAlt } from "@react-icons/all-files/hi/HiGlobeAlt";
+import { IoDocument } from "@react-icons/all-files/io5/IoDocument";
 import { getHostname } from "./utls";
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -36,10 +41,12 @@ export const HistoryListItem = ({
       onMouseOver={onHover}
     >
       <MainInfoContainer>
-        <FcGlobe
+      {/* think of icon to use here */}
+        <IoDocument
           size="24px"
           // what color should I use for history items
             color={isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"}
+            // color="#c53030"
         //   color="#F6E05E" // need to think about this
         />
         <TextContainer>
