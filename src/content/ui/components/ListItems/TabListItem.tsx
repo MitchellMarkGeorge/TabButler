@@ -28,6 +28,7 @@ import {
 import browser from "webextension-polyfill";
 import { getHostname } from "./utls";
 import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
+import { HiGlobe } from "@react-icons/all-files/hi/HiGlobe";
 
 export const TabListItem: React.FC<ListItemProps<TabData>> = ({
   data,
@@ -41,7 +42,7 @@ export const TabListItem: React.FC<ListItemProps<TabData>> = ({
   const isDarkMode = useIsDarkMode();
 
   const getFallBackIcon = () => (
-    <HiOutlineGlobe
+    <HiGlobe
       size="24px"
       color={isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"}
     />

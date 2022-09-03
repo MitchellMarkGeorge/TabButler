@@ -100,9 +100,11 @@ function unmountSearchComponentFromMessage(message: Message) {
     // in this case, the user wants to switch to a different search mode
     // update the props of the component with the nessecary information
     // and update the current search mode
-    searchUiHandler.updateProps({
-      searchMode: requestedSearchMode,
-    });
+    console.log(requestedSearchMode);
+    // searchUiHandler.updateProps({
+    //   searchMode: requestedSearchMode,
+    // });
+    searchUiHandler.updateSearchMode(requestedSearchMode);
     currentSearchMode = requestedSearchMode;
   }
 }

@@ -32,6 +32,8 @@ export const SearchModal = (props: Props) => {
     // console.log("props.searchMode updated");
     // only update the currentSearchmode if the incomming searchMode from the props is not the same as the current one
     // on mount, the value of currentSearch mode is set from the props so it should not be set again
+    console.log("currentSearchMode", currentSearchMode);
+    console.log("props.searchMode", props.searchMode);
     if (currentSearchMode !== props.searchMode) {
       // console.log("setting currentSearchMode with props.searchMode");
       // it is important to set loading to true here so that when the component rerenders after the currentSearchMode has changed, it renders the loading state, not the old data with incorrect components
@@ -45,14 +47,16 @@ export const SearchModal = (props: Props) => {
       // loading is true as new data based on the new currentSearch mode is fetched
       setCurrentSearchMode(props.searchMode);
     }
-  }, [props.searchMode]);
+  }, [props]); // with the side bar this use effect is not always triggered
+  // if you clik on a sidebar item and then try and switch with a shortcut, the useEffect is not triggered when the dependency array is [props.searchMode]
+  // it only works if [props] as the dependency... why?
 
   const changeCurrentSearchMode = useCallback((newSearchMode: SearchMode) => {
     // function that groups functionality together, including updating the outside searchMode
     props.updateOutsideSearchMode(newSearchMode);
     setIsLoading(true);
     setCurrentSearchMode(newSearchMode);
-  }, []);
+  }, [props.updateOutsideSearchMode]);
 
   // is this nessecary?
   const contextValue = useMemo(

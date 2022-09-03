@@ -12,6 +12,7 @@ import {
 import { FcGlobe } from "@react-icons/all-files/fc/FcGlobe";
 import { FaGlobeAmericas } from "@react-icons/all-files/fa/FaGlobeAmericas";
 import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
+import { HiGlobe } from "@react-icons/all-files/hi/HiGlobe";
 import { HiOutlineLibrary } from "@react-icons/all-files/hi/HiOutlineLibrary";
 import { HiGlobeAlt } from "@react-icons/all-files/hi/HiGlobeAlt";
 import { IoDocument } from "@react-icons/all-files/io5/IoDocument";
@@ -42,7 +43,7 @@ export const HistoryListItem = ({
     >
       <MainInfoContainer>
       {/* think of icon to use here */}
-        <HiOutlineGlobe
+        <HiGlobe
           size="24px"
           // what color should I use for history items
             color={isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"}

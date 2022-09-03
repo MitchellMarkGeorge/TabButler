@@ -17,6 +17,7 @@ export const SideBar = () => {
         const isSelected = currentSearchMode === searchMode;
         return (
           <SideBarItem
+            key={searchMode}
             className={isSelected ? "side-bar-item-selected" : "side-bar-item"}
             onClick={() => {
               // MUST be batched together
