@@ -27,7 +27,7 @@ import {
 
 import browser from "webextension-polyfill";
 import { getHostname } from "./utls";
-import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
+// import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
 import { HiGlobe } from "@react-icons/all-files/hi/HiGlobe";
 
 export const TabListItem: React.FC<ListItemProps<TabData>> = ({

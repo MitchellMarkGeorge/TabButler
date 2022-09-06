@@ -1,6 +1,6 @@
 import { isBrowserURL } from "../common/common";
 import {
-  Commands,
+  Command,
   Message,
   MessagePlayload,
   TogglePinTabPayload,
@@ -13,6 +13,7 @@ import {
   checkCommands,
   getCurrentTab,
   getHistoryData,
+  getMessageFromCommand,
   getTabsInBrowser,
   injectExtension,
   reactOnTabUpdate,
@@ -50,10 +51,10 @@ browser.commands.onCommand.addListener((command) => {
       !isBrowserURL(currentTab.url)
     ) {
       const messagePayload: MessagePlayload = {
-        message:
-          command === Commands.TOGGLE_TAB_ACTIONS
-            ? Message.TOGGLE_TAB_ACTIONS
-            : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
+        message: getMessageFromCommand(command as Command),
+          // command === Commands.TOGGLE_TAB_ACTIONS
+          //   ? Message.TOGGLE_TAB_ACTIONS
+          //   : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
       };
       browser.tabs.sendMessage(currentTab.id, messagePayload);
     }

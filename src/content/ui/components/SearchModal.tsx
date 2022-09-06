@@ -6,7 +6,7 @@ import { SearchModalContext } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
 import { ModalBody } from "./utils";
 import styles from "../styles/styles.scss";
-import { SideBar } from "./SideBar";
+// import { SideBar } from "./SideBar";
 // will release tab filters first
 
 export interface Props {
@@ -47,7 +47,7 @@ export const SearchModal = (props: Props) => {
       // loading is true as new data based on the new currentSearch mode is fetched
       setCurrentSearchMode(props.searchMode);
     }
-  }, [props]); // with the side bar this use effect is not always triggered
+  }, [props.searchMode]); // with the side bar this use effect is not always triggered
   // if you clik on a sidebar item and then try and switch with a shortcut, the useEffect is not triggered when the dependency array is [props.searchMode]
   // it only works if [props] as the dependency... why?
 
@@ -79,7 +79,7 @@ export const SearchModal = (props: Props) => {
     <SearchModalContext.Provider value={contextValue}>
       <style>{styles}</style>
       <ModalBody>
-        <SideBar />
+        {/* <SideBar /> */}
         <SearchViewContainer />
       </ModalBody>
     </SearchModalContext.Provider>

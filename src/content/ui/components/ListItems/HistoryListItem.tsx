@@ -9,13 +9,7 @@ import {
   SecondaryText,
   TextContainer,
 } from "./ListItem";
-import { FcGlobe } from "@react-icons/all-files/fc/FcGlobe";
-import { FaGlobeAmericas } from "@react-icons/all-files/fa/FaGlobeAmericas";
-import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
 import { HiGlobe } from "@react-icons/all-files/hi/HiGlobe";
-import { HiOutlineLibrary } from "@react-icons/all-files/hi/HiOutlineLibrary";
-import { HiGlobeAlt } from "@react-icons/all-files/hi/HiGlobeAlt";
-import { IoDocument } from "@react-icons/all-files/io5/IoDocument";
 import { getHostname } from "./utls";
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime";

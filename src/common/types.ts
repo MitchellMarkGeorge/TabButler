@@ -1,9 +1,10 @@
 import { IconType } from "@react-icons/all-files";
 
-export const enum Commands {
+export const enum Command {
   TOGGLE_TAB_SEARCH = "toggle-tab-search",
   TOGGLE_TAB_ACTIONS = "toggle-tab-actions",
   TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
+  TOGGLE_TAB_HISTORY = "toggle-tab-history",
 }
 
 // name space Messages according to their use using a union(?) of enums
@@ -12,6 +13,7 @@ export const enum Message {
   // command specific
   TOGGLE_TAB_SEARCH = "toggle-search",
   TOGGLE_TAB_ACTIONS = "toggle-actions",
+  TOGGLE_TAB_HISTORY = "toggle-history",
 
   // tab search specific
   GET_TAB_DATA = "get-tab-data",
@@ -57,13 +59,22 @@ export const enum SearchMode {
   TAB_HISTORY = "tab-history",
 }
 
-export function getSearchModeFromMessage(message: Message) {
-  if (message === Message.TOGGLE_TAB_ACTIONS) {
-    return SearchMode.TAB_ACTIONS;
+export function getSearchModeFromMessage(message: Message): SearchMode {
+  switch (message) {
+    case Message.TOGGLE_TAB_ACTIONS:
+      return SearchMode.TAB_ACTIONS;
+
+    case Message.TOGGLE_TAB_SEARCH:
+      return SearchMode.TAB_SEARCH;
+
+    case Message.TOGGLE_TAB_HISTORY:
+      return SearchMode.TAB_HISTORY;
+
+    default:
+      return SearchMode.TAB_SEARCH
   }
-  // should always be the default
-  return SearchMode.TAB_SEARCH;
 }
+
 
 export interface MessagePlayload {
   message: Message;

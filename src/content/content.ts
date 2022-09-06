@@ -36,6 +36,7 @@ const messageListener = (messagePayload: MessagePlayload) => {
   switch (message) {
     case Message.TOGGLE_TAB_ACTIONS:
     case Message.TOGGLE_TAB_SEARCH:
+    case Message.TOGGLE_TAB_HISTORY:
       if (isOpen) {
         // special function to switch modes if the message is different
         unmountSearchComponentFromMessage(message);
