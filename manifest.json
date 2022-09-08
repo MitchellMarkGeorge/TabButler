@@ -28,7 +28,7 @@
     "toggle-tab-search": {
       "suggested_key": {
         "default": "Ctrl+Shift+Space",
-        "mac": "MacCtrl+Shift+Space",
+        "mac": "Ctrl+Shift+Space",
         "windows": "Ctrl+Shift+Space",
         "linux": "Ctrl+Shift+Space"
       },

@@ -2,7 +2,7 @@
 // import { CacheProvider, css, Global } from "@emotion/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Data, SearchMode } from "@common/types";
-import { SearchModalContext } from "./SearchModalContext";
+import { SearchModalContext, SearchModalContextType } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
 import { ModalBody } from "./utils";
 import styles from "../styles/styles.scss";
@@ -13,7 +13,7 @@ export interface Props {
   searchMode: SearchMode;
   close: () => void; // function to completely unmount the modal
   // this function is needed so that when the searchmode is changed inside the ui, the content.js file can know about it and update accordingly
-  updateOutsideSearchMode: (searchMode: SearchMode) => void
+  // updateOutsideSearchMode: (searchMode: SearchMode) => void
 }
 
 // alternative to the style tag is a link tag with the chrome url to transpiled style sheet
@@ -53,13 +53,13 @@ export const SearchModal = (props: Props) => {
 
   const changeCurrentSearchMode = useCallback((newSearchMode: SearchMode) => {
     // function that groups functionality together, including updating the outside searchMode
-    props.updateOutsideSearchMode(newSearchMode);
+    // props.updateOutsideSearchMode(newSearchMode);
     setIsLoading(true);
     setCurrentSearchMode(newSearchMode);
-  }, [props.updateOutsideSearchMode]);
+  }, []);
 
   // is this nessecary?
-  const contextValue = useMemo(
+  const contextValue = useMemo<SearchModalContextType>(
     () => ({
       close: props.close,
       currentSearchMode,
