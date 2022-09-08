@@ -6,7 +6,7 @@
   "version": "1.0.0.5",
   "version_name": "1.0.0-beta.3",
   "description": "A tab manager at your service.",
-  "permissions": ["tabs", "scripting"],
+  "permissions": ["tabs", "scripting", "history"],
   "host_permissions": ["<all_urls>"],
   "offline_enabled": true,
   "icons": {
@@ -27,7 +27,10 @@
   "commands": {
     "toggle-tab-search": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Space"
+        "default": "Ctrl+Shift+Space",
+        "mac": "Ctrl+Shift+Space",
+        "windows": "Ctrl+Shift+Space",
+        "linux": "Ctrl+Shift+Space"
       },
       "description": "Toggle the Tab Search Modal in the current tab"
     },
@@ -39,6 +42,15 @@
         "mac": "Alt+Shift+Space"
       },
       "description": "Toggle Tab Actions Modal in the current tab"
+    },
+    "toggle-tab-history": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+H",
+        "mac": "MacCtrl+Shift+H",
+        "windows": "Ctrl+Shift+H",
+        "linux": "Ctrl+Shift+H"
+      },
+      "description": "Toggle Tab History Modal in the current tab"
     }
   }
 }

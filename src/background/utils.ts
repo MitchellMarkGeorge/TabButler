@@ -1,6 +1,8 @@
 import { isBrowserURL } from "../common/common";
 import {
   CheackSearchOpenResponse,
+  Command,
+  HistoryData,
   Message,
   SearchMode,
   TabData,
@@ -87,6 +89,28 @@ export async function getTabsInBrowser(activeTabId?: number) {
         // muted info
       };
       results.push(tabData);
+    }
+  }
+
+  return results;
+}
+
+export async function getHistoryData() {
+  // how many history items should i be showing???
+  // in what timeframe
+  const history = await browser.history.search({ text: ""});
+  const results: HistoryData[] = [];
+
+  const historyNum = history.length;
+  for (let i = 0; i < historyNum; i++) {
+    const { title, url, lastVisitTime} = history[i];
+    if (title && url && lastVisitTime !== undefined) {
+      results.push({
+        title,
+        url,
+        timeVisited: lastVisitTime
+
+      })
     }
   }
 
@@ -191,3 +215,19 @@ export const checkCommands = async () => {
   }
   return false;
 };
+
+export function getMessageFromCommand(command: Command): Message {
+  switch (command) {
+    case Command.TOGGLE_TAB_ACTIONS:
+      return Message.TOGGLE_TAB_ACTIONS;
+  
+    case Command.TOGGLE_TAB_SEARCH:
+      return Message.TOGGLE_TAB_SEARCH;
+  
+    case Command.TOGGLE_TAB_HISTORY:
+      return Message.TOGGLE_TAB_HISTORY;
+  
+    default:
+      return Message.TOGGLE_TAB_SEARCH;
+  }
+}

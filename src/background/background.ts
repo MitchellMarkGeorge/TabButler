@@ -1,16 +1,19 @@
 import { isBrowserURL } from "../common/common";
 import {
-  Commands,
+  Command,
   Message,
   MessagePlayload,
   TogglePinTabPayload,
   ToggleMuteTabPayload,
   ChangeTabPayload,
   GivenTabPayload,
+  OpenHistoryItemPayload,
 } from "../common/types";
 import {
   checkCommands,
   getCurrentTab,
+  getHistoryData,
+  getMessageFromCommand,
   getTabsInBrowser,
   injectExtension,
   reactOnTabUpdate,
@@ -48,10 +51,10 @@ browser.commands.onCommand.addListener((command) => {
       !isBrowserURL(currentTab.url)
     ) {
       const messagePayload: MessagePlayload = {
-        message:
-          command === Commands.TOGGLE_TAB_ACTIONS
-            ? Message.TOGGLE_TAB_ACTIONS
-            : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
+        message: getMessageFromCommand(command as Command),
+          // command === Commands.TOGGLE_TAB_ACTIONS
+          //   ? Message.TOGGLE_TAB_ACTIONS
+          //   : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
       };
       browser.tabs.sendMessage(currentTab.id, messagePayload);
     }
@@ -79,6 +82,9 @@ browser.runtime.onMessage.addListener(
     switch (messagePayload.message) {
       case Message.GET_TAB_DATA:
         return Promise.resolve(getTabsInBrowser());
+
+      case Message.GET_HISTORY_DATA:
+        return Promise.resolve(getHistoryData());
 
       case Message.CHANGE_TAB: {
         const { tabId, windowId } = messagePayload as ChangeTabPayload;
@@ -196,8 +202,12 @@ browser.runtime.onMessage.addListener(
       case Message.OPEN_GOOGLE:
       case Message.OPEN_TWITTER:
       case Message.OPEN_YOUTUBE:
-      case Message.OPEN_FACEBOOK: {
-        const url = getUrl(messagePayload.message);
+      case Message.OPEN_FACEBOOK:
+      case Message.OPEN_HISTORY_ITEM: {
+        const url =
+          messagePayload.message === Message.OPEN_HISTORY_ITEM
+            ? (messagePayload as OpenHistoryItemPayload).url
+            : getUrl(messagePayload.message);
         browser.tabs.create({ active: true, url });
         break;
       }

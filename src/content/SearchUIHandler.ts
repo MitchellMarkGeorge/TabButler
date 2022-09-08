@@ -1,6 +1,7 @@
 import { Props, SearchModal } from "./ui/components/SearchModal";
 import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
+import { SearchMode } from "@common/types";
 
 export class SearchUIHandler {
   private props!: Props;
@@ -24,6 +25,13 @@ export class SearchUIHandler {
   public updateProps(props: Partial<Props>) {
     if (this.isMounted) {
       Object.assign(this.props, props);
+      this.render();
+    }
+  }
+
+  public updateSearchMode(searchMode: SearchMode) {
+    if (this.isMounted) {
+      this.props.searchMode = searchMode;
       this.render();
     }
   }

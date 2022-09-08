@@ -45,6 +45,7 @@
   img {
     height: 24px;
     width: 24px;
+    image-rendering: auto;
   }
 
   .text-container {
@@ -64,6 +65,7 @@
 
   .secondary-text {
     font-size: 10px;
+    font-weight: 510;
     /* if selected use special color if not fall back to the default one*/
     /* color: ${(props) =>
       props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"}; */

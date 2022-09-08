@@ -36,6 +36,7 @@ const messageListener = (messagePayload: MessagePlayload) => {
   switch (message) {
     case Message.TOGGLE_TAB_ACTIONS:
     case Message.TOGGLE_TAB_SEARCH:
+    case Message.TOGGLE_TAB_HISTORY:
       if (isOpen) {
         // special function to switch modes if the message is different
         unmountSearchComponentFromMessage(message);
@@ -94,9 +95,11 @@ function unmountSearchComponentFromMessage(message: Message) {
     // in this case, the user wants to switch to a different search mode
     // update the props of the component with the nessecary information
     // and update the current search mode
-    searchUiHandler.updateProps({
-      searchMode: requestedSearchMode,
-    });
+    console.log(requestedSearchMode);
+    // searchUiHandler.updateProps({
+    //   searchMode: requestedSearchMode,
+    // });
+    searchUiHandler.updateSearchMode(requestedSearchMode);
     currentSearchMode = requestedSearchMode;
   }
 }

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import {
   ActionData,
+  HistoryData,
   Message,
   MessagePlayload,
   SearchMode,
@@ -16,6 +17,8 @@ import { SearchView } from "./SearchView";
 import { searchActions, onActionItemClick } from "../services/actions";
 import { searchTabs, onTabItemClick } from "../services/tabs";
 import { Empty, ErrorMessage, Heading } from "./utils";
+import { onHistoryItemClick, searchHistory } from "../services/history";
+import { HistoryListItem } from "./ListItems/HistoryListItem";
 
 export const SearchViewContainer = () => {
   const { currentSearchMode } = useSearchModalContext();
@@ -90,6 +93,18 @@ export const SearchViewContainer = () => {
             searchData={searchTabs}
             onItemClick={onTabItemClick}
             listItemComponent={TabListItem}
+          />
+        );
+      case SearchMode.TAB_HISTORY:
+        return (
+          <SearchView
+            // currentSearchMode={currentSearchMode}
+            data={data as HistoryData[]}
+            inputPlaceHolderText="Search History..."
+            noDataText="No history to show"
+            searchData={searchHistory}
+            onItemClick={onHistoryItemClick}
+            listItemComponent={HistoryListItem}
           />
         );
     }

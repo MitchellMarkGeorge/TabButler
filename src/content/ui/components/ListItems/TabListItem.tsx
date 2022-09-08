@@ -1,7 +1,7 @@
 import { IconContext } from "@react-icons/all-files";
 import { AiFillPushpin } from "@react-icons/all-files/ai/AiFillPushpin";
 import { AiOutlinePushpin } from "@react-icons/all-files/ai/AiOutlinePushpin";
-import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
+// import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
 import { HiVolumeOff } from "@react-icons/all-files/hi/HiVolumeOff";
 import { HiVolumeUp } from "@react-icons/all-files/hi/HiVolumeUp";
 import { RiCloseLine } from "@react-icons/all-files/ri/RiCloseLine";
@@ -26,6 +26,9 @@ import {
 } from "./ListItem";
 
 import browser from "webextension-polyfill";
+import { getHostname } from "./utls";
+// import { HiOutlineGlobe } from "@react-icons/all-files/hi/HiOutlineGlobe";
+import { HiGlobe } from "@react-icons/all-files/hi/HiGlobe";
 
 export const TabListItem: React.FC<ListItemProps<TabData>> = ({
   data,
@@ -38,11 +41,8 @@ export const TabListItem: React.FC<ListItemProps<TabData>> = ({
   // is it fine to be used like this???
   const isDarkMode = useIsDarkMode();
 
-  const getHostname = (url: string) => {
-    return new URL(url).hostname;
-  };
   const getFallBackIcon = () => (
-    <HiOutlineGlobe
+    <HiGlobe
       size="24px"
       color={isDarkMode ? "rgba(255, 255, 255, 0.36)" : "rgba(0, 0, 0, 0.36)"}
     />
