@@ -8,6 +8,7 @@ import {
   ChangeTabPayload,
   GivenTabPayload,
   OpenHistoryItemPayload,
+  WebSearchPayload,
 } from "../common/types";
 import {
   checkCommands,
@@ -52,9 +53,9 @@ browser.commands.onCommand.addListener((command) => {
     ) {
       const messagePayload: MessagePlayload = {
         message: getMessageFromCommand(command as Command),
-          // command === Commands.TOGGLE_TAB_ACTIONS
-          //   ? Message.TOGGLE_TAB_ACTIONS
-          //   : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
+        // command === Commands.TOGGLE_TAB_ACTIONS
+        //   ? Message.TOGGLE_TAB_ACTIONS
+        //   : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
       };
       browser.tabs.sendMessage(currentTab.id, messagePayload);
     }
@@ -209,6 +210,18 @@ browser.runtime.onMessage.addListener(
             ? (messagePayload as OpenHistoryItemPayload).url
             : getUrl(messagePayload.message);
         browser.tabs.create({ active: true, url });
+        break;
+      }
+      case Message.WEB_SEARCH: {
+        const { url, searchValue } = messagePayload as WebSearchPayload;
+        // this should work for most of them
+        if (searchValue) {
+          const searchUrl = new URL(`${url}/search`);
+          searchUrl.searchParams.set("q", encodeURIComponent(searchValue));
+          browser.tabs.create({ active: true, url: searchUrl.toString() });
+        } else {
+          browser.tabs.create({ active: true, url });
+        }
         break;
       }
     }

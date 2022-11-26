@@ -7,6 +7,7 @@ import {
   SearchMode,
   TabData,
   UpdatedTabDataPayload,
+  WebSearchEngines,
 } from "@common/types";
 import { useData } from "../hooks";
 import { useSearchModalContext } from "./SearchModalContext";
@@ -18,7 +19,9 @@ import { searchActions, onActionItemClick } from "../services/actions";
 import { searchTabs, onTabItemClick } from "../services/tabs";
 import { Empty, ErrorMessage, Heading } from "./utils";
 import { onHistoryItemClick, searchHistory } from "../services/history";
+import { searchWebSearchEngines, onWebSearchEngineClick } from "../services/websearch";
 import { HistoryListItem } from "./ListItems/HistoryListItem";
+import { WebSearchEngineListItem } from "./ListItems/WebSearchEngineItem";
 
 export const SearchViewContainer = () => {
   const { currentSearchMode } = useSearchModalContext();
@@ -102,6 +105,17 @@ export const SearchViewContainer = () => {
             searchData={searchHistory}
             onItemClick={onHistoryItemClick}
             listItemComponent={HistoryListItem}
+          />
+        );
+      case SearchMode.TAB_WEB_SEARCH:
+        return (
+          <SearchView
+            data={data as WebSearchEngines[]}
+            inputPlaceHolderText="Search the Web..."
+            noDataText="No history to show"
+            searchData={searchWebSearchEngines}
+            onItemClick={onWebSearchEngineClick}
+            listItemComponent={WebSearchEngineListItem}
           />
         );
     }

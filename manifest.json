@@ -52,5 +52,12 @@
       },
       "description": "Toggle Tab History Modal in the current tab"
     }
-  }
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["/icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

@@ -13,7 +13,7 @@ const MainContainer = createComponent({ className: "main-container" });
 const TabFilterPrompt = createComponent({ className: "tab-filter-prompt" });
 const ListContainer = createComponent({ className: "list-container" });
 
-interface Props<T> {
+interface Props<T extends Data> {
   // currentSearchMode: SearchMode;
   data: T[];
   inputPlaceHolderText: string;
@@ -23,7 +23,7 @@ interface Props<T> {
     data: T[],
     onlyCurrentWindow: boolean,
   ) => T[];
-  onItemClick: (item: T) => void;
+  onItemClick: (item: T, searhValue: string) => void;
   listItemComponent: React.FC<ListItemProps<T>>;
 }
 
@@ -139,7 +139,7 @@ export const SearchView = <T extends Data>(props: Props<T>) => {
   });
 
   const onItemClick = (data: Data) => {
-    props.onItemClick(data as T);
+    props.onItemClick(data as T, searchValue);
     close();
   };
 

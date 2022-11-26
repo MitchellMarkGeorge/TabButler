@@ -19,6 +19,8 @@ export const enum Message {
   GET_TAB_DATA = "get-tab-data",
   GET_HISTORY_DATA = "get-history-data",
 
+  WEB_SEARCH = "web-search",
+
   CHANGE_TAB = "change-tab",
   TAB_DATA_UPDATE = "tab-data-update",
 
@@ -48,6 +50,8 @@ export const enum Message {
   OPEN_FACEBOOK = "open-facebook",
   OPEN_HISTORY_ITEM = "open-history-item",
 
+
+
   // when workspaces are implemented, related actions will be here
 
   ERROR = "error",
@@ -57,6 +61,7 @@ export const enum SearchMode {
   TAB_ACTIONS = "tab-actions",
   TAB_SEARCH = "tab-search",
   TAB_HISTORY = "tab-history",
+  TAB_WEB_SEARCH = "tab-web-search",
 }
 
 export function getSearchModeFromMessage(message: Message): SearchMode {
@@ -114,7 +119,13 @@ export interface OpenHistoryItemPayload extends MessagePlayload {
   url: string;
 }
 
-export type Data = TabData | ActionData | HistoryData;
+export interface WebSearchPayload extends MessagePlayload {
+  message: Message.WEB_SEARCH;
+  url: string;
+  searchValue: string;
+}
+
+export type Data = TabData | ActionData | HistoryData | WebSearchEngines;
 
 export interface TabData {
   tabId: number;
@@ -141,6 +152,13 @@ export interface HistoryData {
   timeVisited: number
 }
 
+export interface WebSearchEngines {
+  // icon: string; // think about this
+  name: string;
+  url: string;
+  icon: string;
+}
+
 export interface SideBarItem {
   searchMode: SearchMode;
   icon: IconType;
@@ -150,3 +168,4 @@ export interface CheackSearchOpenResponse {
   isOpen: boolean;
   currentSearchMode: SearchMode;
 }
+

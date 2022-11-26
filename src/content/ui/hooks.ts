@@ -5,6 +5,7 @@ import { getTabData } from "./services/tabs";
 
 import { useSearchModalContext } from "./components/SearchModalContext";
 import { getHistoryData } from "./services/history";
+import { getWebSearchEngines } from "./services/websearch";
 
 // hook to scroll to element is selected
 export const useScroll = (selected: boolean) => {
@@ -55,6 +56,8 @@ export const useData = (searchMode: SearchMode) => {
       getDataFunc = getActions;
     } else if (searchMode === SearchMode.TAB_HISTORY) {
       getDataFunc = getHistoryData;
+    } else if(searchMode === SearchMode.TAB_WEB_SEARCH) {
+      getDataFunc = getWebSearchEngines;
     } else {
       getDataFunc = getTabData;
     }
