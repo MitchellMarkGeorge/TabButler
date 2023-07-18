@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "strict": true,
+    "target": "ES6",
+    "types": ["vite/client", "node", "chrome"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "module": "commonjs",
-    "sourceMap": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "CommonJS",
+    "noEmit": true,
     "jsx": "react",
-    "typeRoots": ["node_modules/@types"],
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "@common/*": ["src/common/*"]
+      "@common/*": ["src/common/*"],
     }
-  }
-}
+  },
+  "include": ["src", "vite.config.ts"],
+ }

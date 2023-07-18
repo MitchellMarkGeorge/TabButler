@@ -1,0 +1,12 @@
+{
+    "env": {
+        "DEV": "true"
+    },
+    "watch": [
+        "src",
+        "vite.config.ts",
+        "public"
+    ],
+    "ext": "tsx,scss,ts,json,js",
+    "exec": "vite build"
+}
