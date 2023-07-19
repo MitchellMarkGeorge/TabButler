@@ -1,15 +1,19 @@
-{
+ {
   "compilerOptions": {
     "target": "es5",
     "strict": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
     "esModuleInterop": true,
     "module": "commonjs",
+    "skipLibCheck": true,
     "sourceMap": true,
+    "noFallthroughCasesInSwitch": true,
     "jsx": "react",
     "typeRoots": ["node_modules/@types"],
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "@common/*": ["src/common/*"]
     }
-  }
+  },
+  "include": ["src", "vite.config.ts"],
 }
