@@ -7,6 +7,8 @@ const srcRoot = resolve(__dirname, "src")
 const publicDir = resolve(__dirname, "public")
 const outDir = resolve(__dirname, "dist")
 
+// Use vite build --watch or nodemon??
+
 export default defineConfig({
    resolve: {
     alias: {
