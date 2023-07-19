@@ -12,7 +12,7 @@ const srcRoot = resolve(__dirname, "src");
 
 export default function buildContentScript(): PluginOption {
   return {
-    name: "build-content",
+    name: "build-content-script",
     async buildEnd() {
       for (const _package of packages) {
         await build({

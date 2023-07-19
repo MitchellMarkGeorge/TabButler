@@ -9,7 +9,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "module": "CommonJS",
-    "noEmit": true,
+    "noEmit": true, // not sure if this is needed
     "jsx": "react",
     "baseUrl": ".",
     "paths": {

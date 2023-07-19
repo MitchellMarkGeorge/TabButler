@@ -18,7 +18,7 @@ export default defineConfig({
    build: {
     outDir,
      // think about emptyOutDir
-    //  emptyOutDir: false,
+     emptyOutDir: false,
     //  sourcemap: false,
      rollupOptions: {
         input: {
