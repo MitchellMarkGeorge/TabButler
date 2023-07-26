@@ -215,19 +215,3 @@ export const checkCommands = async () => {
   }
   return false;
 };
-
-export function getMessageFromCommand(command: Command): Message {
-  switch (command) {
-    case Command.TOGGLE_TAB_ACTIONS:
-      return Message.TOGGLE_TAB_ACTIONS;
-  
-    case Command.TOGGLE_TAB_SEARCH:
-      return Message.TOGGLE_TAB_SEARCH;
-  
-    case Command.TOGGLE_TAB_HISTORY:
-      return Message.TOGGLE_TAB_HISTORY;
-  
-    default:
-      return Message.TOGGLE_TAB_SEARCH;
-  }
-}

@@ -32,25 +32,7 @@
         "windows": "Ctrl+Shift+Space",
         "linux": "Ctrl+Shift+Space"
       },
-      "description": "Toggle the Tab Search Modal in the current tab"
-    },
-    "toggle-tab-actions": {
-      "suggested_key": {
-        "default": "Alt+Shift+Space",
-        "windows": "Alt+Shift+K",
-        "linux": "Alt+Shift+K",
-        "mac": "Alt+Shift+Space"
-      },
-      "description": "Toggle Tab Actions Modal in the current tab"
-    },
-    "toggle-tab-history": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+H",
-        "mac": "MacCtrl+Shift+H",
-        "windows": "Ctrl+Shift+H",
-        "linux": "Ctrl+Shift+H"
-      },
-      "description": "Toggle Tab History Modal in the current tab"
+      "description": "Toggle the Tab Butler Modal in the current tab"
     }
   }
 }

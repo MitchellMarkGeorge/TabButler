@@ -29,13 +29,6 @@ export class SearchUIHandler {
     }
   }
 
-  public updateSearchMode(searchMode: SearchMode) {
-    if (this.isMounted) {
-      this.props.searchMode = searchMode;
-      this.render();
-    }
-  }
-
   public getProps() {
     return this.props;
   }

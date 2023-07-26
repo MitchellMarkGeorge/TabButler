@@ -13,7 +13,6 @@ import {
   checkCommands,
   getCurrentTab,
   getHistoryData,
-  getMessageFromCommand,
   getTabsInBrowser,
   injectExtension,
   reactOnTabUpdate,
@@ -51,10 +50,7 @@ browser.commands.onCommand.addListener((command) => {
       !isBrowserURL(currentTab.url)
     ) {
       const messagePayload: MessagePlayload = {
-        message: getMessageFromCommand(command as Command),
-          // command === Commands.TOGGLE_TAB_ACTIONS
-          //   ? Message.TOGGLE_TAB_ACTIONS
-          //   : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
+        message: Message.TOGGLE_TAB_BUTLER_MODAL
       };
       browser.tabs.sendMessage(currentTab.id, messagePayload);
     }

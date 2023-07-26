@@ -11,9 +11,7 @@ export const enum Command {
 // type Message =  CommandMessage | TabSearchMessage | TabActionMessage
 export const enum Message {
   // command specific
-  TOGGLE_TAB_SEARCH = "toggle-search",
-  TOGGLE_TAB_ACTIONS = "toggle-actions",
-  TOGGLE_TAB_HISTORY = "toggle-history",
+  TOGGLE_TAB_BUTLER_MODAL = "toggle-tab-butler-modal",
 
   // tab search specific
   GET_TAB_DATA = "get-tab-data",
@@ -58,23 +56,6 @@ export const enum SearchMode {
   TAB_SEARCH = "tab-search",
   TAB_HISTORY = "tab-history",
 }
-
-export function getSearchModeFromMessage(message: Message): SearchMode {
-  switch (message) {
-    case Message.TOGGLE_TAB_ACTIONS:
-      return SearchMode.TAB_ACTIONS;
-
-    case Message.TOGGLE_TAB_SEARCH:
-      return SearchMode.TAB_SEARCH;
-
-    case Message.TOGGLE_TAB_HISTORY:
-      return SearchMode.TAB_HISTORY;
-
-    default:
-      return SearchMode.TAB_SEARCH
-  }
-}
-
 
 export interface MessagePlayload {
   message: Message;

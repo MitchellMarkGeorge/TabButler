@@ -1,7 +1,7 @@
 // import createCache from "@emotion/cache";
 // import { CacheProvider, css, Global } from "@emotion/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Data, SearchMode } from "@common/types";
+import { Data } from "@common/types";
 import { SearchModalContext, SearchModalContextType } from "./SearchModalContext";
 import { SearchViewContainer } from "./SearchViewContainer";
 import { ModalBody } from "./utils";
@@ -10,10 +10,8 @@ import styles from "../styles/styles.scss?inline";
 // will release tab filters first
 
 export interface Props {
-  searchMode: SearchMode;
-  close: () => void; // function to completely unmount the modal
-  // this function is needed so that when the searchmode is changed inside the ui, the content.js file can know about it and update accordingly
-  // updateOutsideSearchMode: (searchMode: SearchMode) => void
+  // function to completely unmount the modal {
+  close: () => void; 
 }
 
 // alternative to the style tag is a link tag with the chrome url to transpiled style sheet
@@ -63,7 +61,6 @@ export const SearchModal = (props: Props) => {
     () => ({
       close: props.close,
       currentSearchMode,
-      // setCurrentSearchMode,
       changeCurrentSearchMode,
       setIsLoading,
       isLoading,
@@ -79,7 +76,6 @@ export const SearchModal = (props: Props) => {
     <SearchModalContext.Provider value={contextValue}>
       <style>{styles}</style>
       <ModalBody>
-        {/* <SideBar /> */}
         <SearchViewContainer />
       </ModalBody>
     </SearchModalContext.Provider>
