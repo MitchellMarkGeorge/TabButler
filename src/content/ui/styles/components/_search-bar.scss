@@ -7,9 +7,10 @@
   background-color: transparent; // inherit??
   border: none;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.5rem;
   color: variables.$gray-800; // input text color
+  align-items: center;
 
   &-icon {
     height: 1.25rem;
@@ -19,8 +20,9 @@
 
   &-input {
     appearance: none; // think about this
+    background-color: transparent;
     font-family: inherit;
-    // color: inherit;
+    color: inherit;
     border: none;
     width: 100%; // is this needed
 
@@ -36,14 +38,14 @@
     }
   }
 
-  @include dark-mode {
+  @include utils.dark-mode {
     color: variables.$gray-50; // input text color
     &-icon {
       color: variables.$gray-500; // match the place holder
     }
 
     &-input::placeholder {
-      color: variables.$gray-500; 
+      color: variables.$gray-500;
     }
   }
 }

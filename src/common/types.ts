@@ -1,4 +1,13 @@
-import { IconType } from "@react-icons/all-files";
+// import { IconType } from "@react-icons/all-files";
+
+// import type { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
+import type React from "react";
+
+// type Icon = typeof MagnifyingGlassIcon;
+type Icon = React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
+  title?: string | undefined;
+  titleId?: string | undefined;
+} & React.RefAttributes<SVGSVGElement>>
 
 export const enum Command {
   TOGGLE_TAB_SEARCH = "toggle-tab-search",
@@ -101,18 +110,18 @@ export interface TabData {
   tabId: number;
   windowId: number;
   favIcon: string | null;
-  tabTitle: string;
-  tabUrl: string;
-  inCurrentWindow: boolean;
-  isAudible: boolean;
-  isMuted: boolean;
-  isPinned: boolean;
+  title: string;
+  url: string;
+  // will leave this for now
+  // isAudible: boolean;
+  // isMuted: boolean;
+  // isPinned: boolean;
 }
 
 export interface ActionData {
   name: string;
-  message: Message; // the message that the action sends to the backgrpond sctipt
-  icon: IconType; // for now
+  // message: Message; // the message that the action sends to the backgrpond sctipt
+  icon: Icon; // for now
   iconColor?: string;
 }
 
@@ -120,11 +129,6 @@ export interface HistoryData {
   title: string,
   url: string,
   timeVisited: number
-}
-
-export interface SideBarItem {
-  searchMode: SearchMode;
-  icon: IconType;
 }
 
 export interface CheackSearchOpenResponse {

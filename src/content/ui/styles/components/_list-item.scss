@@ -1,130 +1,86 @@
 @use "../variables" as variables;
+@use "./utils";
 
 .list-item,
 .list-item-selected {
   width: 100%;
-  /* using a set height might not be needed */
-  height: 50px;
   display: flex;
-  flex-direction: row;
-  /* which one? */
-  row-gap: 16px;
-  column-gap: 16px;
   align-items: center;
-  /* if no height is set, use 10px */
-  padding: 8px;
-  border-radius: 10px;
-  /* justify-content: space-between; */
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  /* if item is selected, the color should change (inspite of theme) */
-  //   color: ${(props) => (props.selected ? "#fff" : "inherit")};
-  color: inherit;
-  background-color: transparent;
-  //   background-color: ${(props) => (props.selected ? "#3182ce" : "transparent")};
+}
 
-  // hover css is technocally no longer needed as the element becomes selected on mouse over
-  /* :hover {
-    color: #f7fafc;
-    background-color: #3182ce;
-  } */
+.list-item-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  // flex: 1; // think about this
+  // min-width: 0; // think about this
+}
 
-  .main-info-container,
-  .button-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    row-gap: 8px;
-    column-gap: 8px;
+.list-item-title,
+.list-item-subtitle {
+  min-width: 0; // think about this
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+.list-item-image,
+.list-item-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.list-item-icon {
+  color: variables.$gray-400;
+  @include utils.dark-mode {
+    color: variables.$gray-500;
   }
+}
 
-  .main-info-container {
-    flex: 1;
-    min-width: 0;
+.list-item {
+  .list-item-title {
+    color: variables.$gray-800;
   }
-
-  img {
-    height: 24px;
-    width: 24px;
-    image-rendering: auto;
+  .list-item-subtitle {
+    color: variables.$gray-500;
   }
-
-  .text-container {
-    /*  flex might not be needed here     */
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    line-height: normal !important;
-  }
-
-  .main-text {
-    font-size: 16px;
-    font-weight: 590;
-    /* color: #fff; */
-  }
-
-  .secondary-text {
-    font-size: 10px;
-    font-weight: 510;
-    /* if selected use special color if not fall back to the default one*/
-    /* color: ${(props) =>
-      props.selected ? "#cbd5e0" : "rgba(255, 255, 255, 0.36)"}; */
-    color: variables.$secondary_white;
-  }
-
-  /* :hover .secondary_text {
-    color: #cbd5e0;
-  } */
-
-  .main-text,
-  .secondary-text {
-    flex: 1;
-    /* max-width: 100%; */
-    min-width: 0;
-    white-space: nowrap;
-    /* set width for text overflow - might use percentage */
-    /* 450px */
-    /* width: 475px;
-    max-width: 475px; */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    /* font-size: 16px; */
-    user-select: none;
-  }
-
-  .icon-button {
-    /* center the buttons */
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-
-  @media (prefers-color-scheme: light) {
-    .secondary-text {
-      //   color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
-      // color: rgba(0, 0, 0, 0.48);
-      color: variables.$secondary_black;
+  @include utils.dark-mode {
+    .list-item-title {
+      color: variables.$gray-100;
     }
-
-    /* :hover .secondary_text {
-      color: #cbd5e0;
-    } */
+    .list-item-subtitle {
+      color: variables.$gray-400;
+    }
   }
 }
 
 .list-item-selected {
-  // color: #fff;
-  color: variables.$primary_white;
-  background-color: variables.$primary_blue;
-  @media (prefers-color-scheme: light) {
-    .secondary-text {
-      //   color: ${(props) => (props.selected ? "#CBD5E0" : "rgba(0, 0, 0, 0.48)")};
-      // color: #cbd5e0;
-      color: variables.$secondary_white;
-    }
-
-    /* :hover .secondary_text {
-      color: #cbd5e0;
-    } */
+  background-color: variables.$blue-500;
+  .list-item-title {
+    color: variables.$gray-50;
   }
+
+  .list-item-subtitle {
+    color: variables.$gray-100;
+  }
+  @include utils.dark-mode {
+    background-color: variables.$blue-600;
+  }
+
+  .list-item-icon {
+    color: variables.$gray-50;
+    // @include utils.dark-mode {
+    //   color: variables.$gray-50;
+    // }
+  }
+}
+
+.list-item-title {
+  font-weight: variables.$font-weight-medium;
 }

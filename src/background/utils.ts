@@ -1,7 +1,6 @@
 import { isBrowserURL } from "../common/common";
 import {
   CheackSearchOpenResponse,
-  Command,
   HistoryData,
   Message,
   SearchMode,
@@ -51,18 +50,19 @@ export async function getTabsWithSearchOpen(): Promise<number[]> {
   return result;
 }
 
-export async function getTabsInBrowser(activeTabId?: number) {
+const cleanTabUrl = (url: string) => {
+  // https://bobbyhadz.com/blog/javascript-remove-querystring-from-url
+  // this method removes all the query params but leaves the hash
+  // the hash is kept as in some cases, it can help users "match" with what they are looking for (eg: a section title in a website they are on)
+  if (url.includes('?')) {
+    return url.slice(0, url.indexOf('?')) + url.slice(url.indexOf('#'));
+  } else return url;
+}
+
+export async function fetchAllTabs() {
   // should it return the current tab??
   // should we be using the lastFocused?
   const tabs = await browser.tabs.query({});
-  let currentWindowId: number | undefined;
-  // if the active tab is provided, use the currentWindow of that tab
-  if (activeTabId !== undefined) {
-    currentWindowId = (await browser.tabs.get(activeTabId)).windowId;
-  } else {
-    // for windows, the current window is the window that the code is being run from (not what we need)
-    currentWindowId = (await browser.windows.getLastFocused()).id;
-  }
   const results: TabData[] = [];
   const tabNum = tabs.length;
 
@@ -80,13 +80,8 @@ export async function getTabsInBrowser(activeTabId?: number) {
         tabId: tab.id,
         windowId: tab.windowId,
         favIcon: tab.favIconUrl || null,
-        tabTitle: tab.title as string, // we know this will be present
-        tabUrl: tab.url.split("?")[0], // removes the query string (should I do this her eor in the SearchMdoal on search?)
-        inCurrentWindow: currentWindowId === tab.windowId,
-        isAudible: Boolean(tab.audible), // if undefined, it will return false
-        isMuted: Boolean(tab?.mutedInfo?.muted), // think about this
-        isPinned: tab.pinned,
-        // muted info
+        title: tab.title as string, // we know this will be present
+        url: cleanTabUrl(tab.url),
       };
       results.push(tabData);
     }
@@ -185,7 +180,7 @@ export const reactOnTabUpdate = (removedTabId?: number) => {
     // for each active tab with their search open, send an update to them
     tabIds.forEach((id) => {
       // passing in the id for each active tab makes sure the currentWindow is correct
-      getTabsInBrowser(id).then((updatedTabData) => {
+      fetchAllTabs(id).then((updatedTabData) => {
         // there is a bug in firefox where the removed tab is still given in the tabData array
         if (removedTabId !== undefined) {
           const removedTabDataIndex = updatedTabData.findIndex(

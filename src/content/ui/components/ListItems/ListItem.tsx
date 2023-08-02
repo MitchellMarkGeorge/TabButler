@@ -4,7 +4,7 @@ import { createComponent } from "../utils";
 export interface ListItemProps<T> {
   data: T;
   selected: boolean; // isSelected
-  onClick: (data: T) => void;
+  // onClick: (data: T) => void;
   onHover: () => void;
 }
 

@@ -48,14 +48,14 @@ browser.runtime.onMessage.addListener(messageListener);
 // this could technically go on the :host selector...
 const styleModalRoot = (modalRoot: HTMLElement) => {
   modalRoot.style.position = "fixed";
-  modalRoot.style.left = "0";
-  modalRoot.style.right = "0";
-  modalRoot.style.bottom = "0";
-  modalRoot.style.top = "0";
-  modalRoot.style.display = "flex";
-  modalRoot.style.justifyContent = "center";
+  // modalRoot.style.left = "0";
+  // modalRoot.style.right = "0";
+  // modalRoot.style.bottom = "0";
+  // modalRoot.style.top = "0";
+  // modalRoot.style.display = "flex";
+  // modalRoot.style.justifyContent = "center";
   modalRoot.style.boxSizing = "border-box";
-  modalRoot.style.paddingTop = "20vh";
+  // modalRoot.style.paddingTop = "20vh";
   modalRoot.style.width = "100%";
   modalRoot.style.height = "100%";
   modalRoot.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
@@ -65,7 +65,7 @@ const styleModalRoot = (modalRoot: HTMLElement) => {
 function mountModal() {
   // create a new modal root on mount and append as the last child of the body
   tabButlerModalRoot = document.createElement("tab-butler-modal");
-  styleModalRoot(tabButlerModalRoot);
+  // styleModalRoot(tabButlerModalRoot);
   // needs to be open so that the click event can bubble up
   tabButlerModalRoot.attachShadow({ mode: "open" });
   document.addEventListener("click", unmountOnClick);
@@ -73,7 +73,11 @@ function mountModal() {
     close: unmountModal,
   });
   isOpen = true;
-  document.body.appendChild(tabButlerModalRoot);
+  // document.body.appendChild(tabButlerModalRoot);
+  // inserts the modal as the first child 
+  // this is needed for it to work with the new syles
+  // should confirm this
+  document.body.insertAdjacentElement("afterbegin", tabButlerModalRoot);
 }
 
 function unmountModal() {

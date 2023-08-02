@@ -1,6 +1,5 @@
 import { isBrowserURL } from "../common/common";
 import {
-  Command,
   Message,
   MessagePlayload,
   TogglePinTabPayload,
@@ -13,9 +12,8 @@ import {
   checkCommands,
   getCurrentTab,
   getHistoryData,
-  getTabsInBrowser,
+  fetchAllTabs,
   injectExtension,
-  reactOnTabUpdate,
 } from "./utils";
 import browser from "webextension-polyfill";
 
@@ -40,7 +38,7 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
   }
 });
 
-browser.commands.onCommand.addListener((command) => {
+browser.commands.onCommand.addListener(() => {
   // should I make these async?
   getCurrentTab().then((currentTab) => {
     if (
@@ -59,16 +57,16 @@ browser.commands.onCommand.addListener((command) => {
 
 // SHOULD ONLY SEND UPDATED TAB DATA IF A TAB IN THE SAME WINDOW AS THE OPEN SEARCH IS CLOSED
 
-browser.tabs.onRemoved.addListener((removedTabId) => {
-  reactOnTabUpdate(removedTabId);
-});
-browser.tabs.onCreated.addListener(() => {
-  reactOnTabUpdate();
-});
-// removed if statement as I also need to know when some of the fields are absent (like audible)
-browser.tabs.onUpdated.addListener(() => {
-  reactOnTabUpdate();
-});
+// browser.tabs.onRemoved.addListener((removedTabId) => {
+//   reactOnTabUpdate(removedTabId);
+// });
+// browser.tabs.onCreated.addListener(() => {
+//   reactOnTabUpdate();
+// });
+// // removed if statement as I also need to know when some of the fields are absent (like audible)
+// browser.tabs.onUpdated.addListener(() => {
+//   reactOnTabUpdate();
+// });
 
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {
@@ -77,7 +75,7 @@ browser.runtime.onMessage.addListener(
     // https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
     switch (messagePayload.message) {
       case Message.GET_TAB_DATA:
-        return Promise.resolve(getTabsInBrowser());
+        return Promise.resolve(fetchAllTabs());
 
       case Message.GET_HISTORY_DATA:
         return Promise.resolve(getHistoryData());
