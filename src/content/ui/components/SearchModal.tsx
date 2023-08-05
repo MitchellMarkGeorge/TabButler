@@ -5,13 +5,14 @@ import styles from "../styles/styles.scss?inline";
 import SearchBar from "./SearchBar";
 // import NoResults from "./NoResults";
 import Section from "./Section";
-import { ActionData } from "@common/types";
+import { ActionData, DataType } from "@common/types";
 import {
   FolderPlusIcon,
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ActionListItem } from "./ListItems/ActionListItem";
+import { BottomBar } from "./BottomBar";
 // import Error from "./Error";
 
 export interface Props {
@@ -29,14 +30,17 @@ export const SearchModal = () => {
     {
       name: "New Tab",
       icon: PlusIcon,
+      type: DataType.ACTION,
     },
     {
       name: "New Window",
       icon: FolderPlusIcon,
+      type: DataType.ACTION,
     },
     {
       name: "Close tab",
       icon: XMarkIcon,
+      type: DataType.ACTION,
     },
   ];
   return (
@@ -54,6 +58,7 @@ export const SearchModal = () => {
             />
           ))}
         </Section>
+        <BottomBar/>
         {/* <NoResults searchQuery={searchQuery}/> */}
         {/* <Error/> */}
       </div>

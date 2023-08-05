@@ -10,12 +10,13 @@ export default function SearchBar(props: Props) {
   const inputRef = useRef<ElementRef<"input">>(null);
 
   useEffect(() => {
+    // focus the input on mount
     inputRef.current?.focus();
   }, []);
 
   return (
     <div className="search-bar">
-        <MagnifyingGlassIcon className="search-bar-icon" />
+      <MagnifyingGlassIcon className="search-bar-icon" />
       <input
         ref={inputRef}
         value={props.value}

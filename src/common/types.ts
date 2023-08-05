@@ -4,17 +4,17 @@
 import type React from "react";
 
 // type Icon = typeof MagnifyingGlassIcon;
-type Icon = React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
+export type Icon = React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
   title?: string | undefined;
   titleId?: string | undefined;
 } & React.RefAttributes<SVGSVGElement>>
 
-export const enum Command {
-  TOGGLE_TAB_SEARCH = "toggle-tab-search",
-  TOGGLE_TAB_ACTIONS = "toggle-tab-actions",
-  TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
-  TOGGLE_TAB_HISTORY = "toggle-tab-history",
-}
+// export const enum Command {
+//   TOGGLE_TAB_SEARCH = "toggle-tab-search",
+//   TOGGLE_TAB_ACTIONS = "toggle-tab-actions",
+//   TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
+//   TOGGLE_TAB_HISTORY = "toggle-tab-history",
+// }
 
 // name space Messages according to their use using a union(?) of enums
 // type Message =  CommandMessage | TabSearchMessage | TabActionMessage
@@ -58,6 +58,13 @@ export const enum Message {
   // when workspaces are implemented, related actions will be here
 
   ERROR = "error",
+}
+
+export const enum DataType {
+  TAB = "TAB",
+  ACTION = "ACTION",
+  BOOKMARK = "BOOKMARK",
+  HISTORY = "HISTORY",
 }
 
 export const enum SearchMode {
@@ -104,31 +111,44 @@ export interface OpenHistoryItemPayload extends MessagePlayload {
   url: string;
 }
 
-export type Data = TabData | ActionData | HistoryData;
+// export type Data = TabData | ActionData | HistoryData;
+export interface Data {
+  type: DataType
+}
 
-export interface TabData {
+export interface TabData extends Data {
   tabId: number;
   windowId: number;
   favIcon: string | null;
   title: string;
   url: string;
+  type: DataType.TAB;
   // will leave this for now
   // isAudible: boolean;
   // isMuted: boolean;
   // isPinned: boolean;
 }
 
-export interface ActionData {
+export interface ActionData extends Data {
   name: string;
   // message: Message; // the message that the action sends to the backgrpond sctipt
   icon: Icon; // for now
   iconColor?: string;
+  type: DataType.ACTION;
 }
 
-export interface HistoryData {
+export interface HistoryData extends Data {
   title: string,
   url: string,
   timeVisited: number
+  type: DataType.HISTORY;
+
+}
+
+export interface BookmarkData extends Data {
+  title: string;
+  url: string;
+  type: DataType.BOOKMARK;
 }
 
 export interface CheackSearchOpenResponse {

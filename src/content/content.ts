@@ -2,7 +2,6 @@ import browser from "webextension-polyfill";
 import {
   Message,
   MessagePlayload,
-  SearchMode,
 } from "../common/types";
 // import "./content.css";
 import { SearchUIHandler } from "./SearchUIHandler";

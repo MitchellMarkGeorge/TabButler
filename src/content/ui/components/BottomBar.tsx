@@ -1,65 +1,37 @@
+import { ArrowUturnLeftIcon, ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import React from "react";
-import { SearchMode } from "@common/types";
-import { createComponent } from "./utils";
 
-const BottomBarContainer = createComponent({ className: "bottom-bar"});
-const ResultNumberContainer = createComponent( { className: "result-number"});
-const WindowToggleContainer = createComponent( { className: "window-toggle"});
-const HelpItemContainer = createComponent( {className: "help-items"});
-
-interface Props {
-  currentSeachMode: SearchMode;
-  resultNum: number;
-  showOnlyCurrentWindow: boolean;
-  toggleShowOnlyCurrentWindow: () => void;
-}
-export function BottomBar({
-  currentSeachMode,
-  resultNum,
-  showOnlyCurrentWindow,
-  toggleShowOnlyCurrentWindow,
-}: Props) {
+export function BottomBar() {
   return (
-    <BottomBarContainer>
-      {/* <span>{resultNum} Results</span> */}
-      {/* what is the best way to do this? should I just cave in and show all the tabs by default? */}
-      <ResultNumberContainer>
-        <span>{resultNum} Results</span>
-      </ResultNumberContainer>
-      {currentSeachMode === SearchMode.TAB_SEARCH && (
-        <WindowToggleContainer>
-          <input
-            type="checkbox"
-            id="current-window-toggle"
-            checked={showOnlyCurrentWindow}
-            onChange={toggleShowOnlyCurrentWindow}
-          />
-          <label htmlFor="current-window-toggle">Only Current Window</label>
-        </WindowToggleContainer>
-      )}
-      <HelpItemContainer>
-        <div>
-          <kbd >&uarr;</kbd>
-          Up
-        </div>
+    <div className="bottom-bar">
 
-        <div>
-          <kbd>&darr;</kbd>
-          Down
+      <div className="bottom-bar-item">
+        <div className="bottom-bar-item-icon-container">
+          <ArrowsUpDownIcon className="bottom-bar-item-icon"/>
         </div>
-
-        <div>
-          <kbd>Enter</kbd>
-          {currentSeachMode === SearchMode.TAB_ACTIONS
-            ? "Execute action"
-            : "Go to tab"}
+        <div className="bottom-bar-item-text text-xs">
+          Navigate
         </div>
+      </div>
 
-        <div>
-          <kbd>Esc</kbd>
+      <div className="bottom-bar-item">
+        <div className="bottom-bar-item-icon-container">
+          <ArrowUturnLeftIcon className="bottom-bar-item-icon"/>
+        </div>
+        <div className="bottom-bar-item-text text-xs">
+          Go to Tab
+        </div>
+      </div>
+
+      <div className="bottom-bar-item">
+        <div className="bottom-bar-item-icon-container">
+        <div className="bottom-bar-item-text text-xs">Esc</div>
+        </div>
+        <div className="bottom-bar-item-text text-xs">
           Close
         </div>
-      </HelpItemContainer>
-    </BottomBarContainer>
+      </div>
+
+    </div>
   );
 }
