@@ -72,6 +72,7 @@ function mountModal() {
     close: unmountModal,
   });
   isOpen = true;
+  // figure out which one to use
   // document.body.appendChild(tabButlerModalRoot);
   // inserts the modal as the first child 
   // this is needed for it to work with the new syles

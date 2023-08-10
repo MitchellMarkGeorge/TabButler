@@ -3,7 +3,6 @@
 
 .section {
   background-color: transparent;
-  border-top: 1px solid variables.$gray-200;
   padding: 1rem 0.5rem;
   display: flex;
   flex-direction: column;
@@ -19,17 +18,25 @@
       color: variables.$gray-500;
     }
   }
-
-  @include utils.dark-mode {
-    border-top: 1px solid variables.$gray-700;
-  }
-
-  //   &-body {
-  //     // put any things needed here
-  //   }
 }
 
 .section-list {
-    height: 100%;
-    overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  border-top: 1px solid variables.$gray-200;
+  border-bottom: 1px solid variables.$gray-200;
+  @include utils.dark-mode {
+    border-top: 1px solid variables.$gray-700;
+    border-bottom: 1px solid variables.$gray-700;
+  }
+
+  & > .section + .section {
+    border-top: 1px solid variables.$gray-200;
+    @include utils.dark-mode {
+      border-top: 1px solid variables.$gray-700;
+    }
+  }
 }

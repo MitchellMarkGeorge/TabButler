@@ -113,7 +113,8 @@ export interface OpenHistoryItemPayload extends MessagePlayload {
 
 // export type Data = TabData | ActionData | HistoryData;
 export interface Data {
-  type: DataType
+  type: DataType;
+  id: string
 }
 
 export interface TabData extends Data {
@@ -155,3 +156,14 @@ export interface CheackSearchOpenResponse {
   isOpen: boolean;
   currentSearchMode: SearchMode;
 }
+
+export interface SectionType {
+  name: string;
+  matchScore: number; 
+  items: Data[] // sorted
+}
+
+export interface ScoredDataType {
+  matchScore: number
+}
+

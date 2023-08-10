@@ -1,7 +1,6 @@
 import { Props, SearchModal } from "./ui/components/SearchModal";
 import { createRoot, Root } from "react-dom/client";
 import { createElement } from "react";
-import { SearchMode } from "@common/types";
 
 export class SearchUIHandler {
   private props!: Props;

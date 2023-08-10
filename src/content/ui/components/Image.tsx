@@ -13,11 +13,11 @@ export default function Image(props: Props) {
 
   const onError = () => {
     setHasError(true);
-  }
+  };
 
-  return (hasError || !src) ? (
-    <FallBackIcon className={className}/>
+  return hasError || !src ? (
+    <FallBackIcon className={className} />
   ) : (
-    <img src={src} className={className} onError={onError}/>
+    <img src={src} className={className} onError={onError} />
   );
 }
