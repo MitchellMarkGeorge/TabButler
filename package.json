@@ -13,6 +13,7 @@
   "devDependencies": {
     "@preact/preset-vite": "^2.5.0",
     "@types/chrome": "^0.0.242",
+    "@types/lodash.debounce": "^4.0.7",
     "@types/react": "^18.2.17",
     "@types/react-dom": "^18.2.7",
     "@types/webextension-polyfill": "^0.10.1",
@@ -41,6 +42,7 @@
     "csstype": "^3.1.2",
     "dayjs": "^1.11.9",
     "focus-trap-react": "^10.2.1",
+    "lodash.debounce": "^4.0.8",
     "nanoid": "^4.0.2",
     "preact": "^10.16.0",
     "puppeteer": "^20.9.0",

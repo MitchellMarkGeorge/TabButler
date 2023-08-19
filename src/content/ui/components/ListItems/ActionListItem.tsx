@@ -2,6 +2,7 @@ import React from "react";
 import { ActionData } from "@common/types";
 // import { useIsDarkMode } from "../../hooks";
 import { ListItemProps } from "./ListItem";
+import { getActionsIcon } from "../../services/actions";
 
 export const ActionListItem = ({
   data,
@@ -9,7 +10,7 @@ export const ActionListItem = ({
   onHover,
   selected,
 }: ListItemProps<ActionData>) => {
-  const Icon = data.icon;
+  const Icon = getActionsIcon(data.message);
   return (
     <div className={selected ? "list-item-selected" : "list-item"}
       // onClick={() => onClick(data)}

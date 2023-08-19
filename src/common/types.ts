@@ -22,6 +22,9 @@ export const enum Message {
   // command specific
   TOGGLE_TAB_BUTLER_MODAL = "toggle-tab-butler-modal",
 
+  // search message
+  SEARCH = "search",
+
   // tab search specific
   GET_TAB_DATA = "get-tab-data",
   GET_HISTORY_DATA = "get-history-data",
@@ -111,6 +114,11 @@ export interface OpenHistoryItemPayload extends MessagePlayload {
   url: string;
 }
 
+export interface SearchPayload extends MessagePlayload {
+  message: Message.SEARCH;
+  query: string;
+}
+
 // export type Data = TabData | ActionData | HistoryData;
 export interface Data {
   type: DataType;
@@ -132,9 +140,8 @@ export interface TabData extends Data {
 
 export interface ActionData extends Data {
   name: string;
-  // message: Message; // the message that the action sends to the backgrpond sctipt
-  icon: Icon; // for now
-  iconColor?: string;
+  message: Message; // the message that the action sends to the backgrpond sctipt
+  // icon: Icon; // for now
   type: DataType.ACTION;
 }
 
@@ -161,9 +168,15 @@ export interface SectionType {
   name: string;
   matchScore: number; 
   items: Data[] // sorted
+  // items: ScoredDataType[] // sorted
 }
 
 export interface ScoredDataType {
-  matchScore: number
+  matchScore: number;
+  data: Data;
 }
 
+export interface Result<T> {
+  hasError: boolean;
+  data: T | null;
+}

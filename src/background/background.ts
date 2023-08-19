@@ -7,12 +7,14 @@ import {
   ChangeTabPayload,
   GivenTabPayload,
   OpenHistoryItemPayload,
+  SearchPayload,
 } from "../common/types";
+import { search } from "./search";
 import {
   checkCommands,
   getCurrentTab,
-  getHistoryData,
-  fetchAllTabs,
+  // fetchAllTabs,
+  // searchHistory,
   injectExtension,
 } from "./utils";
 import browser from "webextension-polyfill";
@@ -74,11 +76,15 @@ browser.runtime.onMessage.addListener(
     // should be present if the sender is a content script (would equate to the current tab)
     // https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
     switch (messagePayload.message) {
-      case Message.GET_TAB_DATA:
-        return Promise.resolve(fetchAllTabs());
+      case Message.SEARCH: {
+        const { query } = messagePayload as SearchPayload;
+        return search(query);
+      }
+      // case Message.GET_TAB_DATA:
+      //   return Promise.resolve(fetchAllTabs());
 
-      case Message.GET_HISTORY_DATA:
-        return Promise.resolve(getHistoryData());
+      // case Message.GET_HISTORY_DATA:
+      //   return Promise.resolve(getHistoryData());
 
       case Message.CHANGE_TAB: {
         const { tabId, windowId } = messagePayload as ChangeTabPayload;

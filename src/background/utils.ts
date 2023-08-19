@@ -1,13 +1,23 @@
+import { nanoid } from "nanoid";
 import { isBrowserURL } from "../common/common";
 import {
+  BookmarkData,
   CheackSearchOpenResponse,
+  DataType,
   HistoryData,
   Message,
   SearchMode,
   TabData,
-  UpdatedTabDataPayload,
+  // UpdatedTabDataPayload,
 } from "../common/types";
 import browser from "webextension-polyfill";
+
+// TODO: organize all the functions in this file
+
+export async function changeTab(windowId: number, tabId: number) {
+  await browser.windows.update(windowId, { focused: true });
+  await browser.tabs.update(tabId, { active: true });
+}
 
 export async function getCurrentTab() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
@@ -54,10 +64,10 @@ const cleanTabUrl = (url: string) => {
   // https://bobbyhadz.com/blog/javascript-remove-querystring-from-url
   // this method removes all the query params but leaves the hash
   // the hash is kept as in some cases, it can help users "match" with what they are looking for (eg: a section title in a website they are on)
-  if (url.includes('?')) {
-    return url.slice(0, url.indexOf('?')) + url.slice(url.indexOf('#'));
+  if (url.includes("?")) {
+    return url.slice(0, url.indexOf("?")) + url.slice(url.indexOf("#"));
   } else return url;
-}
+};
 
 export async function fetchAllTabs() {
   // should it return the current tab??
@@ -76,39 +86,65 @@ export async function fetchAllTabs() {
       tab.windowId !== browser.windows.WINDOW_ID_NONE
     ) {
       // we know that these properties will be present
-      const tabData: TabData = {
+      results.push({
+        type: DataType.TAB,
+        id: nanoid(),
         tabId: tab.id,
         windowId: tab.windowId,
         favIcon: tab.favIconUrl || null,
         title: tab.title as string, // we know this will be present
         url: cleanTabUrl(tab.url),
-      };
-      results.push(tabData);
+      });
     }
   }
 
   return results;
 }
 
-export async function getHistoryData() {
+export async function searchHistory(query: string) {
   // how many history items should i be showing???
   // in what timeframe
-  const history = await browser.history.search({ text: ""});
+  const history = await browser.history.search({ text: query });
   const results: HistoryData[] = [];
 
   const historyNum = history.length;
   for (let i = 0; i < historyNum; i++) {
-    const { title, url, lastVisitTime} = history[i];
+    const { title, url, lastVisitTime } = history[i];
     if (title && url && lastVisitTime !== undefined) {
       results.push({
+        type: DataType.HISTORY,
+        id: nanoid(),
         title,
         url,
-        timeVisited: lastVisitTime
-
-      })
+        timeVisited: lastVisitTime,
+      });
     }
   }
 
+  return results;
+}
+
+export async function searchBookmarks(query: string) {
+  const bookmarks = await browser.bookmarks.search(query);
+  return normalizeBookmarks(bookmarks);
+}
+
+function normalizeBookmarks(bookmarks: browser.Bookmarks.BookmarkTreeNode[]) {
+  const bookmarkNum = bookmarks.length;
+  const results: BookmarkData[] = [];
+  for (let i = 0; i < bookmarkNum; i++) {
+    const bookmark = bookmarks[i];
+    if (bookmark.children) {
+      results.push(...normalizeBookmarks(bookmark.children));
+    } else {
+      results.push({
+        type: DataType.BOOKMARK,
+        id: nanoid(),
+        title: bookmark.title,
+        url: bookmark.url!, // should be present if it since it is not a folder 
+      });
+    } 
+  }
   return results;
 }
 
@@ -173,34 +209,34 @@ export async function injectExtension() {
   // }
 }
 
-export const reactOnTabUpdate = (removedTabId?: number) => {
-  // send updated tab data to all open search modals in the browser
-  getTabsWithSearchOpen().then((tabIds) => {
-    console.log(tabIds);
-    // for each active tab with their search open, send an update to them
-    tabIds.forEach((id) => {
-      // passing in the id for each active tab makes sure the currentWindow is correct
-      fetchAllTabs(id).then((updatedTabData) => {
-        // there is a bug in firefox where the removed tab is still given in the tabData array
-        if (removedTabId !== undefined) {
-          const removedTabDataIndex = updatedTabData.findIndex(
-            (tabData) => tabData.tabId === removedTabId,
-          );
-          if (removedTabDataIndex != -1) {
-            updatedTabData.splice(removedTabDataIndex, 1);
-          }
-        }
-        const messagePayload: UpdatedTabDataPayload = {
-          message: Message.TAB_DATA_UPDATE,
-          updatedTabData,
-        };
-        console.log("sending message");
-        browser.tabs.sendMessage(id, messagePayload);
-      });
-    });
-  });
-  // }
-};
+// export const reactOnTabUpdate = (removedTabId?: number) => {
+//   // send updated tab data to all open search modals in the browser
+//   getTabsWithSearchOpen().then((tabIds) => {
+//     console.log(tabIds);
+//     // for each active tab with their search open, send an update to them
+//     tabIds.forEach((id) => {
+//       // passing in the id for each active tab makes sure the currentWindow is correct
+//       fetchAllTabs(id).then((updatedTabData) => {
+//         // there is a bug in firefox where the removed tab is still given in the tabData array
+//         if (removedTabId !== undefined) {
+//           const removedTabDataIndex = updatedTabData.findIndex(
+//             (tabData) => tabData.tabId === removedTabId,
+//           );
+//           if (removedTabDataIndex != -1) {
+//             updatedTabData.splice(removedTabDataIndex, 1);
+//           }
+//         }
+//         const messagePayload: UpdatedTabDataPayload = {
+//           message: Message.TAB_DATA_UPDATE,
+//           updatedTabData,
+//         };
+//         console.log("sending message");
+//         browser.tabs.sendMessage(id, messagePayload);
+//       });
+//     });
+//   });
+//   // }
+// };
 
 export const checkCommands = async () => {
   // simple function to check if ther are any unbound commands due to conflicts

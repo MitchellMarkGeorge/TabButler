@@ -15,86 +15,91 @@ import { ActionListItem } from "./ListItems/ActionListItem";
 import { BottomBar } from "./BottomBar";
 import { TabListItem } from "./ListItems/TabListItem";
 import { nanoid } from "nanoid";
+import debounce from "lodash.debounce";
+import { search } from "../services/search";
 // import { action } from "webextension-polyfill";
 // import Error from "./Error";
 
 export interface Props {
   close: () => void;
 }
-const actions: ActionData[] = [
-  {
-    name: "New Tab",
-    icon: PlusIcon,
-    type: DataType.ACTION,
-    id: nanoid(),
-  },
-  {
-    name: "New Window",
-    icon: FolderPlusIcon,
-    type: DataType.ACTION,
-    id: nanoid(),
-  },
-  {
-    name: "Close tab",
-    icon: XMarkIcon,
-    type: DataType.ACTION,
-    id: nanoid(),
-  },
-];
+// const actions: ActionData[] = [
+//   {
+//     name: "New Tab",
+//     icon: PlusIcon,
+//     type: DataType.ACTION,
+//     id: nanoid(),
+//   },
+//   {
+//     name: "New Window",
+//     icon: FolderPlusIcon,
+//     type: DataType.ACTION,
+//     id: nanoid(),
+//   },
+//   {
+//     name: "Close tab",
+//     icon: XMarkIcon,
+//     type: DataType.ACTION,
+//     id: nanoid(),
+//   },
+// ];
 
-const tabs: TabData[] = [
-  {
-    favIcon: null,
-    type: DataType.TAB,
-    tabId: 909,
-    title: "Test",
-    url: "https://test.com",
-    windowId: 0,
-    id: nanoid(),
-  },
+// const tabs: TabData[] = [
+//   {
+//     favIcon: null,
+//     type: DataType.TAB,
+//     tabId: 909,
+//     title: "Test",
+//     url: "https://test.com",
+//     windowId: 0,
+//     id: nanoid(),
+//   },
 
-  {
-    favIcon: null,
-    type: DataType.TAB,
-    tabId: 909,
-    title: "Test",
-    url: "https://test.com",
-    windowId: 0,
-    id: nanoid(),
-  },
+//   {
+//     favIcon: null,
+//     type: DataType.TAB,
+//     tabId: 909,
+//     title: "Test",
+//     url: "https://test.com",
+//     windowId: 0,
+//     id: nanoid(),
+//   },
 
-  {
-    favIcon: null,
-    type: DataType.TAB,
-    tabId: 909,
-    title: "Test",
-    url: "https://test.com",
-    windowId: 0,
-    id: nanoid(),
-  },
-];
+//   {
+//     favIcon: null,
+//     type: DataType.TAB,
+//     tabId: 909,
+//     title: "Test",
+//     url: "https://test.com",
+//     windowId: 0,
+//     id: nanoid(),
+//   },
+// ];
 
-const results: SectionType[] = [
-  {
-    name: "Tabs",
-    items: tabs,
-    matchScore: 0.9,
-  },
+// const results: SectionType[] = [
+//   {
+//     name: "Tabs",
+//     items: tabs,
+//     matchScore: 0.9,
+//   },
 
-  {
-    name: "Actions",
-    items: actions,
-    matchScore: 0.72,
-  },
-];
+//   {
+//     name: "Actions",
+//     items: actions,
+//     matchScore: 0.72,
+//   },
+// ];
 
 // alternative to the style tag is a link tag with the chrome url to transpiled style sheet
 // i could also use jss https://cssinjs.org/setup?v=v10.9.2
 
 export const SearchModal = (props: Props) => {
   // focus trap
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SectionType[]>(results); // sorted array of sections
+  // const [searchQuery, setSearchQuery] = useState("");
+  // might need to rethink this (need an easy way to access the actual items and their ids)
+  // but for now having a seperate id array and id-dataItem map works
+  const [searchResults, setSearchResults] = useState<SectionType[]>([]); // sorted array of sections
+
   // think about this - perfomance implecations and general readability
   // this should return a sorted list of all the id of the items (sorted by score)
   const sortedIdList = useMemo(
@@ -107,12 +112,12 @@ export const SearchModal = (props: Props) => {
   // console.log(sortedIdList);
   const [selectedId, setSelectedId] = useState<string>(sortedIdList[0]);
 
-
+  // think about this - perfomance implecations and general readability
   const buildItemIdMap = () => {
-    const  items = searchResults.map((section) => section.items).flat();
+    const items = searchResults.map((section) => section.items).flat();
     console.log(items);
     const itemIdMap = new Map();
-    items.forEach(item => {
+    items.forEach((item) => {
       itemIdMap.set(item.id, item);
     });
     return itemIdMap;
@@ -138,10 +143,9 @@ export const SearchModal = (props: Props) => {
         nextIndex = selectedListIdIndex + 1;
         setSelectedId(sortedIdList[nextIndex]);
       }
-    }
-    else if (event.key === "Enter") {
+    } else if (event.key === "Enter") {
       event.preventDefault();
-      console.log(itemIdMap.get(selectedId))
+      console.log(itemIdMap.get(selectedId));
       // onSubmit();
     }
   };
@@ -197,47 +201,26 @@ export const SearchModal = (props: Props) => {
       </Section>
     ));
   };
+
+  const onInputChange = debounce((query: string) => {
+    if (query && !searchResults.length) {
+      search(query).then((result) => {
+        console.log(result);
+      })
+      // setSearchResults(results);
+    }
+  }, 500);
   return (
     <>
       <style>{styles}</style>
       <div className="modal-body">
-        <SearchBar value={searchQuery} setValue={setSearchQuery} />
-        <div className="section-list">
-          {/* <Section name="Tabs">
-            {tabs.map((tab, i) => (
-              <TabListItem
-                key={i}
-                data={tab}
-                onHover={() => setSelectedIndex(i)}
-                selected={selectedIndex === i}
-              />
-            ))}
-          </Section>
-          <Section name="Tabs">
-            {tabs.map((tab, i) => (
-              <TabListItem
-                key={i}
-                data={tab}
-                onHover={() => setSelectedIndex(i)}
-                selected={selectedIndex === i}
-              />
-            ))}
-          </Section>
-          <Section name="Actions">
-            {actions.map((action, i) => (
-              <ActionListItem
-                key={i}
-                data={action}
-                onHover={() => setSelectedIndex(i)}
-                selected={selectedIndex === i}
-              />
-            ))}
-          </Section> */}
-          {renderSections(searchResults)}
-        </div>
-        <BottomBar />
-        {/* <NoResults searchQuery={searchQuery}/> */}
-        {/* <Error/> */}
+        <SearchBar onChange={onInputChange} />
+        {searchResults.length > 0 && (
+          <>
+            <div className="section-list">{renderSections(searchResults)}</div>
+            <BottomBar />
+          </>
+        )}
       </div>
     </>
   );

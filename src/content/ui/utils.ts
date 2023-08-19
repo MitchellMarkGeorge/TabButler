@@ -1,4 +1,4 @@
-import { MessagePlayload } from "@common/types";
+import { MessagePlayload, Result } from "@common/types";
 import browser from "webextension-polyfill";
 
 export function isInvalidatedContextError(error: Error) {
@@ -6,5 +6,5 @@ export function isInvalidatedContextError(error: Error) {
 }
 
 export function sendMessageToBackground<T>(messagePayload: MessagePlayload) {
-  return browser.runtime.sendMessage(messagePayload) as Promise<T>;
+  return browser.runtime.sendMessage(messagePayload) as Promise<Result<T>>;
 }
