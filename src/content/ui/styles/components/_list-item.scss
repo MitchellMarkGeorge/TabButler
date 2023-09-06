@@ -10,6 +10,7 @@
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   cursor: pointer;
+  overflow: auto;
 }
 
 .list-item-text {
@@ -17,8 +18,8 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  // flex: 1; // think about this
-  // min-width: 0; // think about this
+  flex: 1; // think about this
+  min-width: 0; // think about this -> should this be a set value (100px??)
 }
 
 .list-item-title,

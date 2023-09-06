@@ -6,6 +6,7 @@ import {
 import dayjs from 'dayjs';
 import relativeTime from "dayjs/plugin/relativeTime";
 import { GlobeAltIcon } from "@heroicons/react/24/outline";
+import { useScroll } from "../../hooks";
 dayjs.extend(relativeTime);
 
 export const HistoryListItem = ({
@@ -15,6 +16,7 @@ export const HistoryListItem = ({
 }: ListItemProps<HistoryData>) => {
   // const ref = useScroll(selected);
   // is it fine to be used like this???
+  const ref = useScroll(selected);
 
   const getHumanTime = (time: number) => {
     // need to use native relative time
@@ -25,6 +27,7 @@ export const HistoryListItem = ({
     className={selected ? "list-item-selected" : "list-item"}
     // onClick={() => onClick(data)}
     onMouseOver={onHover}
+    ref={ref}
   >
     <GlobeAltIcon className="list-item-icon"/>
     <div className="list-item-text">

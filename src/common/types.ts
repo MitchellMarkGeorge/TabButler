@@ -166,17 +166,22 @@ export interface CheackSearchOpenResponse {
 
 export interface SectionType {
   name: string;
-  matchScore: number; 
-  items: Data[] // sorted
+  score: number; 
+  items: ScoredDataType[] // sorted
   // items: ScoredDataType[] // sorted
 }
 
 export interface ScoredDataType {
-  matchScore: number;
+  score: number;
   data: Data;
 }
 
 export interface Result<T> {
   hasError: boolean;
   data: T | null;
+}
+
+export interface SearchResponse {
+  sections: SectionType[],
+  sortedResult: ScoredDataType[]
 }
