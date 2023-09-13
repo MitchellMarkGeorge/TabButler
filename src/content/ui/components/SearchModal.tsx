@@ -227,7 +227,8 @@ export const SearchModal = (props: Props) => {
   const renderBody = () => {
     if (hasError) return <Error />;
     if (resultSections === null) return null;
-    if (resultSections.length === 0) return <NoResults searchQuery={inputRef.current?.value || ""}/>; // for now
+    // if there are no resdults you could render a section only for searching
+    if (resultSections.length === 0) return <NoResults searchQuery={inputRef.current?.value || ""}/>; 
     return (
       <>
         {renderSections(resultSections)}

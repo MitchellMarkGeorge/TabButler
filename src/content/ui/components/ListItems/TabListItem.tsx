@@ -6,6 +6,7 @@ import { getHostname } from "./utils";
 import { GlobeAmericasIcon } from "@heroicons/react/24/solid";
 import { ListItemProps } from "./ListItem";
 import { useScroll } from "../../hooks";
+import { BsGlobeAmericas } from "react-icons/bs";
 
 export const TabListItem = ({
   data,
@@ -14,7 +15,7 @@ export const TabListItem = ({
   onClick
 }: ListItemProps<TabData>) => {
   const ref = useScroll(selected);
-  const FallbackIcon = <GlobeAmericasIcon className="list-item-icon"/>
+  const FallbackIcon = <BsGlobeAmericas className="list-item-icon"/>
   return (
     <div
       className={selected ? "list-item-selected" : "list-item"}

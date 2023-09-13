@@ -1,5 +1,6 @@
 import React, { ElementRef, forwardRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { BsSearch } from "react-icons/bs";
 
 interface Props {
   // value: string;
@@ -11,7 +12,7 @@ const SearchBar = forwardRef<ElementRef<"input">, Props>((props: Props, ref) => 
 
   return (
     <div className="search-bar">
-      <MagnifyingGlassIcon className="search-bar-icon" />
+      <BsSearch className="search-bar-icon" />
       <input
         ref={ref}
         onChange={(event) => props.onChange(event.target.value)}

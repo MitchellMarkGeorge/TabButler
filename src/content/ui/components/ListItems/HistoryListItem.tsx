@@ -9,6 +9,7 @@ import { GlobeAltIcon } from "@heroicons/react/24/outline";
 import { useScroll } from "../../hooks";
 import Image from "../Image";
 import { getFaviconURL } from "./utils";
+import { BsGlobe } from "react-icons/bs";
 dayjs.extend(relativeTime);
 
 export const HistoryListItem = ({
@@ -20,7 +21,7 @@ export const HistoryListItem = ({
   // const ref = useScroll(selected);
   // is it fine to be used like this???
   const ref = useScroll(selected);
-  const FallBackIcon = <GlobeAltIcon className="list-item-icon"/>
+  const FallBackIcon = <BsGlobe className="list-item-icon"/>
 
   const getHumanTime = (time: number) => {
     // need to use native relative time

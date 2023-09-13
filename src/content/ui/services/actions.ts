@@ -1,35 +1,55 @@
-import { ActionData, Message, MessagePlayload, Icon } from "@common/types";
+import { ActionData, Message, MessagePlayload } from "@common/types";
 
 import { sendMessageToBackground } from "../utils";
-import {
-  DocumentDuplicateIcon,
-  EyeSlashIcon,
-  GlobeAmericasIcon,
-  SquaresPlusIcon,
-  WindowIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
 
-export function getActionsIcon(message: Message): Icon {
+import {
+  BsFillPlusCircleFill,
+  BsWindowPlus,
+  BsIncognito,
+  BsWindowX,
+  BsFiles,
+  BsXCircleFill,
+  BsXSquareFill,
+  BsFacebook,
+  BsGithub,
+  BsGoogle,
+  BsYoutube,
+  BsTwitter,
+  BsGlobe,
+} from "react-icons/bs";
+
+export function getActionsIcon(message: Message) {
   // return MagnifyingGlassIcon;
 
   switch (message) {
     case Message.OPEN_NEW_TAB:
-      return SquaresPlusIcon;
+      return BsFillPlusCircleFill;
     case Message.OPEN_NEW_WINDOW:
-      return WindowIcon;
+      return BsWindowPlus;
     case Message.OPEN_INCOGNITO_WINDOW:
-      return EyeSlashIcon;
+      return BsIncognito;
     case Message.CLOSE_CURRENT_TAB:
+      return BsXCircleFill;
     case Message.CLOSE_CURRENT_WINDOW:
+      return BsWindowX;
     case Message.CLOSE_OTHER_TABS:
       // for now
-      return XMarkIcon;
+      return BsXSquareFill;
 
     case Message.DUPLICATE_TAB:
-      return DocumentDuplicateIcon;
+      return BsFiles;
+    case Message.OPEN_FACEBOOK:
+      return BsFacebook;
+    case Message.OPEN_GITHUB:
+      return BsGithub;
+    case Message.OPEN_GOOGLE:
+      return BsGoogle;
+    case Message.OPEN_YOUTUBE:
+      return BsYoutube;
+    case Message.OPEN_TWITTER:
+      return BsTwitter;
     default:
-      return GlobeAmericasIcon;
+      return BsGlobe;
   }
 }
 

@@ -5,6 +5,7 @@ import { StarIcon } from "@heroicons/react/24/solid";
 import { getFaviconURL, getHostname } from "./utils";
 import { useScroll } from "../../hooks";
 import Image from "../Image";
+import { BsStarFill } from "react-icons/bs";
 
 export const BookmarkListItem = ({
   data,
@@ -13,7 +14,7 @@ export const BookmarkListItem = ({
   selected,
 }: ListItemProps<BookmarkData>) => {
   const ref = useScroll(selected);
-  const FallBackIcon =  <StarIcon className="list-item-star" />
+  const FallBackIcon =  <BsStarFill className="list-item-star" />
   return (
     <div
       className={selected ? "list-item-selected" : "list-item"}
