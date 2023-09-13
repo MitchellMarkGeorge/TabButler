@@ -3,7 +3,6 @@ import Image from "../Image";
 import { TabData } from "@common/types";
 
 import { getHostname } from "./utils";
-import { GlobeAmericasIcon } from "@heroicons/react/24/solid";
 import { ListItemProps } from "./ListItem";
 import { useScroll } from "../../hooks";
 import { BsGlobeAmericas } from "react-icons/bs";

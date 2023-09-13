@@ -9,6 +9,7 @@ import {
   OpenHistoryItemPayload,
   SearchPayload,
   OpenNewTabWithUrlPayload,
+  ActionPayload,
 } from "../common/types";
 import { search } from "./search";
 import {
@@ -52,7 +53,7 @@ browser.commands.onCommand.addListener(() => {
       !isBrowserURL(currentTab.url)
     ) {
       const messagePayload: MessagePlayload = {
-        message: Message.TOGGLE_TAB_BUTLER_MODAL
+        message: Message.TOGGLE_TAB_BUTLER_MODAL,
       };
       browser.tabs.sendMessage(currentTab.id, messagePayload);
     }
@@ -167,6 +168,16 @@ browser.runtime.onMessage.addListener(
           browser.tabs.duplicate(sender.tab.id);
         }
         break;
+
+      case Message.WEB_SEARCH: {
+        console.log("here", messagePayload);
+        const { query } = messagePayload as ActionPayload;
+        if (query) {
+          browser.search.query({ text: query, disposition: "NEW_TAB" });
+          console.log("here");
+        }
+        break;
+      }
 
       case Message.CLOSE_DUPLICATE_TABS: {
         browser.tabs.query({}).then((tabs) => {

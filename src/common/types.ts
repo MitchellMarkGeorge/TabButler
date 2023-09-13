@@ -59,6 +59,8 @@ export const enum Message {
   OPEN_FACEBOOK = "open-facebook",
   OPEN_HISTORY_ITEM = "open-history-item",
 
+  WEB_SEARCH = "web-search",
+
   // when workspaces are implemented, related actions will be here
 
   ERROR = "error",
@@ -79,6 +81,12 @@ export const enum SearchMode {
 
 export interface MessagePlayload {
   message: Message;
+  // message: string
+  // data: TabData[]
+}
+
+export interface ActionPayload extends MessagePlayload {
+  query?: string
   // message: string
   // data: TabData[]
 }
@@ -149,6 +157,7 @@ export interface ActionData extends Data {
   message: Message; // the message that the action sends to the backgrpond sctipt
   // icon: Icon; // for now
   type: DataType.ACTION;
+  query?: string
 }
 
 export interface HistoryData extends Data {

@@ -4,9 +4,13 @@ import {
   Data,
   ScoredDataType,
   SearchResponse,
+  ActionData,
+  Message,
+  DataType,
 } from "@common/types";
 import { searchHistory, fetchAllTabs, searchBookmarks } from "../utils";
 import { actions } from "./actions";
+import { nanoid } from "nanoid";
 
 const DEFAULT_RESULT: Result<SearchResponse> = { data: null, hasError: false };
 const DEFAULT_FUZZINESS = 0.8;
@@ -29,10 +33,10 @@ export async function search(query: string): Promise<Result<SearchResponse>> {
     // TODO: do these all need to be in promises
     const [tabResults, actionResults, bookmarkResults, historyResults] =
       await Promise.all([
-        scoreData(query, tabs, ["title", "url"]),
+        scoreData(query, tabs, ["title", "url"]), // tab results should be boosted (increased by a percentage)
         scoreData(query, actions, "name"),
         scoreData(query, bookmarks, ["title", "url"]),
-        scoreData(query, history, ["title", "url"]),
+        scoreData(query, history, ["title", "url"]), // might also be boosted
       ]);
     console.log("tabs", tabResults);
 
@@ -74,6 +78,33 @@ export async function search(query: string): Promise<Result<SearchResponse>> {
       },
       [],
     );
+
+    if (sections.length === 0 && sortedResult.length === 0) {
+      // if there are no results, return a default web search action
+      const webSearchAction: ActionData = {
+        id: nanoid(),
+        message: Message.WEB_SEARCH,
+        name: `Search for "${query}" in new tab`,
+        type: DataType.ACTION,
+        query, // think about this
+      };
+
+      const scoredAction = { data: webSearchAction, score: 1 };
+
+      const actionSection: SectionType = {
+        name: "Actions",
+        items: [scoredAction],
+        score: 1,
+      };
+
+      return {
+        hasError: false,
+        data: {
+          sections: [actionSection],
+          sortedResult: [scoredAction],
+        },
+      };
+    }
 
     return {
       hasError: false,

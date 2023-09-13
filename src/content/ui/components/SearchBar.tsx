@@ -1,5 +1,4 @@
 import React, { ElementRef, forwardRef } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { BsSearch } from "react-icons/bs";
 
 interface Props {

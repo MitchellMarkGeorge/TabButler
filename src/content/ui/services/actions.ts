@@ -1,4 +1,4 @@
-import { ActionData, Message, MessagePlayload } from "@common/types";
+import { ActionData, ActionPayload, Message } from "@common/types";
 
 import { sendMessageToBackground } from "../utils";
 
@@ -16,6 +16,7 @@ import {
   BsYoutube,
   BsTwitter,
   BsGlobe,
+  BsSearch,
 } from "react-icons/bs";
 
 export function getActionsIcon(message: Message) {
@@ -48,14 +49,19 @@ export function getActionsIcon(message: Message) {
       return BsYoutube;
     case Message.OPEN_TWITTER:
       return BsTwitter;
+
+    case Message.WEB_SEARCH:
+      return BsSearch;
     default:
       return BsGlobe;
   }
 }
 
 export const onActionItemClick = (action: ActionData) => {
-  const messagePayload: MessagePlayload = {
+  console.log("here", action.query);
+  const messagePayload: ActionPayload = {
     message: action.message,
+    query: action.query
   };
   sendMessageToBackground(messagePayload);
 };

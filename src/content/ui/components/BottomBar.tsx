@@ -1,7 +1,3 @@
-import {
-  ArrowUturnLeftIcon,
-  ArrowsUpDownIcon,
-} from "@heroicons/react/24/outline";
 import React from "react";
 import { BsArrowDownUp, BsArrowReturnLeft } from "react-icons/bs";
 

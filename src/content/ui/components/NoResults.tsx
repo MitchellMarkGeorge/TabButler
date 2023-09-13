@@ -1,4 +1,3 @@
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import React from 'react'
 import { BsSearch } from 'react-icons/bs'
 
