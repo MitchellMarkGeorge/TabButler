@@ -6,9 +6,9 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
+  gap: 0.5em;
+  padding: 0.5em 0.75em;
+  border-radius: 0.5em;
   cursor: pointer;
   overflow: auto;
 }
@@ -16,7 +16,7 @@
 .list-item-text {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.5em;
   width: 100%;
   flex: 1; // think about this
   min-width: 0; // think about this -> should this be a set value (100px??)
@@ -32,9 +32,14 @@
 }
 
 .list-item-image,
-.list-item-icon {
-  width: 1.5rem;
-  height: 1.5rem;
+.list-item-icon,
+.list-item-star {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.list-item-star {
+  color: variables.$gold;
 }
 
 .list-item-icon {

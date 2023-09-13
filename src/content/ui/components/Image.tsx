@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Icon } from "@common/types";
 
 interface Props {
   src: string | null;
-  fallbackIcon: Icon;
+  fallbackIcon: React.JSX.Element;
   className?: string;
 }
 
@@ -16,7 +15,7 @@ export default function Image(props: Props) {
   };
 
   return hasError || !src ? (
-    <FallBackIcon className={className} />
+    FallBackIcon
   ) : (
     <img src={src} className={className} onError={onError} />
   );

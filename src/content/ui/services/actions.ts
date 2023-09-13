@@ -1,33 +1,41 @@
 import { ActionData, Message, MessagePlayload, Icon } from "@common/types";
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 
-import browser from "webextension-polyfill";
-
-export const searchActions = (searchValue: string, data: ActionData[]) => {
-  if (searchValue) {
-    return data.filter((action) =>
-      action.name.toLowerCase().includes(searchValue.toLowerCase()),
-    );
-  } else {
-    return data;
-  }
-};
+import { sendMessageToBackground } from "../utils";
+import {
+  DocumentDuplicateIcon,
+  EyeSlashIcon,
+  GlobeAmericasIcon,
+  SquaresPlusIcon,
+  WindowIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 
 export function getActionsIcon(message: Message): Icon {
-  return MagnifyingGlassIcon;
-  // switch (action.message) {
-  //   case value:
-      
-  //     break;
-  
-  //   default:
-  //     break;
-  // }
+  // return MagnifyingGlassIcon;
+
+  switch (message) {
+    case Message.OPEN_NEW_TAB:
+      return SquaresPlusIcon;
+    case Message.OPEN_NEW_WINDOW:
+      return WindowIcon;
+    case Message.OPEN_INCOGNITO_WINDOW:
+      return EyeSlashIcon;
+    case Message.CLOSE_CURRENT_TAB:
+    case Message.CLOSE_CURRENT_WINDOW:
+    case Message.CLOSE_OTHER_TABS:
+      // for now
+      return XMarkIcon;
+
+    case Message.DUPLICATE_TAB:
+      return DocumentDuplicateIcon;
+    default:
+      return GlobeAmericasIcon;
+  }
 }
 
 export const onActionItemClick = (action: ActionData) => {
   const messagePayload: MessagePlayload = {
     message: action.message,
   };
-  browser.runtime.sendMessage(messagePayload);
+  sendMessageToBackground(messagePayload);
 };

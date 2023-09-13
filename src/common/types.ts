@@ -40,6 +40,7 @@ export const enum Message {
   CLOSE_CURRENT_TAB = "close-current-tab",
   CLOSE_CURRENT_WINDOW = "close-current-window",
   OPEN_NEW_TAB = "open-new-tab",
+  OPEN_NEW_TAB_WITH_URL = "open-new-tab-with-url",
   OPEN_NEW_WINDOW = "open-new-window",
   OPEN_INCOGNITO_WINDOW = "open-incognito-window",
 
@@ -111,6 +112,11 @@ export interface UpdatedTabDataPayload extends MessagePlayload {
 
 export interface OpenHistoryItemPayload extends MessagePlayload {
   message: Message.OPEN_HISTORY_ITEM;
+  url: string;
+}
+
+export interface OpenNewTabWithUrlPayload extends MessagePlayload {
+  message: Message.OPEN_NEW_TAB_WITH_URL;
   url: string;
 }
 

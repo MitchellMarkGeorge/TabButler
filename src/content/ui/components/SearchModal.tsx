@@ -1,6 +1,6 @@
 // import createCache from "@emotion/cache";
 // import { CacheProvider, css, Global } from "@emotion/react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { ElementRef, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../styles/styles.scss?inline";
 import SearchBar from "./SearchBar";
 // import NoResults from "./NoResults";
@@ -8,6 +8,7 @@ import Section from "./Section";
 import {
   ActionData,
   BookmarkData,
+  Data,
   DataType,
   HistoryData,
   ScoredDataType,
@@ -23,6 +24,10 @@ import { HistoryListItem } from "./ListItems/HistoryListItem";
 import { BookmarkListItem } from "./ListItems/BookmarkListItem";
 import Error from "./Error";
 import NoResults from "./NoResults";
+import { onActionItemClick } from "../services/actions";
+import { onTabItemClick } from "../services/tabs";
+import { onHistoryItemClick } from "../services/history";
+import { onBookmarkItemClick } from "../services/bookmarks";
 // import { action } from "webextension-polyfill";
 // import Error from "./Error";
 
@@ -120,6 +125,13 @@ export const SearchModal = (props: Props) => {
     } else return null;
   }, [selectedId]);
 
+  const inputRef = useRef<ElementRef<"input">>(null);
+
+  useEffect(() => {
+    // focus the input on mount
+    inputRef.current?.focus();
+  }, []);
+
   // think about this - perfomance implecations and general readability
   // this should return a sorted list of all the id of the items (sorted by score)
   // const sortedIdList = useMemo(
@@ -143,6 +155,17 @@ export const SearchModal = (props: Props) => {
   // };
 
   // const itemIdMap = useMemo(buildItemIdMap, [resultSections]);
+  const onSubmit = (data: Data) => {
+    if (data.type === DataType.TAB) {
+      onTabItemClick(data as TabData)
+    } else if (data.type === DataType.ACTION) {
+      onActionItemClick(data as ActionData);
+    } else if (data.type === DataType.BOOKMARK) {
+      onBookmarkItemClick(data as BookmarkData);
+    } else if (data.type === DataType.HISTORY) {
+      onHistoryItemClick(data as HistoryData);
+    }
+  }
 
   const onKeyDown = (event: KeyboardEvent) => {
     // circular navigation might confuse users
@@ -155,17 +178,25 @@ export const SearchModal = (props: Props) => {
       if (indexOfSelected !== 0) {
         nextIndex = indexOfSelected - 1;
         setSelectedId(resultList[nextIndex].data.id);
+      } else {
+        nextIndex = resultList.length - 1;
+        setSelectedId(resultList[nextIndex].data.id);
       }
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       if (indexOfSelected !== resultList.length - 1) {
         nextIndex = indexOfSelected + 1;
         setSelectedId(resultList[nextIndex].data.id);
+      } else {
+        nextIndex = 0;
+        setSelectedId(resultList[nextIndex].data.id);
       }
     } else if (event.key === "Enter") {
       event.preventDefault();
-      console.log(resultList[indexOfSelected].data);
-      // onSubmit();
+      const data = resultList[indexOfSelected].data;
+      console.log(data);
+      onSubmit(data);
+      props.close()
     }
   };
 
@@ -194,9 +225,9 @@ export const SearchModal = (props: Props) => {
   });
 
   const renderBody = () => {
-    if (resultSections === null) return null;
     if (hasError) return <Error />;
-    if (resultSections.length === 0) return <NoResults searchQuery="test" />; // for now
+    if (resultSections === null) return null;
+    if (resultSections.length === 0) return <NoResults searchQuery={inputRef.current?.value || ""}/>; // for now
     return (
       <>
         {renderSections(resultSections)}
@@ -218,6 +249,7 @@ export const SearchModal = (props: Props) => {
                     data={data as ActionData}
                     onHover={() => setSelectedId(data.id)}
                     selected={selectedId === data.id}
+                    onClick={onClickFactory(onActionItemClick)}
                   />
                 );
               } else if (data.type === DataType.TAB) {
@@ -227,6 +259,7 @@ export const SearchModal = (props: Props) => {
                     data={data as TabData}
                     onHover={() => setSelectedId(data.id)}
                     selected={selectedId === data.id}
+                    onClick={onClickFactory(onTabItemClick)}
                   />
                 );
               } else if (data.type === DataType.HISTORY) {
@@ -236,6 +269,7 @@ export const SearchModal = (props: Props) => {
                     data={data as HistoryData}
                     onHover={() => setSelectedId(data.id)}
                     selected={selectedId === data.id}
+                    onClick={onClickFactory(onHistoryItemClick)}
                   />
                 );
               } else if (data.type === DataType.BOOKMARK) {
@@ -245,6 +279,7 @@ export const SearchModal = (props: Props) => {
                     data={data as BookmarkData}
                     onHover={() => setSelectedId(data.id)}
                     selected={selectedId === data.id}
+                    onClick={onClickFactory(onBookmarkItemClick)}
                   />
                 );
               }
@@ -257,30 +292,50 @@ export const SearchModal = (props: Props) => {
 
   const onInputChange = debounce((query: string) => {
     if (query) {
-      search(query).then((result) => {
-        console.log(result);
-        if (result.hasError) {
+      search(query)
+        .then((result) => {
+          // if the the input is currently empty, dont try and and set the result/render an error
+          if (!inputRef.current?.value) return;
+          console.log(result);
+          if (result.hasError) {
+            setError(true);
+          } else if (result.data !== null) {
+            console.log(result.data);
+            const { sections, sortedResult } = result.data;
+            setResultSections(sections);
+            setResultList(sortedResult);
+            // select the first item
+            if (sortedResult.length === 0) {
+              setSelectedId(null);
+            } else {
+              setSelectedId(sortedResult[0].data.id);
+            }
+            // result.data && setResultSections(result.data);
+          }
+        })
+        .catch((err) => {
+          console.log("here is the err", err);
+          console.log("here in the catch");
           setError(true);
-        } else if (result.data !== null) {
-          console.log(result.data);
-          const { sections, sortedResult } = result.data;
-          setResultSections(sections);
-          setResultList(sortedResult);
-          // select the first item
-          setSelectedId(sortedResult[0].data.id || null);
-          // result.data && setResultSections(result.data);
-        }
-      });
+        });
     }
   }, 300);
+
+  const onClickFactory = <T,>(func: (data: T) => void) => {
+    return (data: T) => {
+      func(data);
+      props.close();
+    }
+  }
   return (
     <>
       <style>{styles}</style>
       <div className="modal-body">
         <SearchBar
+          ref={inputRef}
           onChange={(query) => {
             // think about this
-            if (!query && resultSections?.length) {
+            if (!query) {
               setResultSections(null);
             } else {
               onInputChange(query);

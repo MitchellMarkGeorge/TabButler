@@ -1,4 +1,4 @@
-import React, { useRef, ElementRef, useEffect } from "react";
+import React, { ElementRef, forwardRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
 interface Props {
@@ -7,23 +7,19 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-export default function SearchBar(props: Props) {
-  const inputRef = useRef<ElementRef<"input">>(null);
-
-  useEffect(() => {
-    // focus the input on mount
-    inputRef.current?.focus();
-  }, []);
+const SearchBar = forwardRef<ElementRef<"input">, Props>((props: Props, ref) => {
 
   return (
     <div className="search-bar">
       <MagnifyingGlassIcon className="search-bar-icon" />
       <input
-        ref={inputRef}
+        ref={ref}
         onChange={(event) => props.onChange(event.target.value)}
         className="search-bar-input text-base"
         placeholder="Search for browser tabs, actions, history, bookmarks..."
       />
     </div>
   );
-}
+});
+
+export default SearchBar;

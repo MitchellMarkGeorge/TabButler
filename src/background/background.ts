@@ -8,14 +8,16 @@ import {
   GivenTabPayload,
   OpenHistoryItemPayload,
   SearchPayload,
+  OpenNewTabWithUrlPayload,
 } from "../common/types";
 import { search } from "./search";
 import {
   checkCommands,
   getCurrentTab,
+  injectExtension,
   // fetchAllTabs,
   // searchHistory,
-  injectExtension,
+  // injectExtension,
 } from "./utils";
 import browser from "webextension-polyfill";
 
@@ -36,7 +38,7 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
         browser.tabs.create({ url: welcomeUrl.toString() });
       });
     }
-    injectExtension();
+    injectExtension(); // need to fix this
   }
 });
 
@@ -116,6 +118,12 @@ browser.runtime.onMessage.addListener(
       case Message.OPEN_NEW_TAB:
         browser.tabs.create({ active: true });
         break;
+
+      case Message.OPEN_NEW_TAB_WITH_URL: {
+        const { url } = messagePayload as OpenNewTabWithUrlPayload;
+        browser.tabs.create({ active: true, url });
+        break;
+      }
 
       case Message.OPEN_NEW_WINDOW:
       case Message.OPEN_INCOGNITO_WINDOW:

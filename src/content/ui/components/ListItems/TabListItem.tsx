@@ -2,7 +2,7 @@ import React from "react";
 import Image from "../Image";
 import { TabData } from "@common/types";
 
-import { getHostname } from "./utls";
+import { getHostname } from "./utils";
 import { GlobeAmericasIcon } from "@heroicons/react/24/solid";
 import { ListItemProps } from "./ListItem";
 import { useScroll } from "../../hooks";
@@ -11,19 +11,21 @@ export const TabListItem = ({
   data,
   onHover,
   selected,
+  onClick
 }: ListItemProps<TabData>) => {
   const ref = useScroll(selected);
+  const FallbackIcon = <GlobeAmericasIcon className="list-item-icon"/>
   return (
     <div
       className={selected ? "list-item-selected" : "list-item"}
-      // onClick={() => onClick(data)}
+      onClick={() => onClick(data)}
       onMouseOver={onHover}
       ref={ref}
     >
       <Image
         className="list-item-icon"
         src={data.favIcon}
-        fallbackIcon={GlobeAmericasIcon}
+        fallbackIcon={FallbackIcon}
       />
       <div className="list-item-text">
         <div className="list-item-title text-sm">{data.title}</div>

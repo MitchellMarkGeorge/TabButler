@@ -7,7 +7,7 @@ import { useScroll } from "../../hooks";
 
 export const ActionListItem = ({
   data,
-  // onClick,
+  onClick,
   onHover,
   selected,
 }: ListItemProps<ActionData>) => {
@@ -15,7 +15,7 @@ export const ActionListItem = ({
   const ref = useScroll(selected);
   return (
     <div className={selected ? "list-item-selected" : "list-item"}
-      // onClick={() => onClick(data)}
+      onClick={() => onClick(data)}
       onMouseOver={onHover}
       ref={ref}
     >

@@ -9,8 +9,8 @@ import { searchHistory, fetchAllTabs, searchBookmarks } from "../utils";
 import { actions } from "./actions";
 
 const DEFAULT_RESULT: Result<SearchResponse> = { data: null, hasError: false };
-const DEFAULT_FUZZINESS = 0.9;
-const DEFAULT_SCORE_THRESHOLD = 0.3;
+const DEFAULT_FUZZINESS = 0.8;
+const DEFAULT_SCORE_THRESHOLD = 0.4;
 
 export async function search(query: string): Promise<Result<SearchResponse>> {
   // export async function search(query: string): Promise<Result<Data[]>> {

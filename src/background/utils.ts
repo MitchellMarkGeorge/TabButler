@@ -93,7 +93,7 @@ export async function fetchAllTabs() {
         windowId: tab.windowId,
         favIcon: tab.favIconUrl || null,
         title: tab.title as string, // we know this will be present
-        url: cleanTabUrl(tab.url),
+        url: cleanTabUrl(tab.url), // think about this (should be good for search)
       });
     }
   }

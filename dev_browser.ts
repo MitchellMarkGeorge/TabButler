@@ -5,6 +5,7 @@ import path from 'path';
   const pathToExtension = path.join(process.cwd(), 'dist');
   const browser = await puppeteer.launch({
     headless: false,
+
     
     args: [
       `--disable-extensions-except=${pathToExtension}`,
