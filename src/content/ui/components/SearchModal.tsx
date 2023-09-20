@@ -208,6 +208,7 @@ export const SearchModal = (props: Props) => {
     }
   };
 
+  // SHOULD I ADD THESE LISTENERS TO THE INPUT INSTEAD??
   const addListeners = () => {
     document.addEventListener("keydown", closeOnEscape, true);
     // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view

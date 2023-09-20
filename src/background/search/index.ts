@@ -33,6 +33,7 @@ export async function search(query: string): Promise<Result<SearchResponse>> {
     // TODO: do these all need to be in promises
     const [tabResults, actionResults, bookmarkResults, historyResults] =
       await Promise.all([
+        // scoreData(query, tabs, ["title", "url"], 0.15), // tab results should be boosted (increased by a percentage)
         scoreData(query, tabs, ["title", "url"]), // tab results should be boosted (increased by a percentage)
         scoreData(query, actions, "name"),
         scoreData(query, bookmarks, ["title", "url"]),
@@ -123,6 +124,7 @@ function scoreData<T extends Data>(
   query: string,
   data: T[],
   keys: keyof T | Array<keyof T>,
+  boostPercentage?: number
 ) {
   const dataLength = data.length;
   let results: ScoredDataType[] = [];
@@ -130,8 +132,12 @@ function scoreData<T extends Data>(
   if (!Array.isArray(keys)) {
     for (let i = 0; i < dataLength; i++) {
       const item = data[i];
-      const score = matchScore(query, item[keys] as string);
+      let score = matchScore(query, item[keys] as string);
       if (score < DEFAULT_SCORE_THRESHOLD) continue;
+      if (boostPercentage !== undefined) {
+        // think about this
+        score += score * boostPercentage; // get the percentage and add it to the score 
+      }
       results.push({ score, data: item });
     }
   } else {
@@ -148,6 +154,10 @@ function scoreData<T extends Data>(
         }
       }
       if (maxScore === 0 || maxScore < DEFAULT_SCORE_THRESHOLD) continue;
+      if (boostPercentage !== undefined) {
+        // think about this
+        maxScore += maxScore * boostPercentage; // get the percentage and add it to the score 
+      }
       results.push({ score: maxScore, data: item });
     }
   }
