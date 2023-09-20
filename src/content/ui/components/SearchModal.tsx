@@ -167,9 +167,14 @@ export const SearchModal = (props: Props) => {
     }
   }
 
-  const onKeyDown = (event: KeyboardEvent) => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     // circular navigation might confuse users
     let nextIndex = 0;
+    if (event.key === "Escape") {
+      event.stopPropagation();
+      props.close();
+      return;
+    }
     // const selectedListIdIndex = sortedIdList.indexOf(selectedId);
     if (resultList === null || indexOfSelected === null) return;
     // using tab caused some issues
@@ -200,30 +205,30 @@ export const SearchModal = (props: Props) => {
     }
   };
 
-  const closeOnEscape = (event: KeyboardEvent) => {
-    // this is neccessary to stop some sites from preventing some key strokes from being registered
-    event.stopPropagation();
-    if (event.key === "Escape") {
-      props.close();
-    }
-  };
+  // const closeOnEscape = (event: KeyboardEvent) => {
+  //   // this is neccessary to stop some sites from preventing some key strokes from being registered
+  //   event.stopPropagation();
+  //   if (event.key === "Escape") {
+  //     props.close();
+  //   }
+  // };
 
   // SHOULD I ADD THESE LISTENERS TO THE INPUT INSTEAD??
-  const addListeners = () => {
-    document.addEventListener("keydown", closeOnEscape, true);
-    // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view
-    document.addEventListener("keydown", onKeyDown, true);
-  };
+  // const addListeners = () => {
+  //   document.addEventListener("keydown", closeOnEscape, true);
+  //   // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view
+  //   document.addEventListener("keydown", onKeyDown, true);
+  // };
 
-  const removeListeners = () => {
-    document.removeEventListener("keydown", closeOnEscape, true);
-    document.removeEventListener("keydown", onKeyDown, true);
-  };
+  // const removeListeners = () => {
+  //   document.removeEventListener("keydown", closeOnEscape, true);
+  //   document.removeEventListener("keydown", onKeyDown, true);
+  // };
 
-  useEffect(() => {
-    addListeners();
-    return removeListeners;
-  });
+  // useEffect(() => {
+  //   addListeners();
+  //   return removeListeners;
+  // });
 
   const renderBody = () => {
     if (hasError) return <Error />;
@@ -335,6 +340,7 @@ export const SearchModal = (props: Props) => {
       <div className="modal-body">
         <SearchBar
           ref={inputRef}
+          onKeyDown={onKeyDown}
           onChange={(query) => {
             // think about this
             if (!query) {
