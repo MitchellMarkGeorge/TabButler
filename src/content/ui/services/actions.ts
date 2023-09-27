@@ -58,7 +58,7 @@ export function getActionsIcon(message: Message) {
 }
 
 export const onActionItemClick = (action: ActionData) => {
-  console.log("here", action.query);
+  // console.log("here", action.query);
   const messagePayload: ActionPayload = {
     message: action.message,
     query: action.query

@@ -81,7 +81,7 @@ const unmountOnClick = (event: MouseEvent) => {
 };
 
 function shutdownScript() {
-  console.log("shutting down");
+  // console.log("shutting down");
   unmountModal();
   // remove the listener to so it can't be triggered again
   // this prevents any old content scripts in the tab from being triggered in the tab

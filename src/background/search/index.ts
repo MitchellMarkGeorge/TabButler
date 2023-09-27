@@ -13,33 +13,33 @@ import { actions } from "./actions";
 import { nanoid } from "nanoid";
 
 const DEFAULT_RESULT: Result<SearchResponse> = { data: null, hasError: false };
-const DEFAULT_FUZZINESS = 0.8;
+const DEFAULT_FUZZINESS = 0.9;
 const DEFAULT_SCORE_THRESHOLD = 0.4;
 
 export async function search(query: string): Promise<Result<SearchResponse>> {
   // export async function search(query: string): Promise<Result<Data[]>> {
   if (!query) return DEFAULT_RESULT;
   try {
-    console.log("query: ", query);
+    // console.log("query: ", query);
     const [history, bookmarks, tabs] = await Promise.all([
       searchHistory(query),
       searchBookmarks(query),
       fetchAllTabs(),
     ]);
 
-    console.log("history", history);
-    console.log("bookmarks", bookmarks);
+    // console.log("history", history);
+    // console.log("bookmarks", bookmarks);
 
     // TODO: do these all need to be in promises
     const [tabResults, actionResults, bookmarkResults, historyResults] =
       await Promise.all([
-        // scoreData(query, tabs, ["title", "url"], 0.15), // tab results should be boosted (increased by a percentage)
-        scoreData(query, tabs, ["title", "url"]), // tab results should be boosted (increased by a percentage)
+        scoreData(query, tabs, ["title", "url"], 0.15), // tab results should be boosted (increased by a percentage)
+        // scoreData(query, tabs, ["title", "url"]), // tab results should be boosted (increased by a percentage)
         scoreData(query, actions, "name"),
         scoreData(query, bookmarks, ["title", "url"]),
         scoreData(query, history, ["title", "url"]), // might also be boosted
       ]);
-    console.log("tabs", tabResults);
+    // console.log("tabs", tabResults);
 
     const tabSection: SectionType = {
       items: tabResults.results,
@@ -115,7 +115,7 @@ export async function search(query: string): Promise<Result<SearchResponse>> {
       },
     };
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return { hasError: true, data: null };
   }
 }
@@ -181,6 +181,8 @@ function scoreData<T extends Data>(
   // is it the average score of all top 20 results or is if the average score of everything
 }
 
+// TODO need tore evaluate this... not providing the best results
+// eg: would rather return history items then tabs or just wont return tabs at all
 function matchScore(
   query: string,
   target: string,

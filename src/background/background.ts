@@ -23,7 +23,6 @@ import {
 import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
-  console.log(reason);
   if (reason === "install" || reason === "update") {
     // opening the welcome page first buys the extension time to inject into the avalible pages
     if (reason === "install") {
@@ -174,7 +173,6 @@ browser.runtime.onMessage.addListener(
         const { query } = messagePayload as ActionPayload;
         if (query) {
           browser.search.query({ text: query, disposition: "NEW_TAB" });
-          console.log("here");
         }
         break;
       }

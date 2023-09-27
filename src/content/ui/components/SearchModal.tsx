@@ -28,6 +28,7 @@ import { onActionItemClick } from "../services/actions";
 import { onTabItemClick } from "../services/tabs";
 import { onHistoryItemClick } from "../services/history";
 import { onBookmarkItemClick } from "../services/bookmarks";
+import FocusTrap from "focus-trap-react";
 // import { action } from "webextension-polyfill";
 // import Error from "./Error";
 
@@ -169,9 +170,10 @@ export const SearchModal = (props: Props) => {
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     // circular navigation might confuse users
+    // this is needed to prevent some sites from trying to overide the key
+      event.stopPropagation();
     let nextIndex = 0;
     if (event.key === "Escape") {
-      event.stopPropagation();
       props.close();
       return;
     }
@@ -199,7 +201,7 @@ export const SearchModal = (props: Props) => {
     } else if (event.key === "Enter") {
       event.preventDefault();
       const data = resultList[indexOfSelected].data;
-      console.log(data);
+      // console.log(data);
       onSubmit(data);
       props.close()
     }
@@ -303,7 +305,7 @@ export const SearchModal = (props: Props) => {
         .then((result) => {
           // if the the input is currently empty, dont try and and set the result/render an error
           if (!inputRef.current?.value) return;
-          console.log(result);
+          // console.log(result);
           if (result.hasError) {
             setError(true);
           } else if (result.data !== null) {
@@ -320,9 +322,9 @@ export const SearchModal = (props: Props) => {
             // result.data && setResultSections(result.data);
           }
         })
-        .catch((err) => {
-          console.log("here is the err", err);
-          console.log("here in the catch");
+        .catch(() => {
+          // console.log("here is the err", err);
+          // console.log("here in the catch");
           setError(true);
         });
     }
@@ -337,6 +339,7 @@ export const SearchModal = (props: Props) => {
   return (
     <>
       <style>{styles}</style>
+      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
       <div className="modal-body">
         <SearchBar
           ref={inputRef}
@@ -358,6 +361,7 @@ export const SearchModal = (props: Props) => {
           </>
         )} */}
       </div>
+      </FocusTrap>
     </>
   );
 };

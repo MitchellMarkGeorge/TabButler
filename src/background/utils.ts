@@ -34,7 +34,6 @@ export async function getTabsWithSearchOpen(): Promise<number[]> {
     active: true,
     status: "complete",
   }); // can only communicate with tabs that are completely loaded
-  console.log(activeTabs);
   const activeTabsLength = activeTabs.length;
   const result: number[] = [];
   for (let i = 0; i < activeTabsLength; i++) {

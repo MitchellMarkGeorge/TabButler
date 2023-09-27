@@ -15,7 +15,10 @@ const SearchBar = forwardRef<ElementRef<"input">, Props>((props: Props, ref) => 
       <BsSearch className="search-bar-icon" />
       <input
         ref={ref}
-        onChange={(event) => props.onChange(event.target.value)}
+        onChange={(event) => {
+          event.stopPropagation();
+          props.onChange(event.target.value) }
+        }
         onKeyDown={props.onKeyDown}
         className="search-bar-input text-base"
         placeholder="Search for browser tabs, actions, history, bookmarks..."
