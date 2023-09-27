@@ -2,6 +2,7 @@ export const isFirefox = () => navigator.userAgent.includes("Firefox");
 export const isChrome = () => navigator.userAgent.includes("Chrome");
 
 export function isBrowserURL(url: string) {
+  if (url === "about:blank") return true;
   if (isChrome()) return isChromeURL(url);
   if (isFirefox()) return isFirefoxURL(url);
 }

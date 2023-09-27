@@ -6,7 +6,14 @@
   "version": "1.0.0.6",
   "version_name": "1.0.0-beta.4",
   "description": "A tab manager at your service.",
-  "permissions": ["tabs", "scripting", "history"],
+  "permissions": ["tabs", "scripting", "history", "bookmarks", "favicon", "search"],
+  "web_accessible_resources": [
+    {
+      "resources": ["_favicon/*"],
+      "matches": ["<all_urls>"],
+      "extension_ids": ["*"]
+    }
+  ],
   "host_permissions": ["<all_urls>"],
   "offline_enabled": true,
   "icons": {
@@ -32,25 +39,7 @@
         "windows": "Ctrl+Shift+Space",
         "linux": "Ctrl+Shift+Space"
       },
-      "description": "Toggle the Tab Search Modal in the current tab"
-    },
-    "toggle-tab-actions": {
-      "suggested_key": {
-        "default": "Alt+Shift+Space",
-        "windows": "Alt+Shift+K",
-        "linux": "Alt+Shift+K",
-        "mac": "Alt+Shift+Space"
-      },
-      "description": "Toggle Tab Actions Modal in the current tab"
-    },
-    "toggle-tab-history": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+H",
-        "mac": "MacCtrl+Shift+H",
-        "windows": "Ctrl+Shift+H",
-        "linux": "Ctrl+Shift+H"
-      },
-      "description": "Toggle Tab History Modal in the current tab"
+      "description": "Toggle the Tab Butler Modal in the current tab"
     }
   }
 }

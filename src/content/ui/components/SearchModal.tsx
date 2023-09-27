@@ -1,87 +1,367 @@
 // import createCache from "@emotion/cache";
 // import { CacheProvider, css, Global } from "@emotion/react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Data, SearchMode } from "@common/types";
-import { SearchModalContext, SearchModalContextType } from "./SearchModalContext";
-import { SearchViewContainer } from "./SearchViewContainer";
-import { ModalBody } from "./utils";
+import React, { ElementRef, useEffect, useMemo, useRef, useState } from "react";
 import styles from "../styles/styles.scss?inline";
-// import { SideBar } from "./SideBar";
-// will release tab filters first
+import SearchBar from "./SearchBar";
+// import NoResults from "./NoResults";
+import Section from "./Section";
+import {
+  ActionData,
+  BookmarkData,
+  Data,
+  DataType,
+  HistoryData,
+  ScoredDataType,
+  SectionType,
+  TabData,
+} from "@common/types";
+import { ActionListItem } from "./ListItems/ActionListItem";
+import { BottomBar } from "./BottomBar";
+import { TabListItem } from "./ListItems/TabListItem";
+import debounce from "lodash.debounce";
+import { search } from "../services/search";
+import { HistoryListItem } from "./ListItems/HistoryListItem";
+import { BookmarkListItem } from "./ListItems/BookmarkListItem";
+import Error from "./Error";
+import NoResults from "./NoResults";
+import { onActionItemClick } from "../services/actions";
+import { onTabItemClick } from "../services/tabs";
+import { onHistoryItemClick } from "../services/history";
+import { onBookmarkItemClick } from "../services/bookmarks";
+import FocusTrap from "focus-trap-react";
+// import { action } from "webextension-polyfill";
+// import Error from "./Error";
 
 export interface Props {
-  searchMode: SearchMode;
-  close: () => void; // function to completely unmount the modal
-  // this function is needed so that when the searchmode is changed inside the ui, the content.js file can know about it and update accordingly
-  // updateOutsideSearchMode: (searchMode: SearchMode) => void
+  close: () => void;
 }
+// const actions: ActionData[] = [
+//   {
+//     name: "New Tab",
+//     icon: PlusIcon,
+//     type: DataType.ACTION,
+//     id: nanoid(),
+//   },
+//   {
+//     name: "New Window",
+//     icon: FolderPlusIcon,
+//     type: DataType.ACTION,
+//     id: nanoid(),
+//   },
+//   {
+//     name: "Close tab",
+//     icon: XMarkIcon,
+//     type: DataType.ACTION,
+//     id: nanoid(),
+//   },
+// ];
+
+// const tabs: TabData[] = [
+//   {
+//     favIcon: null,
+//     type: DataType.TAB,
+//     tabId: 909,
+//     title: "Test",
+//     url: "https://test.com",
+//     windowId: 0,
+//     id: nanoid(),
+//   },
+
+//   {
+//     favIcon: null,
+//     type: DataType.TAB,
+//     tabId: 909,
+//     title: "Test",
+//     url: "https://test.com",
+//     windowId: 0,
+//     id: nanoid(),
+//   },
+
+//   {
+//     favIcon: null,
+//     type: DataType.TAB,
+//     tabId: 909,
+//     title: "Test",
+//     url: "https://test.com",
+//     windowId: 0,
+//     id: nanoid(),
+//   },
+// ];
+
+// const results: SectionType[] = [
+//   {
+//     name: "Tabs",
+//     items: tabs,
+//     matchScore: 0.9,
+//   },
+
+//   {
+//     name: "Actions",
+//     items: actions,
+//     matchScore: 0.72,
+//   },
+// ];
 
 // alternative to the style tag is a link tag with the chrome url to transpiled style sheet
 // i could also use jss https://cssinjs.org/setup?v=v10.9.2
 
 export const SearchModal = (props: Props) => {
-  const [currentSearchMode, setCurrentSearchMode] = useState<SearchMode>(
-    props.searchMode,
-  ); // make the inital value the searchMode that was passed in
-  // puting the loading state here so it can be put in the context
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [data, setData] = useState<Data[]>([]);
+  // focus trap
+  // const [searchQuery, setSearchQuery] = useState("");
+  // might need to rethink this (need an easy way to access the actual items and their ids)
+  // but for now having a seperate id array and id-dataItem map works
+  const [resultSections, setResultSections] = useState<SectionType[] | null>(
+    null,
+  ); // sorted array of sections
+  const [resultList, setResultList] = useState<ScoredDataType[] | null>(null);
+  const [hasError, setError] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const indexOfSelected = useMemo(() => {
+    if (resultList && selectedId) {
+      const foundId = resultList.findIndex(
+        ({ data }) => data.id === selectedId,
+      );
+      return foundId === -1 ? null : foundId;
+    } else return null;
+  }, [selectedId]);
+
+  const inputRef = useRef<ElementRef<"input">>(null);
 
   useEffect(() => {
-    // console.log("props.searchMode updated");
-    // only update the currentSearchmode if the incomming searchMode from the props is not the same as the current one
-    // on mount, the value of currentSearch mode is set from the props so it should not be set again
-    console.log("currentSearchMode", currentSearchMode);
-    console.log("props.searchMode", props.searchMode);
-    if (currentSearchMode !== props.searchMode) {
-      // console.log("setting currentSearchMode with props.searchMode");
-      // it is important to set loading to true here so that when the component rerenders after the currentSearchMode has changed, it renders the loading state, not the old data with incorrect components
-      // updates are batched together
-      // make a function that ties these 2 functions together
-      // the modal only works if these updates can be batched together so when the current search mode changes, it is already in a loading state so the incorrect data is not rendered
-
-      // no need to update the outer currentSearchMode as that is where the prop updates are comming from
-      setIsLoading(true);
-      console.log("setting loading to true...");
-      // loading is true as new data based on the new currentSearch mode is fetched
-      setCurrentSearchMode(props.searchMode);
-    }
-  }, [props.searchMode]); // with the side bar this use effect is not always triggered
-  // if you clik on a sidebar item and then try and switch with a shortcut, the useEffect is not triggered when the dependency array is [props.searchMode]
-  // it only works if [props] as the dependency... why?
-
-  const changeCurrentSearchMode = useCallback((newSearchMode: SearchMode) => {
-    // function that groups functionality together, including updating the outside searchMode
-    // props.updateOutsideSearchMode(newSearchMode);
-    setIsLoading(true);
-    setCurrentSearchMode(newSearchMode);
+    // focus the input on mount
+    inputRef.current?.focus();
   }, []);
 
-  // is this nessecary?
-  const contextValue = useMemo<SearchModalContextType>(
-    () => ({
-      close: props.close,
-      currentSearchMode,
-      // setCurrentSearchMode,
-      changeCurrentSearchMode,
-      setIsLoading,
-      isLoading,
-      setHasError,
-      hasError,
-      data,
-      setData,
-    }),
-    [props, currentSearchMode, isLoading, hasError, data],
-  ); // think about this - should i just use the object as is?
+  // think about this - perfomance implecations and general readability
+  // this should return a sorted list of all the id of the items (sorted by score)
+  // const sortedIdList = useMemo(
+  //   () =>
+  //     resultSections
+  //       .map((section) => section.items.map(({ data }) => data.id))
+  //       .flat(),
+  //   [resultSections],
+  // );
+  // console.log(sortedIdList);
 
+  // think about this - perfomance implecations and general readability
+  // const buildItemIdMap = () => {
+  //   const items = resultSections.map((section) => section.items).flat();
+  //   console.log(items);
+  //   const itemIdMap = new Map();
+  //   items.forEach(({ data }) => {
+  //     itemIdMap.set(data.id, data);
+  //   });
+  //   return itemIdMap;
+  // };
+
+  // const itemIdMap = useMemo(buildItemIdMap, [resultSections]);
+  const onSubmit = (data: Data) => {
+    if (data.type === DataType.TAB) {
+      onTabItemClick(data as TabData)
+    } else if (data.type === DataType.ACTION) {
+      onActionItemClick(data as ActionData);
+    } else if (data.type === DataType.BOOKMARK) {
+      onBookmarkItemClick(data as BookmarkData);
+    } else if (data.type === DataType.HISTORY) {
+      onHistoryItemClick(data as HistoryData);
+    }
+  }
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    // circular navigation might confuse users
+    // this is needed to prevent some sites from trying to overide the key
+      event.stopPropagation();
+    let nextIndex = 0;
+    if (event.key === "Escape") {
+      props.close();
+      return;
+    }
+    // const selectedListIdIndex = sortedIdList.indexOf(selectedId);
+    if (resultList === null || indexOfSelected === null) return;
+    // using tab caused some issues
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (indexOfSelected !== 0) {
+        nextIndex = indexOfSelected - 1;
+        setSelectedId(resultList[nextIndex].data.id);
+      } else {
+        nextIndex = resultList.length - 1;
+        setSelectedId(resultList[nextIndex].data.id);
+      }
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (indexOfSelected !== resultList.length - 1) {
+        nextIndex = indexOfSelected + 1;
+        setSelectedId(resultList[nextIndex].data.id);
+      } else {
+        nextIndex = 0;
+        setSelectedId(resultList[nextIndex].data.id);
+      }
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      const data = resultList[indexOfSelected].data;
+      // console.log(data);
+      onSubmit(data);
+      props.close()
+    }
+  };
+
+  // const closeOnEscape = (event: KeyboardEvent) => {
+  //   // this is neccessary to stop some sites from preventing some key strokes from being registered
+  //   event.stopPropagation();
+  //   if (event.key === "Escape") {
+  //     props.close();
+  //   }
+  // };
+
+  // SHOULD I ADD THESE LISTENERS TO THE INPUT INSTEAD??
+  // const addListeners = () => {
+  //   document.addEventListener("keydown", closeOnEscape, true);
+  //   // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view
+  //   document.addEventListener("keydown", onKeyDown, true);
+  // };
+
+  // const removeListeners = () => {
+  //   document.removeEventListener("keydown", closeOnEscape, true);
+  //   document.removeEventListener("keydown", onKeyDown, true);
+  // };
+
+  // useEffect(() => {
+  //   addListeners();
+  //   return removeListeners;
+  // });
+
+  const renderBody = () => {
+    if (hasError) return <Error />;
+    if (resultSections === null) return null;
+    // if there are no resdults you could render a section only for searching
+    if (resultSections.length === 0) return <NoResults searchQuery={inputRef.current?.value || ""}/>; 
+    return (
+      <>
+        {renderSections(resultSections)}
+        <BottomBar />
+      </>
+    );
+  };
+
+  const renderSections = (sections: SectionType[]) => {
+    return (
+      <div className="section-list">
+        {sections.map((section) => (
+          <Section name={section.name} key={section.name}>
+            {section.items.map(({ data }) => {
+              if (data.type === DataType.ACTION) {
+                return (
+                  <ActionListItem
+                    key={data.id}
+                    data={data as ActionData}
+                    onHover={() => setSelectedId(data.id)}
+                    selected={selectedId === data.id}
+                    onClick={onClickFactory(onActionItemClick)}
+                  />
+                );
+              } else if (data.type === DataType.TAB) {
+                return (
+                  <TabListItem
+                    key={data.id}
+                    data={data as TabData}
+                    onHover={() => setSelectedId(data.id)}
+                    selected={selectedId === data.id}
+                    onClick={onClickFactory(onTabItemClick)}
+                  />
+                );
+              } else if (data.type === DataType.HISTORY) {
+                return (
+                  <HistoryListItem
+                    key={data.id}
+                    data={data as HistoryData}
+                    onHover={() => setSelectedId(data.id)}
+                    selected={selectedId === data.id}
+                    onClick={onClickFactory(onHistoryItemClick)}
+                  />
+                );
+              } else if (data.type === DataType.BOOKMARK) {
+                return (
+                  <BookmarkListItem
+                    key={data.id}
+                    data={data as BookmarkData}
+                    onHover={() => setSelectedId(data.id)}
+                    selected={selectedId === data.id}
+                    onClick={onClickFactory(onBookmarkItemClick)}
+                  />
+                );
+              }
+            })}
+          </Section>
+        ))}
+      </div>
+    );
+  };
+
+  const onInputChange = debounce((query: string) => {
+    if (query) {
+      search(query)
+        .then((result) => {
+          // if the the input is currently empty, dont try and and set the result/render an error
+          if (!inputRef.current?.value) return;
+          // console.log(result);
+          if (result.hasError) {
+            setError(true);
+          } else if (result.data !== null) {
+            console.log(result.data);
+            const { sections, sortedResult } = result.data;
+            setResultSections(sections);
+            setResultList(sortedResult);
+            // select the first item
+            if (sortedResult.length === 0) {
+              setSelectedId(null);
+            } else {
+              setSelectedId(sortedResult[0].data.id);
+            }
+            // result.data && setResultSections(result.data);
+          }
+        })
+        .catch(() => {
+          // console.log("here is the err", err);
+          // console.log("here in the catch");
+          setError(true);
+        });
+    }
+  }, 300);
+
+  const onClickFactory = <T,>(func: (data: T) => void) => {
+    return (data: T) => {
+      func(data);
+      props.close();
+    }
+  }
   return (
-    <SearchModalContext.Provider value={contextValue}>
+    <>
       <style>{styles}</style>
-      <ModalBody>
-        {/* <SideBar /> */}
-        <SearchViewContainer />
-      </ModalBody>
-    </SearchModalContext.Provider>
+      <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
+      <div className="modal-body">
+        <SearchBar
+          ref={inputRef}
+          onKeyDown={onKeyDown}
+          onChange={(query) => {
+            // think about this
+            if (!query) {
+              setResultSections(null);
+            } else {
+              onInputChange(query);
+            }
+          }}
+        />
+        {renderBody()}
+        {/* {resultSections.length > 0 && (
+          <>
+            <div className="section-list">{renderSections(resultSections)}</div>
+            <BottomBar />
+          </>
+        )} */}
+      </div>
+      </FocusTrap>
+    </>
   );
 };

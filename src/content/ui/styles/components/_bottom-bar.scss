@@ -1,113 +1,55 @@
 @use "../variables" as variables;
+@use "./utils";
 
 .bottom-bar {
-  height: 20px;
-  /* min-height: 20px; */
-  /* max-height: 20px; */
-  width: 100%;
-  /* flex: none; */
-  /* padding: 8px; */
-  padding-left: 8px;
-  padding-right: 8px;
-  font-size: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.75em 1em;
+  // border-top: 1px solid variables.$gray-200;
+  gap: 1em;
+  // @include utils.dark-mode {
+  //   border-top: 1px solid variables.$gray-700;
+  // }
+}
+
+.bottom-bar-item {
   display: flex;
   align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-  /* column-gap: 8px; */
-  // color: rgba(255, 255, 255, 0.36);
-  color: variables.$primary_gray;
-  /* "medium" font weight */
-  font-weight: 510;
+  gap: 0.5em;
+}
 
-  kbd {
-    background-color: transparent;
-    border-radius: 4px;
-    // border: 1px solid rgba(255, 255, 255, 0.36);
-    border: 1px solid variables.$primary_gray;
-    display: inline-block;
-    line-height: 1;
-    padding: 2px 4px;
-    white-space: nowrap;
-    margin-right: 4px;
+.bottom-bar-item-icon-container {
+  height: 1.25em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.125em 0.25em;
+  border-radius: 0.25em;
+  border: 1px solid variables.$gray-200;
+  @include utils.dark-mode {
+    border: 1px solid variables.$gray-500;
+  }
+}
 
-    @media (prefers-color-scheme: light) {
-      color: #333;
-      background-color: #eee;
-      border: none;
-    }
+.bottom-bar-item-icon {
+  height: 0.75em;
+  width: 0.75em;
+}
+
+.bottom-bar-item-text {
+  font-weight: variables.$font-weight-semibold;
+}
+
+  .bottom-bar-item-icon,
+  .bottom-bar-item-text {
+    color: variables.$gray-400;
   }
 
-  .help-items,
-  .result-number,
-  .window-toggle {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    column-gap: 8px;
-  }
 
-  .result-number,
-  .window-toggle {
-    font-size: 12px;
-  }
-
-  .window-toggle {
-    column-gap: 4px;
-  }
-
-  .window-toggle label {
-    cursor: pointer;
-  }
-
-  .window-toggle input {
-    /* opacity: 0;
-    position: absolute; */
-    /* not sure about this */
-    /* need to find way to style this checkbox */
-    appearance: none;
-    -moz-appearance: none;
-    height: 14px;
-    width: 14px;
-    cursor: pointer;
-    background-color: transparent;
-    /* background-color: rgba(255, 255, 255, 0.36); */
-    display: inline-block;
-    line-height: 1;
-    padding: 2px 4px;
-    border-radius: 4px;
-    // border: 1px solid rgba(255, 255, 255, 0.36);
-    border: 1px solid variables.$primary_gray;
-    margin: 0;
-  }
-
-  .window-toggle input:focus {
-    outline: none;
-  }
-
-  .window-toggle input:checked {
-    // background-color: #3182ce;
-    background-color: variables.$primary_blue;
-    border: none;
-  }
-  .window-toggle input:checked::after {
-    /* style for the check mark */
-    content: "\2713";
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    // color: #f7fafc;
-    color: variables.$primary_white;
-    height: 100%;
-    width: 100%;
-  }
-
-  @media (prefers-color-scheme: light) {
-    // color: rgba(0, 0, 0, 0.48);
-    color: variables.$secondary_black;
-
-    .window-toggle input {
-      background-color: #eee;
-    }
+@include utils.dark-mode {
+  .bottom-bar-item-icon,
+  .bottom-bar-item-text {
+    color: variables.$gray-500;
   }
 }

@@ -1,0 +1,51 @@
+@use "../variables" as variables;
+@use "./utils";
+
+.search-bar {
+  width: 100%;
+  padding: 1em;
+  background-color: transparent; // inherit??
+  border: none;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  color: variables.$gray-800; // input text color
+  align-items: center;
+
+  &-icon {
+    height: 1.25em;
+    width: 1.25em;
+    color: variables.$gray-400; // match the place holder
+  }
+
+  &-input {
+    appearance: none; // think about this
+    background-color: transparent;
+    font-family: inherit;
+    color: inherit;
+    border: none;
+    width: 100%; // is this needed
+
+    &::placeholder {
+      opacity: 1; // firefox changes the opacity
+      color: variables.$gray-400;
+    }
+
+    &:focus {
+      // think about this
+      // does using appearance: none resolve this
+      outline: none;
+    }
+  }
+
+  @include utils.dark-mode {
+    color: variables.$gray-50; // input text color
+    &-icon {
+      color: variables.$gray-500; // match the place holder
+    }
+
+    &-input::placeholder {
+      color: variables.$gray-500;
+    }
+  }
+}

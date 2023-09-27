@@ -1,19 +1,29 @@
-import { IconType } from "@react-icons/all-files";
+// import { IconType } from "@react-icons/all-files";
 
-export const enum Command {
-  TOGGLE_TAB_SEARCH = "toggle-tab-search",
-  TOGGLE_TAB_ACTIONS = "toggle-tab-actions",
-  TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
-  TOGGLE_TAB_HISTORY = "toggle-tab-history",
-}
+// import type { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
+import type React from "react";
+
+// type Icon = typeof MagnifyingGlassIcon;
+export type Icon = React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
+  title?: string | undefined;
+  titleId?: string | undefined;
+} & React.RefAttributes<SVGSVGElement>>
+
+// export const enum Command {
+//   TOGGLE_TAB_SEARCH = "toggle-tab-search",
+//   TOGGLE_TAB_ACTIONS = "toggle-tab-actions",
+//   TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
+//   TOGGLE_TAB_HISTORY = "toggle-tab-history",
+// }
 
 // name space Messages according to their use using a union(?) of enums
 // type Message =  CommandMessage | TabSearchMessage | TabActionMessage
 export const enum Message {
   // command specific
-  TOGGLE_TAB_SEARCH = "toggle-search",
-  TOGGLE_TAB_ACTIONS = "toggle-actions",
-  TOGGLE_TAB_HISTORY = "toggle-history",
+  TOGGLE_TAB_BUTLER_MODAL = "toggle-tab-butler-modal",
+
+  // search message
+  SEARCH = "search",
 
   // tab search specific
   GET_TAB_DATA = "get-tab-data",
@@ -30,6 +40,7 @@ export const enum Message {
   CLOSE_CURRENT_TAB = "close-current-tab",
   CLOSE_CURRENT_WINDOW = "close-current-window",
   OPEN_NEW_TAB = "open-new-tab",
+  OPEN_NEW_TAB_WITH_URL = "open-new-tab-with-url",
   OPEN_NEW_WINDOW = "open-new-window",
   OPEN_INCOGNITO_WINDOW = "open-incognito-window",
 
@@ -48,9 +59,18 @@ export const enum Message {
   OPEN_FACEBOOK = "open-facebook",
   OPEN_HISTORY_ITEM = "open-history-item",
 
+  WEB_SEARCH = "web-search",
+
   // when workspaces are implemented, related actions will be here
 
   ERROR = "error",
+}
+
+export const enum DataType {
+  TAB = "TAB",
+  ACTION = "ACTION",
+  BOOKMARK = "BOOKMARK",
+  HISTORY = "HISTORY",
 }
 
 export const enum SearchMode {
@@ -59,25 +79,14 @@ export const enum SearchMode {
   TAB_HISTORY = "tab-history",
 }
 
-export function getSearchModeFromMessage(message: Message): SearchMode {
-  switch (message) {
-    case Message.TOGGLE_TAB_ACTIONS:
-      return SearchMode.TAB_ACTIONS;
-
-    case Message.TOGGLE_TAB_SEARCH:
-      return SearchMode.TAB_SEARCH;
-
-    case Message.TOGGLE_TAB_HISTORY:
-      return SearchMode.TAB_HISTORY;
-
-    default:
-      return SearchMode.TAB_SEARCH
-  }
-}
-
-
 export interface MessagePlayload {
   message: Message;
+  // message: string
+  // data: TabData[]
+}
+
+export interface ActionPayload extends MessagePlayload {
+  query?: string
   // message: string
   // data: TabData[]
 }
@@ -114,39 +123,80 @@ export interface OpenHistoryItemPayload extends MessagePlayload {
   url: string;
 }
 
-export type Data = TabData | ActionData | HistoryData;
+export interface OpenNewTabWithUrlPayload extends MessagePlayload {
+  message: Message.OPEN_NEW_TAB_WITH_URL;
+  url: string;
+}
 
-export interface TabData {
+export interface SearchPayload extends MessagePlayload {
+  message: Message.SEARCH;
+  query: string;
+}
+
+// export type Data = TabData | ActionData | HistoryData;
+export interface Data {
+  type: DataType;
+  id: string
+}
+
+export interface TabData extends Data {
   tabId: number;
   windowId: number;
   favIcon: string | null;
-  tabTitle: string;
-  tabUrl: string;
-  inCurrentWindow: boolean;
-  isAudible: boolean;
-  isMuted: boolean;
-  isPinned: boolean;
+  title: string;
+  url: string;
+  type: DataType.TAB;
+  // will leave this for now
+  // isAudible: boolean;
+  // isMuted: boolean;
+  // isPinned: boolean;
 }
 
-export interface ActionData {
+export interface ActionData extends Data {
   name: string;
   message: Message; // the message that the action sends to the backgrpond sctipt
-  icon: IconType; // for now
-  iconColor?: string;
+  // icon: Icon; // for now
+  type: DataType.ACTION;
+  query?: string
 }
 
-export interface HistoryData {
+export interface HistoryData extends Data {
   title: string,
   url: string,
   timeVisited: number
+  type: DataType.HISTORY;
+
 }
 
-export interface SideBarItem {
-  searchMode: SearchMode;
-  icon: IconType;
+export interface BookmarkData extends Data {
+  title: string;
+  url: string;
+  type: DataType.BOOKMARK;
 }
 
 export interface CheackSearchOpenResponse {
   isOpen: boolean;
   currentSearchMode: SearchMode;
+}
+
+export interface SectionType {
+  name: string;
+  score: number; 
+  items: ScoredDataType[] // sorted
+  // items: ScoredDataType[] // sorted
+}
+
+export interface ScoredDataType {
+  score: number;
+  data: Data;
+}
+
+export interface Result<T> {
+  hasError: boolean;
+  data: T | null;
+}
+
+export interface SearchResponse {
+  sections: SectionType[],
+  sortedResult: ScoredDataType[]
 }

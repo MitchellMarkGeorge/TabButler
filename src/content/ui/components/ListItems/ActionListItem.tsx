@@ -1,7 +1,9 @@
 import React from "react";
-import { ActionData } from "../../../../common/types";
-import { useIsDarkMode } from "../../hooks";
-import { ListItem, ListItemProps, MainText, MainInfoContainer } from "./ListItem";
+import { ActionData } from "@common/types";
+// import { useIsDarkMode } from "../../hooks";
+import { ListItemProps } from "./ListItem";
+import { getActionsIcon } from "../../services/actions";
+import { useScroll } from "../../hooks";
 
 export const ActionListItem = ({
   data,
@@ -9,29 +11,20 @@ export const ActionListItem = ({
   onHover,
   selected,
 }: ListItemProps<ActionData>) => {
-  // const ref = useScroll(selected);
-  // is it fine to be used like this???
-  const isDarkMode = useIsDarkMode();
-  const Icon = data.icon;
+  const Icon = getActionsIcon(data.message);
+  const ref = useScroll(selected);
   return (
-    <ListItem
+    <div className={selected ? "list-item-selected" : "list-item"}
       onClick={() => onClick(data)}
-      selected={selected}
       onMouseOver={onHover}
+      ref={ref}
     >
-      <MainInfoContainer>
         <Icon
-          size="24px"
-          color={
-            data.iconColor
-              ? data.iconColor
-              : isDarkMode
-              ? "rgba(255, 255, 255, 0.36)"
-              : "rgba(0, 0, 0, 0.36)"
-          }
+          className="list-item-icon"
         />
-        <MainText>{data.name}</MainText>
-      </MainInfoContainer>
-    </ListItem>
+        <div className="list-item-text">
+          <div className="list-item-title text-sm">{data.name}</div>
+        </div>
+      </div>
   );
 };

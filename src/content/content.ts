@@ -1,13 +1,10 @@
 import browser from "webextension-polyfill";
 import {
-  getSearchModeFromMessage,
   Message,
   MessagePlayload,
-  SearchMode,
 } from "../common/types";
 // import "./content.css";
 import { SearchUIHandler } from "./SearchUIHandler";
-// import type * as CSS from 'csstype';
 
 // if there is already a modal element in the dom (meaning there was an update), remove the existing one and create a new one
 // this should unmount the react component and remove the shadow dom. for now this leaves some listeners attached but it should not affect any functionality
@@ -27,90 +24,50 @@ document.addEventListener(shutDownEvent, shutdownScript);
 let tabButlerModalRoot: HTMLElement | null = null;
 // needs to be open so that the click event can bubble up
 let isOpen = false; // technically no longer needed
-let currentSearchMode: SearchMode;
 const searchUiHandler = new SearchUIHandler();
 
 const messageListener = (messagePayload: MessagePlayload) => {
   // i will need to rename the component from search to something else
   const { message } = messagePayload;
   switch (message) {
-    case Message.TOGGLE_TAB_ACTIONS:
-    case Message.TOGGLE_TAB_SEARCH:
-    case Message.TOGGLE_TAB_HISTORY:
+    case Message.TOGGLE_TAB_BUTLER_MODAL:
       if (isOpen) {
-        // special function to switch modes if the message is different
-        unmountSearchComponentFromMessage(message);
+        unmountModal();
       } else {
-        mountSearchComponent(message);
+        mountModal();
       }
       break;
     case Message.CHECK_SEARCH_OPEN:
-      return Promise.resolve({ isOpen, currentSearchMode });
+      return Promise.resolve({ isOpen });
   }
-};
+}
 browser.runtime.onMessage.addListener(messageListener);
 
-const styleModalRoot = (modalRoot: HTMLElement) => {
-  modalRoot.style.position = "fixed";
-  modalRoot.style.left = "0";
-  modalRoot.style.right = "0";
-  modalRoot.style.bottom = "0";
-  modalRoot.style.top = "0";
-  modalRoot.style.display = "flex";
-  modalRoot.style.justifyContent = "center";
-  modalRoot.style.boxSizing = "border-box";
-  modalRoot.style.paddingTop = "20vh";
-  modalRoot.style.width = "100%";
-  modalRoot.style.height = "100%";
-  modalRoot.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-  modalRoot.style.zIndex = "999999";
-};
-
-function mountSearchComponent(message: Message) {
+function mountModal() {
   // create a new modal root on mount and append as the last child of the body
   tabButlerModalRoot = document.createElement("tab-butler-modal");
-  styleModalRoot(tabButlerModalRoot);
+  // styleModalRoot(tabButlerModalRoot);
   // needs to be open so that the click event can bubble up
   tabButlerModalRoot.attachShadow({ mode: "open" });
-  const requestedSearchMode = getSearchModeFromMessage(message);
   document.addEventListener("click", unmountOnClick);
   searchUiHandler.mount(tabButlerModalRoot.shadowRoot as ShadowRoot, {
-    searchMode: requestedSearchMode,
-    close: unmountSearchComponent,
+    close: unmountModal,
   });
-  currentSearchMode = requestedSearchMode;
   isOpen = true;
-  document.body.appendChild(tabButlerModalRoot);
+  // figure out which one to use
+  // document.body.appendChild(tabButlerModalRoot);
+  // inserts the modal as the first child 
+  // this is needed for it to work with the new syles
+  // should confirm this
+  document.body.insertAdjacentElement("afterbegin", tabButlerModalRoot);
 }
 
-function unmountSearchComponentFromMessage(message: Message) {
-  // get the accosiated search type of the message
-  const requestedSearchMode = getSearchModeFromMessage(message);
-  if (currentSearchMode === requestedSearchMode) {
-    // if the search type of the currently open search compenent is the same
-    // as the the received one, the user issued the same command
-    // meaning they just want to toggle it off
-    unmountSearchComponent();
-  } else {
-    // in this case, the user wants to switch to a different search mode
-    // update the props of the component with the nessecary information
-    // and update the current search mode
-    console.log(requestedSearchMode);
-    // searchUiHandler.updateProps({
-    //   searchMode: requestedSearchMode,
-    // });
-    searchUiHandler.updateSearchMode(requestedSearchMode);
-    currentSearchMode = requestedSearchMode;
-  }
-}
-
-function unmountSearchComponent() {
+function unmountModal() {
   document.removeEventListener("click", unmountOnClick);
   searchUiHandler.unMount();
   tabButlerModalRoot?.remove();
   tabButlerModalRoot = null;
   isOpen = false;
-  // should i reset currentSearchMode?
 }
 
 const unmountOnClick = (event: MouseEvent) => {
@@ -119,13 +76,13 @@ const unmountOnClick = (event: MouseEvent) => {
   const [firstElementTarget] = (event as PointerEvent).composedPath();
   // if the user clicked on the overlay
   if (firstElementTarget === tabButlerModalRoot) {
-    unmountSearchComponent();
+    unmountModal();
   }
 };
 
 function shutdownScript() {
-  console.log("shutting down");
-  unmountSearchComponent();
+  // console.log("shutting down");
+  unmountModal();
   // remove the listener to so it can't be triggered again
   // this prevents any old content scripts in the tab from being triggered in the tab
   browser.runtime.onMessage.removeListener(messageListener);
@@ -133,6 +90,6 @@ function shutdownScript() {
 
 window.addEventListener("beforeunload", () => {
   if (isOpen) {
-    unmountSearchComponent();
+    unmountModal();
   }
 });

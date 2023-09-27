@@ -1,129 +1,67 @@
-import { ActionData, Message, MessagePlayload } from "@common/types";
+import { ActionData, ActionPayload, Message } from "@common/types";
 
-import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
-import { AiFillCloseSquare } from "@react-icons/all-files/ai/AiFillCloseSquare";
-import { AiFillEyeInvisible } from "@react-icons/all-files/ai/AiFillEyeInvisible";
-import { AiFillGithub } from "@react-icons/all-files/ai/AiFillGithub";
-import { AiFillGoogleCircle } from "@react-icons/all-files/ai/AiFillGoogleCircle";
-import { AiFillTwitterCircle } from "@react-icons/all-files/ai/AiFillTwitterCircle";
-import { AiFillYoutube } from "@react-icons/all-files/ai/AiFillYoutube";
-import { AiFillFacebook } from "@react-icons/all-files/ai/AiFillFacebook";
-import { AiFillPushpin } from "@react-icons/all-files/ai/AiFillPushpin";
+import { sendMessageToBackground } from "../utils";
 
-import { BiWindowClose } from "@react-icons/all-files/bi/BiWindowClose";
-import { BiWindowOpen } from "@react-icons/all-files/bi/BiWindowOpen";
-import { BiPlusCircle } from "@react-icons/all-files/bi/BiPlusCircle";
-import { BiVolumeMute } from "@react-icons/all-files/bi/BiVolumeMute";
-import { BiDuplicate } from "@react-icons/all-files/bi/BiDuplicate";
+import {
+  BsFillPlusCircleFill,
+  BsWindowPlus,
+  BsIncognito,
+  BsWindowX,
+  BsFiles,
+  BsXCircleFill,
+  BsXSquareFill,
+  BsFacebook,
+  BsGithub,
+  BsGoogle,
+  BsYoutube,
+  BsTwitter,
+  BsGlobe,
+  BsSearch,
+} from "react-icons/bs";
 
-import { GoDiffRemoved } from "@react-icons/all-files/go/GoDiffRemoved";
+export function getActionsIcon(message: Message) {
+  // return MagnifyingGlassIcon;
 
-import browser from "webextension-polyfill";
+  switch (message) {
+    case Message.OPEN_NEW_TAB:
+      return BsFillPlusCircleFill;
+    case Message.OPEN_NEW_WINDOW:
+      return BsWindowPlus;
+    case Message.OPEN_INCOGNITO_WINDOW:
+      return BsIncognito;
+    case Message.CLOSE_CURRENT_TAB:
+      return BsXCircleFill;
+    case Message.CLOSE_CURRENT_WINDOW:
+      return BsWindowX;
+    case Message.CLOSE_OTHER_TABS:
+      // for now
+      return BsXSquareFill;
 
-export const searchActions = (searchValue: string, data: ActionData[]) => {
-  if (searchValue) {
-    return data.filter((action) =>
-      action.name.toLowerCase().includes(searchValue.toLowerCase()),
-    );
-  } else {
-    return data;
+    case Message.DUPLICATE_TAB:
+      return BsFiles;
+    case Message.OPEN_FACEBOOK:
+      return BsFacebook;
+    case Message.OPEN_GITHUB:
+      return BsGithub;
+    case Message.OPEN_GOOGLE:
+      return BsGoogle;
+    case Message.OPEN_YOUTUBE:
+      return BsYoutube;
+    case Message.OPEN_TWITTER:
+      return BsTwitter;
+
+    case Message.WEB_SEARCH:
+      return BsSearch;
+    default:
+      return BsGlobe;
   }
-};
-
-export function getActions() {
-  const actions: ActionData[] = [
-    {
-      name: "New Tab",
-      message: Message.OPEN_NEW_TAB,
-      icon: BiPlusCircle,
-    },
-    {
-      name: "New Window",
-      message: Message.OPEN_NEW_WINDOW,
-      icon: BiWindowOpen,
-    },
-    {
-      name: "New Incognito Window",
-      message: Message.OPEN_INCOGNITO_WINDOW,
-      icon: AiFillEyeInvisible,
-    },
-    {
-      name: "Close Tab",
-      message: Message.CLOSE_CURRENT_TAB,
-      icon: AiFillCloseCircle,
-    },
-    {
-      name: "Close Window",
-      message: Message.CLOSE_CURRENT_WINDOW,
-      icon: BiWindowClose,
-    },
-    // this action is used only for the current tab
-    {
-      name: "Mute/Unmute Current Tab",
-      message: Message.TOGGLE_MUTE_CURRENT_TAB,
-      icon: BiVolumeMute,
-    },
-
-    // this action is used only for the current tab
-    {
-      name: "Pin/Unpin Current Tab",
-      message: Message.TOGGLE_PIN_CURRENT_TAB,
-      icon: AiFillPushpin,
-    },
-    {
-      name: "Duplicate Tab",
-      message: Message.DUPLICATE_TAB,
-      icon: BiDuplicate,
-    },
-    {
-      name: "Close Duplicate Tabs",
-      message: Message.CLOSE_DUPLICATE_TABS,
-      icon: GoDiffRemoved,
-    },
-    {
-      name: "Close Other Tabs in Window",
-      message: Message.CLOSE_OTHER_TABS,
-      icon: AiFillCloseSquare,
-    },
-    {
-      name: "Open GitHub", // might remove this one
-      message: Message.OPEN_GITHUB,
-      icon: AiFillGithub,
-      //   iconColor: "rgba(0, 0, 0, 0.64)",
-    },
-    {
-      name: "Open Google",
-      message: Message.OPEN_GOOGLE,
-      icon: AiFillGoogleCircle,
-      //   iconColor: "#ecc946"
-    },
-    {
-      name: "Open Twitter",
-      message: Message.OPEN_TWITTER,
-      icon: AiFillTwitterCircle,
-      // iconColor: "#4299e1"
-    },
-    {
-      name: "Open YouTube",
-      message: Message.OPEN_YOUTUBE,
-      icon: AiFillYoutube,
-      // iconColor: "rgba(0, 0, 0, 0.64)",
-      //   iconColor: "#c53030"
-    },
-    {
-      name: "Open Facebook",
-      message: Message.OPEN_FACEBOOK,
-      icon: AiFillFacebook,
-      //   iconColor: "#2c5282"
-    },
-  ];
-
-  return Promise.resolve(actions);
 }
 
 export const onActionItemClick = (action: ActionData) => {
-  const messagePayload: MessagePlayload = {
+  // console.log("here", action.query);
+  const messagePayload: ActionPayload = {
     message: action.message,
+    query: action.query
   };
-  browser.runtime.sendMessage(messagePayload);
+  sendMessageToBackground(messagePayload);
 };

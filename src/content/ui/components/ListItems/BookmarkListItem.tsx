@@ -1,20 +1,19 @@
 import React from "react";
-import Image from "../Image";
-import { TabData } from "@common/types";
-
-import { getHostname } from "./utils";
+import { BookmarkData } from "@common/types";
 import { ListItemProps } from "./ListItem";
+import { getFaviconURL, getHostname } from "./utils";
 import { useScroll } from "../../hooks";
-import { BsGlobeAmericas } from "react-icons/bs";
+import Image from "../Image";
+import { BsStarFill } from "react-icons/bs";
 
-export const TabListItem = ({
+export const BookmarkListItem = ({
   data,
   onHover,
+  onClick,
   selected,
-  onClick
-}: ListItemProps<TabData>) => {
+}: ListItemProps<BookmarkData>) => {
   const ref = useScroll(selected);
-  const FallbackIcon = <BsGlobeAmericas className="list-item-icon"/>
+  const FallBackIcon =  <BsStarFill className="list-item-star" />
   return (
     <div
       className={selected ? "list-item-selected" : "list-item"}
@@ -22,11 +21,7 @@ export const TabListItem = ({
       onMouseOver={onHover}
       ref={ref}
     >
-      <Image
-        className="list-item-icon"
-        src={data.favIcon}
-        fallbackIcon={FallbackIcon}
-      />
+      <Image fallbackIcon={FallBackIcon} src={getFaviconURL(data.url)} className="list-item-image" />
       <div className="list-item-text">
         <div className="list-item-title text-sm">{data.title}</div>
         <div className="list-item-subtitle text-xs">

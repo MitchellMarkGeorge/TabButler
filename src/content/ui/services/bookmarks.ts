@@ -1,10 +1,10 @@
-import { HistoryData, Message, OpenNewTabWithUrlPayload } from "@common/types";
+import { BookmarkData, Message, OpenNewTabWithUrlPayload } from "@common/types";
 import { sendMessageToBackground } from "../utils";
 
-export const onHistoryItemClick = (historyData: HistoryData) => {
+export const onBookmarkItemClick = (bookmarkData: BookmarkData) => {
     const messagePayload: OpenNewTabWithUrlPayload = {
         message: Message.OPEN_NEW_TAB_WITH_URL,
-        url: historyData.url,
+        url: bookmarkData.url,
     } 
     sendMessageToBackground(messagePayload);
 }

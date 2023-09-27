@@ -1,6 +1,5 @@
 import { isBrowserURL } from "../common/common";
 import {
-  Command,
   Message,
   MessagePlayload,
   TogglePinTabPayload,
@@ -8,20 +7,22 @@ import {
   ChangeTabPayload,
   GivenTabPayload,
   OpenHistoryItemPayload,
+  SearchPayload,
+  OpenNewTabWithUrlPayload,
+  ActionPayload,
 } from "../common/types";
+import { search } from "./search";
 import {
   checkCommands,
   getCurrentTab,
-  getHistoryData,
-  getMessageFromCommand,
-  getTabsInBrowser,
   injectExtension,
-  reactOnTabUpdate,
+  // fetchAllTabs,
+  // searchHistory,
+  // injectExtension,
 } from "./utils";
 import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
-  console.log(reason);
   if (reason === "install" || reason === "update") {
     // opening the welcome page first buys the extension time to inject into the avalible pages
     if (reason === "install") {
@@ -37,11 +38,11 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
         browser.tabs.create({ url: welcomeUrl.toString() });
       });
     }
-    injectExtension();
+    injectExtension(); // need to fix this
   }
 });
 
-browser.commands.onCommand.addListener((command) => {
+browser.commands.onCommand.addListener(() => {
   // should I make these async?
   getCurrentTab().then((currentTab) => {
     if (
@@ -51,10 +52,7 @@ browser.commands.onCommand.addListener((command) => {
       !isBrowserURL(currentTab.url)
     ) {
       const messagePayload: MessagePlayload = {
-        message: getMessageFromCommand(command as Command),
-          // command === Commands.TOGGLE_TAB_ACTIONS
-          //   ? Message.TOGGLE_TAB_ACTIONS
-          //   : Message.TOGGLE_TAB_SEARCH, // basically fall back to the search
+        message: Message.TOGGLE_TAB_BUTLER_MODAL,
       };
       browser.tabs.sendMessage(currentTab.id, messagePayload);
     }
@@ -63,16 +61,16 @@ browser.commands.onCommand.addListener((command) => {
 
 // SHOULD ONLY SEND UPDATED TAB DATA IF A TAB IN THE SAME WINDOW AS THE OPEN SEARCH IS CLOSED
 
-browser.tabs.onRemoved.addListener((removedTabId) => {
-  reactOnTabUpdate(removedTabId);
-});
-browser.tabs.onCreated.addListener(() => {
-  reactOnTabUpdate();
-});
-// removed if statement as I also need to know when some of the fields are absent (like audible)
-browser.tabs.onUpdated.addListener(() => {
-  reactOnTabUpdate();
-});
+// browser.tabs.onRemoved.addListener((removedTabId) => {
+//   reactOnTabUpdate(removedTabId);
+// });
+// browser.tabs.onCreated.addListener(() => {
+//   reactOnTabUpdate();
+// });
+// // removed if statement as I also need to know when some of the fields are absent (like audible)
+// browser.tabs.onUpdated.addListener(() => {
+//   reactOnTabUpdate();
+// });
 
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {
@@ -80,11 +78,15 @@ browser.runtime.onMessage.addListener(
     // should be present if the sender is a content script (would equate to the current tab)
     // https://developer.chrome.com/docs/extensions/reference/runtime/#type-MessageSender
     switch (messagePayload.message) {
-      case Message.GET_TAB_DATA:
-        return Promise.resolve(getTabsInBrowser());
+      case Message.SEARCH: {
+        const { query } = messagePayload as SearchPayload;
+        return search(query);
+      }
+      // case Message.GET_TAB_DATA:
+      //   return Promise.resolve(fetchAllTabs());
 
-      case Message.GET_HISTORY_DATA:
-        return Promise.resolve(getHistoryData());
+      // case Message.GET_HISTORY_DATA:
+      //   return Promise.resolve(getHistoryData());
 
       case Message.CHANGE_TAB: {
         const { tabId, windowId } = messagePayload as ChangeTabPayload;
@@ -116,6 +118,12 @@ browser.runtime.onMessage.addListener(
       case Message.OPEN_NEW_TAB:
         browser.tabs.create({ active: true });
         break;
+
+      case Message.OPEN_NEW_TAB_WITH_URL: {
+        const { url } = messagePayload as OpenNewTabWithUrlPayload;
+        browser.tabs.create({ active: true, url });
+        break;
+      }
 
       case Message.OPEN_NEW_WINDOW:
       case Message.OPEN_INCOGNITO_WINDOW:
@@ -159,6 +167,15 @@ browser.runtime.onMessage.addListener(
           browser.tabs.duplicate(sender.tab.id);
         }
         break;
+
+      case Message.WEB_SEARCH: {
+        console.log("here", messagePayload);
+        const { query } = messagePayload as ActionPayload;
+        if (query) {
+          browser.search.query({ text: query, disposition: "NEW_TAB" });
+        }
+        break;
+      }
 
       case Message.CLOSE_DUPLICATE_TABS: {
         browser.tabs.query({}).then((tabs) => {

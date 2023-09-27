@@ -1,0 +1,73 @@
+@use "../variables" as variables;
+@use "./utils";
+
+.section {
+  background-color: transparent;
+  padding: 1em 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  // merge media queries
+
+  &-name {
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    color: variables.$gray-400;
+    font-weight: variables.$font-weight-medium;
+    @include utils.dark-mode {
+      color: variables.$gray-500;
+    }
+  }
+}
+
+.section-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  border-top: 1px solid variables.$gray-200;
+  border-bottom: 1px solid variables.$gray-200;
+  @include utils.dark-mode {
+    border-top: 1px solid variables.$gray-700;
+    border-bottom: 1px solid variables.$gray-700;
+  }
+  // think about styling custom scrollbar
+  // scrollbar-width: none;
+  &::-webkit-scrollbar {
+    width: 0.5em; // think about this
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    // border-radius: 1em;
+    background-color: variables.$gray-200;
+    @include utils.dark-mode {
+      background-color: variables.$gray-600;
+    }
+
+    &:hover {
+      background-color: variables.$gray-300;
+      @include utils.dark-mode {
+      background-color: variables.$gray-700;
+      }
+    }
+
+  }
+  // firefox
+  scrollbar-width: thin;
+  scrollbar-color: variables.$gray-200 transparent;
+  @include utils.dark-mode {
+    scrollbar-color: variables.$gray-700 transparent;
+  }
+
+  & > .section + .section {
+    border-top: 1px solid variables.$gray-200;
+    @include utils.dark-mode {
+      border-top: 1px solid variables.$gray-700;
+    }
+  }
+}
