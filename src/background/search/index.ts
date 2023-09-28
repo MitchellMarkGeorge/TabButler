@@ -17,29 +17,25 @@ const DEFAULT_FUZZINESS = 0.9;
 const DEFAULT_SCORE_THRESHOLD = 0.4;
 
 export async function search(query: string): Promise<Result<SearchResponse>> {
-  // export async function search(query: string): Promise<Result<Data[]>> {
   if (!query) return DEFAULT_RESULT;
   try {
-    // console.log("query: ", query);
     const [history, bookmarks, tabs] = await Promise.all([
       searchHistory(query),
       searchBookmarks(query),
       fetchAllTabs(),
     ]);
 
-    // console.log("history", history);
-    // console.log("bookmarks", bookmarks);
 
     // TODO: do these all need to be in promises
     const [tabResults, actionResults, bookmarkResults, historyResults] =
       await Promise.all([
-        scoreData(query, tabs, ["title", "url"], 0.15), // tab results should be boosted (increased by a percentage)
+        // need to figure out what the best boost is 
+        scoreData(query, tabs, ["title", "url"], 0.25), // tab results should be boosted (increased by a percentage)
         // scoreData(query, tabs, ["title", "url"]), // tab results should be boosted (increased by a percentage)
         scoreData(query, actions, "name"),
         scoreData(query, bookmarks, ["title", "url"]),
         scoreData(query, history, ["title", "url"]), // might also be boosted
       ]);
-    // console.log("tabs", tabResults);
 
     const tabSection: SectionType = {
       items: tabResults.results,
