@@ -29,94 +29,22 @@ import { onTabItemClick } from "../services/tabs";
 import { onHistoryItemClick } from "../services/history";
 import { onBookmarkItemClick } from "../services/bookmarks";
 import FocusTrap from "focus-trap-react";
-// import { action } from "webextension-polyfill";
-// import Error from "./Error";
 
 export interface Props {
   close: () => void;
 }
-// const actions: ActionData[] = [
-//   {
-//     name: "New Tab",
-//     icon: PlusIcon,
-//     type: DataType.ACTION,
-//     id: nanoid(),
-//   },
-//   {
-//     name: "New Window",
-//     icon: FolderPlusIcon,
-//     type: DataType.ACTION,
-//     id: nanoid(),
-//   },
-//   {
-//     name: "Close tab",
-//     icon: XMarkIcon,
-//     type: DataType.ACTION,
-//     id: nanoid(),
-//   },
-// ];
-
-// const tabs: TabData[] = [
-//   {
-//     favIcon: null,
-//     type: DataType.TAB,
-//     tabId: 909,
-//     title: "Test",
-//     url: "https://test.com",
-//     windowId: 0,
-//     id: nanoid(),
-//   },
-
-//   {
-//     favIcon: null,
-//     type: DataType.TAB,
-//     tabId: 909,
-//     title: "Test",
-//     url: "https://test.com",
-//     windowId: 0,
-//     id: nanoid(),
-//   },
-
-//   {
-//     favIcon: null,
-//     type: DataType.TAB,
-//     tabId: 909,
-//     title: "Test",
-//     url: "https://test.com",
-//     windowId: 0,
-//     id: nanoid(),
-//   },
-// ];
-
-// const results: SectionType[] = [
-//   {
-//     name: "Tabs",
-//     items: tabs,
-//     matchScore: 0.9,
-//   },
-
-//   {
-//     name: "Actions",
-//     items: actions,
-//     matchScore: 0.72,
-//   },
-// ];
-
 // alternative to the style tag is a link tag with the chrome url to transpiled style sheet
 // i could also use jss https://cssinjs.org/setup?v=v10.9.2
 
 export const SearchModal = (props: Props) => {
-  // focus trap
-  // const [searchQuery, setSearchQuery] = useState("");
-  // might need to rethink this (need an easy way to access the actual items and their ids)
-  // but for now having a seperate id array and id-dataItem map works
   const [resultSections, setResultSections] = useState<SectionType[] | null>(
     null,
   ); // sorted array of sections
-  const [resultList, setResultList] = useState<ScoredDataType[] | null>(null);
+  const [resultList, setResultList] = useState<ScoredDataType[] | null>(null); // sorted list of results
   const [hasError, setError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  // get the index of the selected item in resultList
   const indexOfSelected = useMemo(() => {
     if (resultList && selectedId) {
       const foundId = resultList.findIndex(
@@ -133,32 +61,9 @@ export const SearchModal = (props: Props) => {
     inputRef.current?.focus();
   }, []);
 
-  // think about this - perfomance implecations and general readability
-  // this should return a sorted list of all the id of the items (sorted by score)
-  // const sortedIdList = useMemo(
-  //   () =>
-  //     resultSections
-  //       .map((section) => section.items.map(({ data }) => data.id))
-  //       .flat(),
-  //   [resultSections],
-  // );
-  // console.log(sortedIdList);
-
-  // think about this - perfomance implecations and general readability
-  // const buildItemIdMap = () => {
-  //   const items = resultSections.map((section) => section.items).flat();
-  //   console.log(items);
-  //   const itemIdMap = new Map();
-  //   items.forEach(({ data }) => {
-  //     itemIdMap.set(data.id, data);
-  //   });
-  //   return itemIdMap;
-  // };
-
-  // const itemIdMap = useMemo(buildItemIdMap, [resultSections]);
   const onSubmit = (data: Data) => {
     if (data.type === DataType.TAB) {
-      onTabItemClick(data as TabData)
+      onTabItemClick(data as TabData);
     } else if (data.type === DataType.ACTION) {
       onActionItemClick(data as ActionData);
     } else if (data.type === DataType.BOOKMARK) {
@@ -166,18 +71,16 @@ export const SearchModal = (props: Props) => {
     } else if (data.type === DataType.HISTORY) {
       onHistoryItemClick(data as HistoryData);
     }
-  }
+  };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // circular navigation might confuse users
     // this is needed to prevent some sites from trying to overide the key
-      event.stopPropagation();
-    let nextIndex = 0;
+    event.stopPropagation();
     if (event.key === "Escape") {
       props.close();
       return;
     }
-    // const selectedListIdIndex = sortedIdList.indexOf(selectedId);
+    let nextIndex = 0;
     if (resultList === null || indexOfSelected === null) return;
     // using tab caused some issues
     if (event.key === "ArrowUp") {
@@ -203,40 +106,19 @@ export const SearchModal = (props: Props) => {
       const data = resultList[indexOfSelected].data;
       // console.log(data);
       onSubmit(data);
-      props.close()
+      props.close();
     }
   };
-
-  // const closeOnEscape = (event: KeyboardEvent) => {
-  //   // this is neccessary to stop some sites from preventing some key strokes from being registered
-  //   event.stopPropagation();
-  //   if (event.key === "Escape") {
-  //     props.close();
-  //   }
-  // };
-
-  // SHOULD I ADD THESE LISTENERS TO THE INPUT INSTEAD??
-  // const addListeners = () => {
-  //   document.addEventListener("keydown", closeOnEscape, true);
-  //   // should this be keydown? with behaviour as smooth, navigation is a bit less performant and the selection can go out of view
-  //   document.addEventListener("keydown", onKeyDown, true);
-  // };
-
-  // const removeListeners = () => {
-  //   document.removeEventListener("keydown", closeOnEscape, true);
-  //   document.removeEventListener("keydown", onKeyDown, true);
-  // };
-
-  // useEffect(() => {
-  //   addListeners();
-  //   return removeListeners;
-  // });
 
   const renderBody = () => {
     if (hasError) return <Error />;
     if (resultSections === null) return null;
-    // if there are no resdults you could render a section only for searching
-    if (resultSections.length === 0) return <NoResults searchQuery={inputRef.current?.value || ""}/>; 
+    // if there are no results you could render a section only for searching
+    // this technically dosen't happen anymore since if there are no results,
+    // it returns a single action to search for the query in the browser using a search engine
+    // will leave in here just in case
+    if (resultSections.length === 0)
+      return <NoResults searchQuery={inputRef.current?.value || ""} />;
     return (
       <>
         {renderSections(resultSections)}
@@ -251,52 +133,58 @@ export const SearchModal = (props: Props) => {
         {sections.map((section) => (
           <Section name={section.name} key={section.name}>
             {section.items.map(({ data }) => {
-              if (data.type === DataType.ACTION) {
-                return (
-                  <ActionListItem
-                    key={data.id}
-                    data={data as ActionData}
-                    onHover={() => setSelectedId(data.id)}
-                    selected={selectedId === data.id}
-                    onClick={onClickFactory(onActionItemClick)}
-                  />
-                );
-              } else if (data.type === DataType.TAB) {
-                return (
-                  <TabListItem
-                    key={data.id}
-                    data={data as TabData}
-                    onHover={() => setSelectedId(data.id)}
-                    selected={selectedId === data.id}
-                    onClick={onClickFactory(onTabItemClick)}
-                  />
-                );
-              } else if (data.type === DataType.HISTORY) {
-                return (
-                  <HistoryListItem
-                    key={data.id}
-                    data={data as HistoryData}
-                    onHover={() => setSelectedId(data.id)}
-                    selected={selectedId === data.id}
-                    onClick={onClickFactory(onHistoryItemClick)}
-                  />
-                );
-              } else if (data.type === DataType.BOOKMARK) {
-                return (
-                  <BookmarkListItem
-                    key={data.id}
-                    data={data as BookmarkData}
-                    onHover={() => setSelectedId(data.id)}
-                    selected={selectedId === data.id}
-                    onClick={onClickFactory(onBookmarkItemClick)}
-                  />
-                );
-              }
+              return renderListItem(data);
             })}
           </Section>
         ))}
       </div>
     );
+  };
+
+  const renderListItem = (data: Data) => {
+    switch (data.type) {
+      case DataType.ACTION:
+        return (
+          <ActionListItem
+            key={data.id}
+            data={data as ActionData}
+            onHover={() => setSelectedId(data.id)}
+            selected={selectedId === data.id}
+            onClick={closeOnClick(onActionItemClick)}
+          />
+        );
+      case DataType.TAB:
+        return (
+          <TabListItem
+            key={data.id}
+            data={data as TabData}
+            onHover={() => setSelectedId(data.id)}
+            selected={selectedId === data.id}
+            onClick={closeOnClick(onTabItemClick)}
+          />
+        );
+
+      case DataType.BOOKMARK:
+        return (
+          <BookmarkListItem
+            key={data.id}
+            data={data as BookmarkData}
+            onHover={() => setSelectedId(data.id)}
+            selected={selectedId === data.id}
+            onClick={closeOnClick(onBookmarkItemClick)}
+          />
+        );
+      case DataType.HISTORY:
+        return (
+          <HistoryListItem
+            key={data.id}
+            data={data as HistoryData}
+            onHover={() => setSelectedId(data.id)}
+            selected={selectedId === data.id}
+            onClick={closeOnClick(onHistoryItemClick)}
+          />
+        );
+    }
   };
 
   const onInputChange = debounce((query: string) => {
@@ -309,7 +197,7 @@ export const SearchModal = (props: Props) => {
           if (result.hasError) {
             setError(true);
           } else if (result.data !== null) {
-            console.log(result.data);
+            // console.log(result.data);
             const { sections, sortedResult } = result.data;
             setResultSections(sections);
             setResultList(sortedResult);
@@ -330,37 +218,30 @@ export const SearchModal = (props: Props) => {
     }
   }, 300);
 
-  const onClickFactory = <T,>(func: (data: T) => void) => {
+  const closeOnClick = <T,>(func: (data: T) => void) => {
     return (data: T) => {
       func(data);
       props.close();
-    }
-  }
+    };
+  };
   return (
     <>
       <style>{styles}</style>
       <FocusTrap focusTrapOptions={{ allowOutsideClick: true }}>
-      <div className="modal-body">
-        <SearchBar
-          ref={inputRef}
-          onKeyDown={onKeyDown}
-          onChange={(query) => {
-            // think about this
-            if (!query) {
-              setResultSections(null);
-            } else {
-              onInputChange(query);
-            }
-          }}
-        />
-        {renderBody()}
-        {/* {resultSections.length > 0 && (
-          <>
-            <div className="section-list">{renderSections(resultSections)}</div>
-            <BottomBar />
-          </>
-        )} */}
-      </div>
+        <div className="modal-body">
+          <SearchBar
+            ref={inputRef}
+            onKeyDown={onKeyDown}
+            onChange={(query) => {
+              if (!query) {
+                setResultSections(null);
+              } else {
+                onInputChange(query);
+              }
+            }}
+          />
+          {renderBody()}
+        </div>
       </FocusTrap>
     </>
   );

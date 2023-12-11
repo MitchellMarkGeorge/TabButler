@@ -12,14 +12,7 @@ import {
   ActionPayload,
 } from "../common/types";
 import { search } from "./search";
-import {
-  checkCommands,
-  getCurrentTab,
-  injectExtension,
-  // fetchAllTabs,
-  // searchHistory,
-  // injectExtension,
-} from "./utils";
+import { checkCommands, getCurrentTab, injectExtension } from "./utils";
 import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
@@ -38,19 +31,22 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
         browser.tabs.create({ url: welcomeUrl.toString() });
       });
     }
-    injectExtension(); // need to fix this
+    // injectExtension(); // need to fix this
   }
 });
 
-browser.commands.onCommand.addListener(() => {
-  // should I make these async?
+browser.commands.onCommand.addListener((command, tab) => {
+  console.log(tab);
+  // should I still check the command?
   getCurrentTab().then((currentTab) => {
+    console.log(currentTab)
     if (
       currentTab?.id &&
       currentTab.url &&
       // chrome does not like content scripts acting on thier urls
       !isBrowserURL(currentTab.url)
     ) {
+      console.log(tab?.id === currentTab.id);
       const messagePayload: MessagePlayload = {
         message: Message.TOGGLE_TAB_BUTLER_MODAL,
       };
@@ -58,19 +54,6 @@ browser.commands.onCommand.addListener(() => {
     }
   }); // handle error
 });
-
-// SHOULD ONLY SEND UPDATED TAB DATA IF A TAB IN THE SAME WINDOW AS THE OPEN SEARCH IS CLOSED
-
-// browser.tabs.onRemoved.addListener((removedTabId) => {
-//   reactOnTabUpdate(removedTabId);
-// });
-// browser.tabs.onCreated.addListener(() => {
-//   reactOnTabUpdate();
-// });
-// // removed if statement as I also need to know when some of the fields are absent (like audible)
-// browser.tabs.onUpdated.addListener(() => {
-//   reactOnTabUpdate();
-// });
 
 browser.runtime.onMessage.addListener(
   (messagePayload: MessagePlayload, sender) => {
@@ -82,12 +65,6 @@ browser.runtime.onMessage.addListener(
         const { query } = messagePayload as SearchPayload;
         return search(query);
       }
-      // case Message.GET_TAB_DATA:
-      //   return Promise.resolve(fetchAllTabs());
-
-      // case Message.GET_HISTORY_DATA:
-      //   return Promise.resolve(getHistoryData());
-
       case Message.CHANGE_TAB: {
         const { tabId, windowId } = messagePayload as ChangeTabPayload;
         browser.windows.update(windowId, { focused: true }).then(() => {
@@ -97,7 +74,6 @@ browser.runtime.onMessage.addListener(
         });
         break;
       }
-
       case Message.CLOSE_CURRENT_TAB:
         // if not throw error?
         if (sender.tab?.id) {
@@ -174,26 +150,6 @@ browser.runtime.onMessage.addListener(
         if (query) {
           browser.search.query({ text: query, disposition: "NEW_TAB" });
         }
-        break;
-      }
-
-      case Message.CLOSE_DUPLICATE_TABS: {
-        browser.tabs.query({}).then((tabs) => {
-          const uniqueURLs = new Set<string>();
-          const duplicateTabIds: number[] = []; // should i use a set?
-          for (let i = 0; i < tabs.length; i++) {
-            const tab = tabs[i];
-            if (tab.url && tab.id) {
-              const isDuplicateTab = uniqueURLs.has(tab.url);
-              uniqueURLs.add(tab.url); // record that a tab with this specific url already exists
-              if (isDuplicateTab) {
-                duplicateTabIds.push(tab.id); // is a duplicate tab
-              }
-            }
-          }
-          // remove all duplicate tabs
-          browser.tabs.remove(duplicateTabIds);
-        });
         break;
       }
 

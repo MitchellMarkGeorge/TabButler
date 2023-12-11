@@ -10,9 +10,9 @@ const outDir = resolve(__dirname, "dist")
 // Use vite build --watch or nodemon??
 
 export default defineConfig({
-    esbuild: {
-        drop: ['console', 'debugger']
-    },
+    // esbuild: {
+    //     drop: ['console', 'debugger']
+    // },
    resolve: {
     alias: {
         "@common": resolve(srcRoot, "common"),

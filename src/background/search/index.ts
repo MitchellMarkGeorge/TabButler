@@ -177,8 +177,6 @@ function scoreData<T extends Data>(
   // is it the average score of all top 20 results or is if the average score of everything
 }
 
-// TODO need tore evaluate this... not providing the best results
-// eg: would rather return history items then tabs or just wont return tabs at all
 function matchScore(
   query: string,
   target: string,

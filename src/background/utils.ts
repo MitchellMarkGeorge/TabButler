@@ -2,11 +2,8 @@ import { nanoid } from "nanoid";
 import { isBrowserURL } from "../common/common";
 import {
   BookmarkData,
-  CheackSearchOpenResponse,
   DataType,
   HistoryData,
-  Message,
-  SearchMode,
   TabData,
   // UpdatedTabDataPayload,
 } from "../common/types";
@@ -22,41 +19,6 @@ export async function changeTab(windowId: number, tabId: number) {
 export async function getCurrentTab() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   return tab;
-}
-
-export async function getTabsWithSearchOpen(): Promise<number[]> {
-  // get the active tabs that have an open tab search modal
-  // we only want the active tab as that is the only place it can be in
-  // get the tab in the window with search modal open and in tab search mode
-  // in development, if the there are multiple windows and one of the active tabs in those windows has an isolated content script,
-  // it will cause an error
-  const activeTabs = await browser.tabs.query({
-    active: true,
-    status: "complete",
-  }); // can only communicate with tabs that are completely loaded
-  const activeTabsLength = activeTabs.length;
-  const result: number[] = [];
-  for (let i = 0; i < activeTabsLength; i++) {
-    const activeTab = activeTabs[i];
-    if (activeTab?.id && activeTab.url && !isBrowserURL(activeTab.url)) {
-      // if the page has an old content script, then it will throw an error
-      const respose: CheackSearchOpenResponse = await browser.tabs.sendMessage(
-        activeTab.id,
-        {
-          message: Message.CHECK_SEARCH_OPEN,
-        },
-      );
-      if (
-        respose &&
-        respose.isOpen &&
-        respose.currentSearchMode === SearchMode.TAB_SEARCH
-      ) {
-        result.push(activeTab.id);
-      }
-    }
-  }
-
-  return result;
 }
 
 const cleanTabUrl = (url: string) => {
@@ -91,7 +53,7 @@ export async function fetchAllTabs() {
         tabId: tab.id,
         windowId: tab.windowId,
         favIcon: tab.favIconUrl || null,
-        title: tab.title as string, // we know this will be present
+        title: tab.title!, // we know this will be present
         url: cleanTabUrl(tab.url), // think about this (should be good for search)
       });
     }
@@ -101,8 +63,6 @@ export async function fetchAllTabs() {
 }
 
 export async function searchHistory(query: string) {
-  // how many history items should i be showing???
-  // in what timeframe
   const history = await browser.history.search({ text: query });
   const results: HistoryData[] = [];
 
@@ -151,7 +111,6 @@ export async function injectExtension() {
   const manifest = browser.runtime.getManifest();
   // we know that these values will be present
   const extensionContentScripts = manifest.content_scripts![0].js!;
-  // const extensionCss = manifest.content_scripts![0].css!;
   // inject the extension into all tabs
   const tabs = await browser.tabs.query({ status: "complete" }); // think about this
   const tabsLength = tabs.length;
@@ -169,10 +128,6 @@ export async function injectExtension() {
         target: { tabId: tab.id, allFrames: false },
         files: extensionContentScripts,
       });
-      // await browser.scripting.insertCSS({
-      //   target: { tabId: tab.id, allFrames: false },
-      //   files: extensionCss,
-      // });
     }
   }
   // popular way I have seen it done in othe extensions, this changes the time complexity to O(n^2)
@@ -207,35 +162,6 @@ export async function injectExtension() {
   //   }
   // }
 }
-
-// export const reactOnTabUpdate = (removedTabId?: number) => {
-//   // send updated tab data to all open search modals in the browser
-//   getTabsWithSearchOpen().then((tabIds) => {
-//     console.log(tabIds);
-//     // for each active tab with their search open, send an update to them
-//     tabIds.forEach((id) => {
-//       // passing in the id for each active tab makes sure the currentWindow is correct
-//       fetchAllTabs(id).then((updatedTabData) => {
-//         // there is a bug in firefox where the removed tab is still given in the tabData array
-//         if (removedTabId !== undefined) {
-//           const removedTabDataIndex = updatedTabData.findIndex(
-//             (tabData) => tabData.tabId === removedTabId,
-//           );
-//           if (removedTabDataIndex != -1) {
-//             updatedTabData.splice(removedTabDataIndex, 1);
-//           }
-//         }
-//         const messagePayload: UpdatedTabDataPayload = {
-//           message: Message.TAB_DATA_UPDATE,
-//           updatedTabData,
-//         };
-//         console.log("sending message");
-//         browser.tabs.sendMessage(id, messagePayload);
-//       });
-//     });
-//   });
-//   // }
-// };
 
 export const checkCommands = async () => {
   // simple function to check if ther are any unbound commands due to conflicts

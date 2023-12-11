@@ -5,24 +5,17 @@
   /* use system font (San Fransisco or Segoe UI) */
 }
 
-// svg path {
-//   // think about this
-//   // makes the icons a litle bit "narrower"
-//   stroke-width: 0.7 !important;
-// }
-
 :host {
-  // does this actually work???
-  // just put this in .modal-body?
   /* use system font (San Fransisco or Segoe UI) */
-
+  // some sites (like reddit) make shadow roots hidden for some reason
+  visibility: visible !important;
   position: fixed !important;
   top: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
   left: 0 !important;
   padding-top: 15vh !important;
-  overflow-y: auto !important;
+  // overflow-y: auto !important; // why did I do this
   width: 100% !important;
   height: 100% !important;
   z-index: 999999 !important;

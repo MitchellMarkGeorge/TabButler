@@ -7,106 +7,45 @@
   }
 }
 
+// for text line-height, em refers to the font-size of the element itself, not its parent
+// for now, I will use px units so everything works as expected
+// ideally would use em units instead
+
 .text-xs {
-  font-size: 0.75em;
-  line-height: 1em;
+  // font-size: 0.75em;
+  font-size: 12px;
+  // line-height: 1em;
+  line-height: 16px;
 }
 
 .text-sm {
-  font-size: 0.875em;
-  line-height: 1.25em;
+  // font-size: 0.875em;
+  font-size: 14px;
+  // line-height: 1.25em;
+  line-height: 20px;
 }
 
 .text-base {
-  font-size: 1em;
-  line-height: 1.5em;
+  // font-size: 1em;
+  font-size: 16px;
+  // line-height: 1.5em;
+  line-height: 24px;
 }
 
 .text-lg {
-  font-size: 1.125em;
-  line-height: 1.75em;
+  // font-size: 1.25em;
+  font-size: 18px;
+  // line-height: 1.75em;
+  line-height: 28px;
 }
 
 .text-xl {
-  font-size: 1.25em;
-  line-height: 1.75em;
+  // font-size: 1.25em;
+  font-size: 20px;
+  // line-height: 1.75em;
+  line-height: 28px;
 }
 
-.loader {
-  transform: rotateZ(45deg);
-  perspective: 1000px;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  color: #fff;
-}
-  .loader:before,
-  .loader:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: inherit;
-    height: inherit;
-    border-radius: 50%;
-    transform: rotateX(70deg);
-    animation: 1s spin linear infinite;
-  }
-  .loader:after {
-    color: variables.$blue-500;
-    transform: rotateY(70deg);
-    animation-delay: .4s;
-    @include dark-mode {
-      color: variables.$blue-600;
-    }
-  }
-
-@keyframes rotate {
-  0% {
-    transform: translate(-50%, -50%) rotateZ(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotateZ(360deg);
-  }
-}
-
-@keyframes rotateccw {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(-360deg);
-  }
-}
-
-@keyframes spin {
-  0%,
-  100% {
-    box-shadow: .2em 0px 0 0px currentcolor;
-  }
-  12% {
-    box-shadow: .2em .2em 0 0 currentcolor;
-  }
-  25% {
-    box-shadow: 0 .2em 0 0px currentcolor;
-  }
-  37% {
-    box-shadow: -.2em .2em 0 0 currentcolor;
-  }
-  50% {
-    box-shadow: -.2em 0 0 0 currentcolor;
-  }
-  62% {
-    box-shadow: -.2em -.2em 0 0 currentcolor;
-  }
-  75% {
-    box-shadow: 0px -.2em 0 0 currentcolor;
-  }
-  87% {
-    box-shadow: .2em -.2em 0 0 currentcolor;
-  }
-}
 
 
 .empty-container {
@@ -130,46 +69,5 @@
   @include dark-mode {
     color: variables.$gray-500;
   border-top: 1px solid variables.$gray-700;
-  }
-}
-
-
-.list-container {
-  height: 100%;
-  /* is this needed? */
-  max-height: 100%;
-  overflow: auto;
-  width: 100%;
-  flex: auto;
-  /* should I declare color here? */
-  // color: #fff;
-  color: variables.$primary_white;
-
-  /* remove the scroll bar */
-  /* chromeium */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  /* firefox */
-  scrollbar-width: none;
-
-  @media (prefers-color-scheme: light) {
-    // color: rgba(0, 0, 0, 0.8);
-    color: variables.$primary_black;
-  }
-}
-
-
-.heading {
-  // color: rgba(255, 255, 255, 0.36);
-  color: variables.$primary_gray;
-  font-size: 32px;
-  margin: 0;
-  text-align: center;
-
-  @media (prefers-color-scheme: light) {
-    // color: rgba(0, 0, 0, 0.36);
-    color: variables.$primary_dark_gray;
-    // color: rgba(0, 0, 0, 0.8);
   }
 }

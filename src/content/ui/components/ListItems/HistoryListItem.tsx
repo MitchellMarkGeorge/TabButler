@@ -1,13 +1,11 @@
 import React from "react";
 import { HistoryData } from "@common/types";
 import { ListItemProps } from "./ListItem";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import  formatDistanceToNow  from "date-fns/formatDistanceToNow";
 import { useScroll } from "../../hooks";
 import Image from "../Image";
 import { getFaviconURL } from "./utils";
 import { BsGlobe } from "react-icons/bs";
-dayjs.extend(relativeTime);
 
 export const HistoryListItem = ({
   data,
@@ -15,14 +13,12 @@ export const HistoryListItem = ({
   selected,
   onClick,
 }: ListItemProps<HistoryData>) => {
-  // const ref = useScroll(selected);
-  // is it fine to be used like this???
   const ref = useScroll(selected);
   const FallBackIcon = <BsGlobe className="list-item-icon" />;
 
   const getHumanTime = (time: number) => {
     // need to use native relative time
-    return dayjs(time).fromNow();
+    return `${formatDistanceToNow(time)} ago`;
   };
   return (
     <div

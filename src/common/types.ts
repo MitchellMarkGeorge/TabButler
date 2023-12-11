@@ -1,22 +1,6 @@
 // import { IconType } from "@react-icons/all-files";
 
-// import type { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
-import type React from "react";
-
-// type Icon = typeof MagnifyingGlassIcon;
-export type Icon = React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
-  title?: string | undefined;
-  titleId?: string | undefined;
-} & React.RefAttributes<SVGSVGElement>>
-
-// export const enum Command {
-//   TOGGLE_TAB_SEARCH = "toggle-tab-search",
-//   TOGGLE_TAB_ACTIONS = "toggle-tab-actions",
-//   TOGGLE_TAB_BOOKMARKS = "toggle-tab-bookmarks",
-//   TOGGLE_TAB_HISTORY = "toggle-tab-history",
-// }
-
-// name space Messages according to their use using a union(?) of enums
+// namespace Messages according to their use using a union(?) of enums
 // type Message =  CommandMessage | TabSearchMessage | TabActionMessage
 export const enum Message {
   // command specific
@@ -73,22 +57,16 @@ export const enum DataType {
   HISTORY = "HISTORY",
 }
 
-export const enum SearchMode {
-  TAB_ACTIONS = "tab-actions",
-  TAB_SEARCH = "tab-search",
-  TAB_HISTORY = "tab-history",
+export const enum Command {
+  TOGGLE_TAB_SEARCH = "toggle-tab-search",
 }
 
 export interface MessagePlayload {
   message: Message;
-  // message: string
-  // data: TabData[]
 }
 
 export interface ActionPayload extends MessagePlayload {
   query?: string
-  // message: string
-  // data: TabData[]
 }
 
 export interface ChangeTabPayload extends MessagePlayload {
@@ -174,16 +152,10 @@ export interface BookmarkData extends Data {
   type: DataType.BOOKMARK;
 }
 
-export interface CheackSearchOpenResponse {
-  isOpen: boolean;
-  currentSearchMode: SearchMode;
-}
-
 export interface SectionType {
   name: string;
   score: number; 
   items: ScoredDataType[] // sorted
-  // items: ScoredDataType[] // sorted
 }
 
 export interface ScoredDataType {
