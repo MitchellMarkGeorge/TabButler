@@ -65,7 +65,7 @@ export const actions: ActionData[] = [
   {
     name: "Open Twitter",
     id: nanoid(),
-    message: Message.OPEN_FACEBOOK,
+    message: Message.OPEN_TWITTER,
     type: DataType.ACTION,
   },
 ];
