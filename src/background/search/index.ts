@@ -122,40 +122,22 @@ function scoreData<T extends Data>(
   keys: keyof T | Array<keyof T>,
   boostPercentage?: number
 ) {
+  const normalizedKeys = Array.isArray(keys) ? keys : [keys];
   const dataLength = data.length;
   let results: ScoredDataType[] = [];
 
-  if (!Array.isArray(keys)) {
-    for (let i = 0; i < dataLength; i++) {
-      const item = data[i];
-      let score = matchScore(query, item[keys] as string);
-      if (score < DEFAULT_SCORE_THRESHOLD) continue;
-      if (boostPercentage !== undefined) {
-        // think about this
-        score += score * boostPercentage; // get the percentage and add it to the score 
-      }
-      results.push({ score, data: item });
+  for (let i = 0; i < dataLength; i++) {
+    const item = data[i];
+    let maxScore = 0;
+    for (const key of normalizedKeys) {
+      const score = matchScore(query, item[key] as string);
+      if (score > maxScore) maxScore = score;
     }
-  } else {
-    for (let i = 0; i < dataLength; i++) {
-      const item = data[i];
-      const keyLength = keys.length;
-      let maxScore = 0;
-      for (let j = 0; j < keyLength; j++) {
-        const key = keys[j];
-        const score = matchScore(query, item[key] as string);
-        if (score < DEFAULT_SCORE_THRESHOLD) continue;
-        if (score > maxScore) {
-          maxScore = score;
-        }
-      }
-      if (maxScore === 0 || maxScore < DEFAULT_SCORE_THRESHOLD) continue;
-      if (boostPercentage !== undefined) {
-        // think about this
-        maxScore += maxScore * boostPercentage; // get the percentage and add it to the score 
-      }
-      results.push({ score: maxScore, data: item });
+    if (maxScore < DEFAULT_SCORE_THRESHOLD) continue;
+    if (boostPercentage !== undefined) {
+      maxScore += maxScore * boostPercentage;
     }
+    results.push({ score: maxScore, data: item });
   }
 
   if (results.length === 0) {

@@ -25,9 +25,10 @@ const cleanTabUrl = (url: string) => {
   // https://bobbyhadz.com/blog/javascript-remove-querystring-from-url
   // this method removes all the query params but leaves the hash
   // the hash is kept as in some cases, it can help users "match" with what they are looking for (eg: a section title in a website they are on)
-  if (url.includes("?")) {
-    return url.slice(0, url.indexOf("?")) + url.slice(url.indexOf("#"));
-  } else return url;
+  const queryIndex = url.indexOf("?");
+  if (queryIndex === -1) return url;
+  const hashIndex = url.indexOf("#");
+  return url.slice(0, queryIndex) + (hashIndex !== -1 ? url.slice(hashIndex) : "");
 };
 
 export async function fetchAllTabs() {
@@ -95,14 +96,14 @@ function normalizeBookmarks(bookmarks: browser.Bookmarks.BookmarkTreeNode[]) {
     const bookmark = bookmarks[i];
     if (bookmark.children) {
       results.push(...normalizeBookmarks(bookmark.children));
-    } else {
+    } else if (bookmark.url) {
       results.push({
         type: DataType.BOOKMARK,
         id: nanoid(),
         title: bookmark.title,
-        url: bookmark.url!, // should be present if it since it is not a folder 
+        url: bookmark.url,
       });
-    } 
+    }
   }
   return results;
 }

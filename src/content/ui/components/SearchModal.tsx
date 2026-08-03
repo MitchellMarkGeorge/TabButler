@@ -52,7 +52,7 @@ export const SearchModal = (props: Props) => {
       );
       return foundId === -1 ? null : foundId;
     } else return null;
-  }, [selectedId]);
+  }, [selectedId, resultList]);
 
   const inputRef = useRef<ElementRef<"input">>(null);
 
@@ -187,36 +187,33 @@ export const SearchModal = (props: Props) => {
     }
   };
 
-  const onInputChange = debounce((query: string) => {
-    if (query) {
-      search(query)
-        .then((result) => {
-          // if the the input is currently empty, dont try and and set the result/render an error
-          if (!inputRef.current?.value) return;
-          // console.log(result);
-          if (result.hasError) {
-            setError(true);
-          } else if (result.data !== null) {
-            // console.log(result.data);
-            const { sections, sortedResult } = result.data;
-            setResultSections(sections);
-            setResultList(sortedResult);
-            // select the first item
-            if (sortedResult.length === 0) {
-              setSelectedId(null);
-            } else {
-              setSelectedId(sortedResult[0].data.id);
+  const onInputChange = useRef(
+    debounce((query: string) => {
+      if (query) {
+        search(query)
+          .then((result) => {
+            // if the the input is currently empty, dont try and and set the result/render an error
+            if (!inputRef.current?.value) return;
+            if (result.hasError) {
+              setError(true);
+            } else if (result.data !== null) {
+              const { sections, sortedResult } = result.data;
+              setResultSections(sections);
+              setResultList(sortedResult);
+              // select the first item
+              if (sortedResult.length === 0) {
+                setSelectedId(null);
+              } else {
+                setSelectedId(sortedResult[0].data.id);
+              }
             }
-            // result.data && setResultSections(result.data);
-          }
-        })
-        .catch(() => {
-          // console.log("here is the err", err);
-          // console.log("here in the catch");
-          setError(true);
-        });
-    }
-  }, 300);
+          })
+          .catch(() => {
+            setError(true);
+          });
+      }
+    }, 300),
+  ).current;
 
   const closeOnClick = <T,>(func: (data: T) => void) => {
     return (data: T) => {

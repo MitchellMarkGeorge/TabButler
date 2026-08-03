@@ -35,18 +35,14 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
   }
 });
 
-browser.commands.onCommand.addListener((command, tab) => {
-  console.log(tab);
-  // should I still check the command?
+browser.commands.onCommand.addListener((_command, _tab) => {
   getCurrentTab().then((currentTab) => {
-    console.log(currentTab)
     if (
       currentTab?.id &&
       currentTab.url &&
       // chrome does not like content scripts acting on thier urls
       !isBrowserURL(currentTab.url)
     ) {
-      console.log(tab?.id === currentTab.id);
       const messagePayload: MessagePlayload = {
         message: Message.TOGGLE_TAB_BUTLER_MODAL,
       };
@@ -145,7 +141,6 @@ browser.runtime.onMessage.addListener(
         break;
 
       case Message.WEB_SEARCH: {
-        console.log("here", messagePayload);
         const { query } = messagePayload as ActionPayload;
         if (query) {
           browser.search.query({ text: query, disposition: "NEW_TAB" });
