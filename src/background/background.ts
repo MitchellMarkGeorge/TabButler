@@ -12,7 +12,7 @@ import {
   ActionPayload,
 } from "../common/types";
 import { search } from "./search";
-import { checkCommands, getCurrentTab, injectExtension } from "./utils";
+import { checkCommands, getCurrentTab } from "./utils";
 import browser from "webextension-polyfill";
 
 browser.runtime.onInstalled.addListener(({ reason }) => {
